@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VarshaNet — National Weather Big Data Analytics Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --ink:#0A1628;
+    --panel:#0F2038;
+    --panel-2:#152B47;
+    --border:#213A56;
+    --border-soft:#1A3050;
+    --mist:#7E97B2;
+    --mist-dim:#5A7290;
+    --cloud:#EAF2F8;
+    --teal:#1FC8A9;
+    --teal-dim:rgba(31,200,169,0.14);
+    --amber:#FFB020;
+    --amber-dim:rgba(255,176,32,0.14);
+    --red:#FF5A5F;
+    --red-dim:rgba(255,90,95,0.14);
+    --blue:#4FA8FF;
+    --font-display:'Space Grotesk', system-ui, sans-serif;
+    --font-body:'Inter', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+    --radius:14px;
+    --radius-sm:9px;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(31,200,169,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(79,168,255,0.08), transparent 60%);
+    color:var(--cloud);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  h1,h2,h3,h4{font-family:var(--font-display); margin:0; letter-spacing:-0.01em;}
+  p{margin:0;}
+  button{font-family:var(--font-body);}
+  ::selection{background:var(--teal); color:#00261F;}
+  :focus-visible{outline:2px solid var(--teal); outline-offset:2px;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- NAVBAR ---------- */
+  .navbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    background:rgba(10,22,40,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .brand{display:flex; align-items:center; gap:10px; cursor:pointer;}
+  .brand-mark{width:30px; height:30px; flex:none;}
+  .brand-text{font-family:var(--font-display); font-weight:700; font-size:1.08rem; color:var(--cloud);}
+  .brand-text small{display:block; font-family:var(--font-mono); font-weight:400; font-size:0.62rem; letter-spacing:0.08em; color:var(--mist); margin-top:1px;}
+  .nav-links{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .nav-btn{
+    border:1px solid transparent; background:none; color:var(--mist);
+    padding:8px 14px; border-radius:999px; font-size:0.88rem; font-weight:500;
+    cursor:pointer; transition:all .18s ease;
+  }
+  .nav-btn:hover{color:var(--cloud); background:var(--panel-2);}
+  .nav-btn.active{color:var(--ink); background:var(--teal); font-weight:600;}
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:11px 20px; border-radius:999px; border:1px solid var(--border);
+    font-size:0.92rem; font-weight:600; cursor:pointer; text-decoration:none;
+    background:var(--panel-2); color:var(--cloud); transition:all .18s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--mist-dim); transform:translateY(-1px);}
+  .btn-primary{background:var(--teal); color:#00261F; border-color:var(--teal);}
+  .btn-primary:hover{background:#22DDBB; box-shadow:0 0 0 4px var(--teal-dim);}
+  .btn-ghost{background:transparent;}
+  .btn-sm{padding:7px 13px; font-size:0.8rem; border-radius:8px;}
+  .btn:disabled{opacity:0.45; cursor:not-allowed; transform:none;}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; padding:76px 28px 64px; overflow:hidden;}
+  .hero-inner{max-width:1180px; margin:0 auto; position:relative; z-index:2;}
+  .radar-wrap{position:absolute; top:-160px; right:-160px; width:620px; height:620px; z-index:1; pointer-events:none; opacity:0.55;}
+  .radar-ring{position:absolute; inset:0; border-radius:50%; border:1px solid rgba(31,200,169,0.16);}
+  .radar-ring:nth-child(2){inset:70px;}
+  .radar-ring:nth-child(3){inset:140px;}
+  .radar-ring:nth-child(4){inset:210px;}
+  .radar-sweep{
+    position:absolute; inset:0; border-radius:50%;
+    background:conic-gradient(from 0deg, rgba(31,200,169,0.38), transparent 32%);
+    animation:spin 9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .hero-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.09em;
+    color:var(--teal); background:var(--teal-dim); border:1px solid rgba(31,200,169,0.3);
+    padding:6px 12px; border-radius:999px; margin-bottom:22px;
+  }
+  .dot-live{width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 0 3px var(--teal-dim); animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  .hero-title{
+    font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:700; max-width:16ch;
+    color:var(--cloud); line-height:1.08;
+  }
+  .hero-title em{font-style:normal; color:var(--teal);}
+  .hero-sub{
+    margin-top:22px; max-width:56ch; font-size:1.05rem; color:var(--mist); line-height:1.65;
+  }
+  .hero-cta{margin-top:32px; display:flex; gap:14px; flex-wrap:wrap;}
+
+  .stats-ticker{
+    margin-top:64px; display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--border-soft); border:1px solid var(--border-soft); border-radius:var(--radius); overflow:hidden;
+  }
+  .stat-item{background:rgba(15,32,56,0.7); padding:22px 20px;}
+  .stat-num{font-family:var(--font-mono); font-size:1.7rem; font-weight:500; color:var(--cloud);}
+  .stat-label{margin-top:4px; font-size:0.78rem; color:var(--mist);}
+
+  /* ---------- SOURCES STRIP ---------- */
+  .sources-strip{padding:40px 28px; border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);}
+  .sources-inner{max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .sources-label{font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.09em; color:var(--mist-dim); white-space:nowrap;}
+  .source-chip{
+    font-size:0.86rem; color:var(--mist); border:1px solid var(--border); padding:7px 14px;
+    border-radius:999px; background:var(--panel);
+  }
+
+  /* ---------- PIPELINE ---------- */
+  .section{padding:76px 28px;}
+  .section-head{max-width:640px; margin-bottom:44px;}
+  .section-eyebrow{font-family:var(--font-mono); font-size:0.74rem; letter-spacing:0.09em; color:var(--teal); margin-bottom:10px;}
+  .section-title{font-size:clamp(1.5rem,2.6vw,2.1rem); font-weight:700;}
+  .section-sub{margin-top:12px; color:var(--mist); font-size:1rem;}
+
+  .pipeline{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  .pipeline-step{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px 20px; position:relative; transition:border-color .18s ease, transform .18s ease;
+  }
+  .pipeline-step:hover{border-color:rgba(31,200,169,0.4); transform:translateY(-3px);}
+  .pipeline-num{font-family:var(--font-mono); font-size:0.78rem; color:var(--teal);}
+  .pipeline-title{margin-top:14px; font-size:1.06rem; font-weight:600;}
+  .pipeline-desc{margin-top:10px; font-size:0.88rem; color:var(--mist); line-height:1.6;}
+
+  /* ---------- PREVIEW CARDS ---------- */
+  .preview-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .preview-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border); border-radius:var(--radius); padding:28px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .preview-icon{width:38px; height:38px; border-radius:10px; background:var(--teal-dim); display:flex; align-items:center; justify-content:center; color:var(--teal);}
+  .preview-card h3{font-size:1.2rem;}
+  .preview-card p{color:var(--mist); font-size:0.92rem; line-height:1.6;}
+  .preview-tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+  .tag{font-size:0.74rem; font-family:var(--font-mono); color:var(--mist); border:1px solid var(--border); padding:4px 9px; border-radius:6px;}
+  .preview-card .btn{align-self:flex-start; margin-top:6px;}
+
+  footer.site-footer{
+    padding:32px 28px 60px; border-top:1px solid var(--border-soft);
+    color:var(--mist-dim); font-size:0.82rem; text-align:center; max-width:720px; margin:0 auto;
+  }
+  footer.site-footer strong{color:var(--mist);}
+
+  /* ============ DASHBOARD ============ */
+  .view{display:none;}
+  .view.active{display:block;}
+  .dash-header{
+    padding:28px 28px 0; max-width:1180px; margin:0 auto;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;
+  }
+  .dash-header h1{font-size:1.7rem;}
+  .dash-header .sub{color:var(--mist); font-size:0.88rem; margin-top:6px;}
+  .updated-line{font-family:var(--font-mono); font-size:0.76rem; color:var(--mist-dim); margin-top:8px;}
+
+  .dash-stats{
+    max-width:1180px; margin:24px auto 0; padding:0 28px;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  }
+  .stat-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px 18px;
+  }
+  .stat-card .num{font-family:var(--font-mono); font-size:1.5rem;}
+  .stat-card .label{font-size:0.78rem; color:var(--mist); margin-top:3px;}
+  .stat-card.teal .num{color:var(--teal);}
+  .stat-card.amber .num{color:var(--amber);}
+  .stat-card.red .num{color:var(--red);}
+
+  .dash-layout{
+    max-width:1180px; margin:24px auto 80px; padding:0 28px;
+    display:grid; grid-template-columns:250px 1fr; gap:20px; align-items:start;
+  }
+  .filter-rail{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px; position:sticky; top:88px;
+  }
+  .filter-rail h4{font-size:0.78rem; letter-spacing:0.06em; color:var(--mist); text-transform:uppercase; margin-bottom:16px;}
+  .filter-group{margin-bottom:20px;}
+  .filter-group label{display:block; font-size:0.8rem; color:var(--mist); margin-bottom:8px; font-weight:500;}
+  .date-row{display:flex; gap:6px;}
+  input[type=date],select,input[type=text]{
+    width:100%; background:var(--ink); border:1px solid var(--border); color:var(--cloud);
+    padding:8px 10px; border-radius:8px; font-size:0.82rem; font-family:var(--font-body);
+  }
+  select{cursor:pointer;}
+  .chip-set{display:flex; gap:6px; flex-wrap:wrap;}
+  .chip{
+    font-size:0.76rem; padding:6px 11px; border-radius:999px; border:1px solid var(--border);
+    background:var(--ink); color:var(--mist); cursor:pointer; transition:all .15s ease; user-select:none;
+  }
+  .chip:hover{border-color:var(--mist-dim);}
+  .chip.active{background:var(--teal-dim); border-color:var(--teal); color:var(--teal); font-weight:600;}
+  .btn-reset{width:100%; justify-content:center;}
+
+  .dash-main{display:flex; flex-direction:column; gap:20px;}
+  .panel{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;}
+  .panel-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;}
+  .panel-head h3{font-size:0.98rem;}
+  .panel-head .hint{font-size:0.76rem; color:var(--mist-dim); font-family:var(--font-mono);}
+  .panel-body{padding:18px 20px;}
+
+  #map{height:420px; width:100%;}
+  .map-legend{display:flex; gap:14px; flex-wrap:wrap; padding:12px 20px; border-top:1px solid var(--border-soft);}
+  .legend-item{display:flex; align-items:center; gap:6px; font-size:0.74rem; color:var(--mist);}
+  .legend-dot{width:9px; height:9px; border-radius:50%; flex:none;}
+
+  .charts-row{display:grid; grid-template-columns:1.3fr 1fr; gap:20px;}
+  .charts-row2{display:grid; grid-template-columns:1fr 1.4fr; gap:20px;}
+  .chart-box{height:230px; position:relative;}
+
+  .report-list{max-height:480px; overflow-y:auto;}
+  .report-row{
+    display:grid; grid-template-columns:80px 1.3fr 1fr 1fr 90px; gap:10px; align-items:center;
+    padding:11px 20px; border-bottom:1px solid var(--border-soft); font-size:0.82rem;
+  }
+  .report-row:last-child{border-bottom:none;}
+  .report-row .time{font-family:var(--font-mono); color:var(--mist-dim); font-size:0.74rem;}
+  .report-row .loc strong{display:block; font-size:0.86rem;}
+  .report-row .loc span{color:var(--mist-dim); font-size:0.74rem;}
+  .cat-tag{display:inline-flex; align-items:center; gap:6px; font-size:0.78rem;}
+  .cat-dot{width:8px; height:8px; border-radius:50%; flex:none;}
+  .badge{font-size:0.72rem; padding:4px 9px; border-radius:999px; font-weight:600; text-align:center;}
+  .badge.verified{background:var(--teal-dim); color:var(--teal);}
+  .badge.pending{background:var(--amber-dim); color:var(--amber);}
+  .badge.flagged{background:var(--red-dim); color:var(--red);}
+  .empty-note{padding:40px 20px; text-align:center; color:var(--mist-dim); font-size:0.88rem;}
+
+  /* ============ ADMIN ============ */
+  .admin-login-wrap{min-height:70vh; display:flex; align-items:center; justify-content:center; padding:40px 20px;}
+  .login-card{
+    width:100%; max-width:380px; background:var(--panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:32px;
+  }
+  .login-card h2{font-size:1.3rem;}
+  .login-card .sub{color:var(--mist); font-size:0.86rem; margin-top:8px; line-height:1.5;}
+  .field{margin-top:18px;}
+  .field label{display:block; font-size:0.8rem; color:var(--mist); margin-bottom:6px;}
+  .login-note{margin-top:14px; font-size:0.74rem; color:var(--mist-dim); font-family:var(--font-mono);}
+  .login-error{margin-top:10px; font-size:0.8rem; color:var(--red); display:none;}
+
+  .admin-topbar{max-width:1180px; margin:0 auto; padding:28px 28px 0; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;}
+  .admin-topbar .sub{color:var(--mist); font-size:0.88rem; margin-top:6px;}
+  .admin-stats{max-width:1180px; margin:24px auto 0; padding:0 28px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .admin-layout{max-width:1180px; margin:24px auto 80px; padding:0 28px; display:grid; grid-template-columns:1.7fr 1fr; gap:20px; align-items:start;}
+  .queue-toolbar{display:flex; gap:12px; padding:14px 20px; border-bottom:1px solid var(--border-soft); flex-wrap:wrap; align-items:center;}
+  .status-tabs{display:flex; gap:6px;}
+  .queue-list{max-height:640px; overflow-y:auto;}
+  .queue-row{
+    padding:16px 20px; border-bottom:1px solid var(--border-soft); display:grid;
+    grid-template-columns:1.3fr 0.9fr 1fr 0.8fr; gap:14px; align-items:center;
+  }
+  .queue-row:last-child{border-bottom:none;}
+  .queue-loc strong{font-size:0.92rem; display:block;}
+  .queue-loc .snippet{color:var(--mist); font-size:0.78rem; margin-top:5px; line-height:1.45;}
+  .queue-meta{font-size:0.74rem; color:var(--mist-dim); margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .dup-badge{color:var(--red); background:var(--red-dim); padding:2px 7px; border-radius:6px; font-weight:600;}
+  .trust-wrap{font-size:0.72rem; color:var(--mist);}
+  .trust-bar{height:6px; border-radius:99px; background:var(--border); margin-top:6px; overflow:hidden;}
+  .trust-fill{height:100%; border-radius:99px;}
+  .queue-actions{display:flex; gap:8px; flex-direction:column;}
+  .btn-approve{background:var(--teal-dim); border-color:rgba(31,200,169,0.35); color:var(--teal);}
+  .btn-approve:hover{background:var(--teal); color:#00261F;}
+  .btn-reject{background:var(--red-dim); border-color:rgba(255,90,95,0.35); color:var(--red);}
+  .btn-reject:hover{background:var(--red); color:#2b0002;}
+  .side-card{margin-bottom:20px;}
+  .dup-cluster{padding:14px 20px; border-bottom:1px solid var(--border-soft); font-size:0.82rem;}
+  .dup-cluster:last-child{border-bottom:none;}
+  .dup-cluster .ids{font-family:var(--font-mono); color:var(--mist-dim); font-size:0.74rem; margin-top:4px;}
+
+  /* ============ FORECAST ============ */
+  .forecast-wrap{max-width:640px; margin:0 auto; padding:64px 28px 80px;}
+  .forecast-head{text-align:center; margin-bottom:32px;}
+  .forecast-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border); border-radius:var(--radius); padding:28px;
+  }
+  .forecast-search{display:flex; gap:10px;}
+  .forecast-search input{flex:1;}
+  .forecast-result{margin-top:26px; text-align:center; display:none;}
+  .forecast-result.show{display:block;}
+  .forecast-icon{font-size:3.2rem; line-height:1;}
+  .forecast-temp{font-family:var(--font-mono); font-size:2.6rem; font-weight:500; margin-top:6px;}
+  .forecast-city{color:var(--mist); margin-top:4px; font-size:1.02rem;}
+  .forecast-details{display:flex; justify-content:center; gap:32px; margin-top:22px; padding-top:20px; border-top:1px solid var(--border-soft);}
+  .forecast-detail{text-align:center;}
+  .forecast-detail .val{font-family:var(--font-mono); font-size:1.15rem; color:var(--cloud);}
+  .forecast-detail .lbl{font-size:0.76rem; color:var(--mist-dim); margin-top:3px;}
+  .forecast-error{margin-top:16px; color:var(--red); font-size:0.86rem; text-align:center; display:none;}
+  .forecast-error.show{display:block;}
+  .forecast-loading{margin-top:16px; color:var(--mist); font-size:0.86rem; text-align:center; display:none;}
+  .forecast-loading.show{display:block;}
+  .forecast-hint{margin-top:20px; text-align:center; color:var(--mist-dim); font-size:0.84rem;}
+  .forecast-hint button{background:none; border:none; color:var(--teal); cursor:pointer; font-size:0.84rem; padding:0; text-decoration:underline;}
+
+  /* ============ REPORT FORM ============ */
+  .report-wrap{max-width:640px; margin:0 auto; padding:56px 28px 80px;}
+  .report-head{margin-bottom:28px;}
+  .report-head .sub{color:var(--mist); margin-top:8px; font-size:0.92rem; line-height:1.6;}
+  .form-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:28px;}
+  .form-field{margin-bottom:18px;}
+  .form-field label{display:block; font-size:0.84rem; color:var(--mist); margin-bottom:7px; font-weight:500;}
+  textarea{
+    width:100%; background:var(--ink); border:1px solid var(--border); color:var(--cloud);
+    padding:10px 12px; border-radius:8px; font-size:0.88rem; font-family:var(--font-body); resize:vertical;
+  }
+  input[type=file]{
+    width:100%; background:var(--ink); border:1px solid var(--border); color:var(--mist);
+    padding:9px 10px; border-radius:8px; font-size:0.82rem;
+  }
+  .loc-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .loc-status{font-size:0.78rem; color:var(--mist-dim);}
+  .form-row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .submit-note{font-size:0.78rem; color:var(--mist-dim); margin-top:10px; text-align:center;}
+  .result-box{margin-top:22px; padding:20px; border-radius:var(--radius-sm); border:1px solid var(--border); display:none; gap:18px; align-items:flex-start;}
+  .result-box.show{display:flex;}
+  .result-box.status-verified{background:var(--teal-dim); border-color:rgba(31,200,169,0.35);}
+  .result-box.status-pending{background:var(--amber-dim); border-color:rgba(255,176,32,0.35);}
+  .result-box.status-flagged{background:var(--red-dim); border-color:rgba(255,90,95,0.35);}
+  .result-gauge{
+    flex:none; width:64px; height:64px; border-radius:50%; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-weight:600; font-size:1.05rem; color:var(--cloud);
+  }
+  .result-text strong{display:block; margin-bottom:8px; font-size:0.98rem;}
+  .result-text ul{margin:0; padding-left:18px; font-size:0.84rem; color:var(--mist); line-height:1.7;}
+  .result-text a{color:var(--teal); font-size:0.84rem; display:inline-block; margin-top:10px;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:980px){
+    .pipeline{grid-template-columns:1fr 1fr;}
+    .preview-grid{grid-template-columns:1fr;}
+    .stats-ticker{grid-template-columns:1fr 1fr;}
+    .dash-layout, .admin-layout{grid-template-columns:1fr;}
+    .filter-rail{position:static;}
+    .charts-row, .charts-row2{grid-template-columns:1fr;}
+    .dash-stats, .admin-stats{grid-template-columns:1fr 1fr;}
+    .report-row{grid-template-columns:1fr 1fr; row-gap:6px;}
+    .report-row .time{order:3;}
+    .queue-row{grid-template-columns:1fr;}
+    .queue-actions{flex-direction:row;}
+    .form-row2{grid-template-columns:1fr;}
+    .forecast-details{gap:20px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .radar-sweep{animation:none;}
+    .dot-live{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="brand" data-nav="home">
+    <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="15" stroke="#1FC8A9" stroke-width="1.4" opacity="0.4"/>
+      <circle cx="16" cy="16" r="10" stroke="#1FC8A9" stroke-width="1.4" opacity="0.65"/>
+      <circle cx="16" cy="16" r="3.2" fill="#1FC8A9"/>
+    </svg>
+    <span class="brand-text">VarshaNet<small>NATIONAL WEATHER DATA PLATFORM</small></span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" data-nav="home">Home</button>
+    <button class="nav-btn" data-nav="forecast">Forecast</button>
+    <button class="nav-btn" data-nav="dashboard">Live Dashboard</button>
+    <button class="nav-btn" data-nav="report">Report an Event</button>
+    <button class="nav-btn" data-nav="admin">Admin Console</button>
+  </div>
+</nav>
+
+<!-- ============ HOME ============ -->
+<div class="view active" id="view-home">
+  <section class="hero">
+    <div class="radar-wrap" aria-hidden="true">
+      <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
+      <div class="radar-sweep"></div>
+    </div>
+    <div class="hero-inner">
+      <span class="hero-eyebrow"><span class="dot-live"></span>SMART INDIA HACKATHON 2026 · PS 26069</span>
+      <h1 class="hero-title">The monsoon is already <em>posting</em> about itself.</h1>
+      <p class="hero-sub">VarshaNet pulls live weather signals from X, citizen reports, IMD APIs and open datasets — filters out the noise with machine learning, and turns scattered <strong>#IMD</strong> posts into one verified, real-time map of India's weather.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-nav="dashboard">Open Live Dashboard →</button>
+        <button class="btn btn-ghost" data-nav="admin">Admin Console</button>
+      </div>
+      <div class="stats-ticker">
+        <div class="stat-item"><div class="stat-num" data-count="128430">0</div><div class="stat-label">Reports ingested</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="612">0</div><div class="stat-label">Cities &amp; towns covered</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="42" data-suffix=" min" data-decimal="1">0</div><div class="stat-label">Median time to verify</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="9842">0</div><div class="stat-label">Fake reports filtered</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sources-strip">
+    <div class="sources-inner">
+      <span class="sources-label">PULLING SIGNAL FROM</span>
+      <span class="source-chip">X / Twitter</span>
+      <span class="source-chip">Citizen Report App</span>
+      <span class="source-chip">IMD APIs</span>
+      <span class="source-chip">Public Datasets</span>
+      <span class="source-chip">News &amp; Web</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">HOW IT WORKS</div>
+        <h2 class="section-title">How a post becomes an alert</h2>
+        <p class="section-sub">Four stages turn an unstructured, unverified post into a trustworthy point on the map.</p>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="pipeline-num">01</div>
+          <div class="pipeline-title">Ingest</div>
+          <p class="pipeline-desc">Crawl #IMD and weather hashtags across social platforms, citizen app submissions, public datasets and open APIs — capturing text, media, GPS and timestamp as it lands.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-num">02</div>
+          <div class="pipeline-title">Verify</div>
+          <p class="pipeline-desc">Score every report for authenticity, cross-check the source, and cluster near-identical posts so duplicates never reach the map twice.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-num">03</div>
+          <div class="pipeline-title">Categorize</div>
+          <p class="pipeline-desc">Classify each verified report into rainfall, thunderstorm, flooding, heatwave, fog, dust storm or strong winds — automatically, with no manual tagging.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipeline-num">04</div>
+          <div class="pipeline-title">Visualize</div>
+          <p class="pipeline-desc">Plot everything on a live map with date, location and event filters, so analysts see what's happening as it happens.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">TWO WAYS IN</div>
+        <h2 class="section-title">Built for two kinds of users</h2>
+        <p class="section-sub">One surface for anyone tracking weather across India, another for the team keeping the data honest.</p>
+      </div>
+      <div class="preview-grid">
+        <div class="preview-card">
+          <div class="preview-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12l4-6 4 4 4-8 6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Live Dashboard</h3>
+          <p>Filter thousands of weather reports by date, event type, state and verification status. Watch them land on a map of India in real time, alongside category and trend charts.</p>
+          <div class="preview-tags"><span class="tag">Map view</span><span class="tag">Filters</span><span class="tag">Trend charts</span></div>
+          <button class="btn btn-primary" data-nav="dashboard">Open Dashboard</button>
+        </div>
+        <div class="preview-card">
+          <div class="preview-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2c0 5-4 9-9 9s-9-4-9-9 4-9 9-9c1.6 0 3.1.4 4.4 1.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Admin Console</h3>
+          <p>Review the reports the model isn't sure about. See trust scores, duplicate clusters and source breakdowns, then approve or reject in one click.</p>
+          <div class="preview-tags"><span class="tag">Trust scores</span><span class="tag">Duplicates</span><span class="tag">Moderation</span></div>
+          <button class="btn btn-ghost" data-nav="admin">Open Admin Console</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <strong>VarshaNet</strong> — a prototype built for Smart India Hackathon 2026 (PS 26069), for the Ministry of Earth Sciences · India Meteorological Department. Dashboard combines seeded historical data with real citizen submissions from this deployment.
+  </footer>
+</div>
+
+<!-- ============ FORECAST ============ -->
+<div class="view" id="view-forecast">
+  <div class="forecast-wrap">
+    <div class="forecast-head">
+      <div class="section-eyebrow" style="text-align:center;">LIVE STATION READOUT</div>
+      <h1 class="section-title">Real-time weather for any city</h1>
+      <p class="section-sub">Search live conditions, or cross-check them against citizen and social-media reports on the <button type="button" class="nav-btn" data-nav="dashboard" style="display:inline; padding:0; background:none; color:var(--teal); text-decoration:underline; font-size:inherit; font-weight:inherit;">Live Dashboard</button>.</p>
+    </div>
+    <div class="forecast-card">
+      <div class="forecast-search">
+        <input type="text" id="forecastCity" placeholder="Enter city name" spellcheck="false">
+        <button class="btn btn-primary" id="forecastSearchBtn">Search</button>
+      </div>
+      <div class="forecast-loading" id="forecastLoading">Fetching live conditions…</div>
+      <div class="forecast-error" id="forecastError"></div>
+      <div class="forecast-result" id="forecastResult">
+        <div class="forecast-icon" id="forecastIcon">☁️</div>
+        <div class="forecast-temp" id="forecastTemp">--°C</div>
+        <div class="forecast-city" id="forecastCityName">Search a city</div>
+        <div class="forecast-details">
+          <div class="forecast-detail"><div class="val" id="forecastHumidity">--%</div><div class="lbl">Humidity</div></div>
+          <div class="forecast-detail"><div class="val" id="forecastWind">-- km/h</div><div class="lbl">Wind Speed</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="forecast-hint">See live citizen &amp; social-media weather reports on the <button type="button" data-nav="dashboard" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">Dashboard</button>, or <button type="button" data-nav="report" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">submit one yourself</button>.</p>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="view" id="view-dashboard">
+  <div class="dash-header">
+    <div>
+      <h1>Live Weather Feed</h1>
+      <div class="sub">Real-time reports across India · seeded history + live citizen submissions</div>
+      <div class="updated-line" id="updatedLine">Updated just now</div>
+    </div>
+    <button class="btn btn-primary btn-sm" id="refreshBtn">↻ Refresh feed</button>
+  </div>
+
+  <div class="dash-stats">
+    <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total reports</div></div>
+    <div class="stat-card teal"><div class="num" id="statVerified">0</div><div class="label">Verified</div></div>
+    <div class="stat-card amber"><div class="num" id="statActive">0</div><div class="label">Active events (24h)</div></div>
+    <div class="stat-card red"><div class="num" id="statFlagged">0</div><div class="label">Flagged / duplicate</div></div>
+  </div>
+
+  <div class="dash-layout">
+    <aside class="filter-rail">
+      <h4>Filters</h4>
+      <div class="filter-group">
+        <label>Date range</label>
+        <div class="date-row">
+          <input type="date" id="fromDate">
+          <input type="date" id="toDate">
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Event type</label>
+        <div class="chip-set" id="eventChips"></div>
+      </div>
+      <div class="filter-group">
+        <label>State</label>
+        <select id="stateSelect"><option value="all">All states</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Verification status</label>
+        <select id="statusSelect">
+          <option value="all">All</option>
+          <option value="verified">Verified</option>
+          <option value="pending">Pending</option>
+          <option value="flagged">Flagged</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-reset" id="resetFilters">Reset filters</button>
+    </aside>
+
+    <main class="dash-main">
+      <div class="panel">
+        <div class="panel-head"><h3>Report Map</h3><span class="hint" id="mapCountHint">— reports plotted</span></div>
+        <div id="map"></div>
+        <div class="map-legend" id="mapLegend"></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="panel">
+          <div class="panel-head"><h3>Reports Over Time</h3></div>
+          <div class="panel-body chart-box"><canvas id="lineChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Event Category Share</h3></div>
+          <div class="panel-body chart-box"><canvas id="donutChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="charts-row2">
+        <div class="panel">
+          <div class="panel-head"><h3>Top States</h3></div>
+          <div class="panel-body chart-box"><canvas id="barChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recent Reports</h3><span class="hint" id="tableCountHint"></span></div>
+          <div class="report-list" id="reportList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ REPORT AN EVENT ============ -->
+<div class="view" id="view-report">
+  <div class="report-wrap">
+    <div class="report-head">
+      <h1 class="section-title">Report a weather event</h1>
+      <p class="sub">Your report is checked against live official weather data and scored automatically before appearing on the Live Dashboard.</p>
+    </div>
+    <div class="form-card">
+      <form id="reportForm">
+        <div class="form-field">
+          <label>Event category</label>
+          <select id="reportCategory" required>
+            <option value="">Select category</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Description</label>
+          <textarea id="reportDescription" rows="4" placeholder="Describe what you're seeing..."></textarea>
+        </div>
+        <div class="form-row2">
+          <div class="form-field">
+            <label>City</label>
+            <input type="text" id="reportCity" placeholder="e.g. Mumbai" required>
+          </div>
+          <div class="form-field">
+            <label>State</label>
+            <input type="text" id="reportState" placeholder="e.g. Maharashtra">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Location</label>
+          <div class="loc-row">
+            <button type="button" class="btn btn-sm btn-ghost" id="getLocationBtn">📍 Use My Current Location</button>
+            <span class="loc-status" id="locationStatus"></span>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Photo / video (optional)</label>
+          <input type="file" id="reportMedia" accept="image/*,video/*">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit Report</button>
+        <p class="submit-note">Your report is scored on the VarshaNet server against live IMD-style weather data and saved to the Live Dashboard &amp; Admin Console.</p>
+      </form>
+      <div id="resultBox" class="result-box">
+        <div class="result-gauge" id="resultGauge"></div>
+        <div class="result-text" id="resultText"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div class="view" id="view-admin">
+  <div id="adminLogin" class="admin-login-wrap">
+    <div class="login-card">
+      <h2>Admin Console</h2>
+      <p class="sub">Sign in to review incoming reports, check trust scores and resolve duplicates.</p>
+      <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="admin"></div>
+      <div class="field"><label>Password</label><input type="text" id="loginPass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" id="loginBtn" style="width:100%; justify-content:center; margin-top:20px;">Sign in</button>
+      <p class="login-error" id="loginError">Enter a username and password to continue.</p>
+      <p class="login-note">Sign in with the admin account configured for this deployment.</p>
+    </div>
+  </div>
+
+  <div id="adminShell" style="display:none;">
+    <div class="admin-topbar">
+      <div>
+        <h1>Review Queue</h1>
+        <div class="sub">Moderate incoming weather reports before they reach the public feed</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card amber"><div class="num" id="adminPending">0</div><div class="label">Pending review</div></div>
+      <div class="stat-card red"><div class="num" id="adminFlagged">0</div><div class="label">Flagged (ML / duplicate)</div></div>
+      <div class="stat-card teal"><div class="num" id="adminVerifiedToday">0</div><div class="label">Verified this session</div></div>
+      <div class="stat-card"><div class="num" id="adminAvgTrust">0</div><div class="label">Avg. trust score</div></div>
+    </div>
+
+    <div class="admin-layout">
+      <div class="panel">
+        <div class="queue-toolbar">
+          <input type="text" id="queueSearch" placeholder="Search by city or keyword…" style="max-width:240px;">
+          <div class="status-tabs" id="statusTabs">
+            <span class="chip active" data-tab="open">Needs review</span>
+            <span class="chip" data-tab="flagged">Flagged only</span>
+            <span class="chip" data-tab="all">All</span>
+          </div>
+        </div>
+        <div class="queue-list" id="queueList"></div>
+      </div>
+
+      <div>
+        <div class="panel side-card">
+          <div class="panel-head"><h3>Reports by Source</h3></div>
+          <div class="panel-body chart-box" style="height:200px;"><canvas id="sourceChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
+          <div id="dupClusters"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ================= DATA MODEL ================= */
+  var CITIES = [
+    {city:"Ghaziabad", state:"Uttar Pradesh", lat:28.6692, lng:77.4538},
+    {city:"Delhi", state:"Delhi", lat:28.7041, lng:77.1025},
+    {city:"Mumbai", state:"Maharashtra", lat:19.0760, lng:72.8777},
+    {city:"Chennai", state:"Tamil Nadu", lat:13.0827, lng:80.2707},
+    {city:"Kolkata", state:"West Bengal", lat:22.5726, lng:88.3639},
+    {city:"Bengaluru", state:"Karnataka", lat:12.9716, lng:77.5946},
+    {city:"Hyderabad", state:"Telangana", lat:17.3850, lng:78.4867},
+    {city:"Ahmedabad", state:"Gujarat", lat:23.0225, lng:72.5714},
+    {city:"Pune", state:"Maharashtra", lat:18.5204, lng:73.8567},
+    {city:"Jaipur", state:"Rajasthan", lat:26.9124, lng:75.7873},
+    {city:"Lucknow", state:"Uttar Pradesh", lat:26.8467, lng:80.9462},
+    {city:"Guwahati", state:"Assam", lat:26.1445, lng:91.7362},
+    {city:"Bhopal", state:"Madhya Pradesh", lat:23.2599, lng:77.4126},
+    {city:"Patna", state:"Bihar", lat:25.5941, lng:85.1376},
+    {city:"Chandigarh", state:"Chandigarh", lat:30.7333, lng:76.7794},
+    {city:"Thiruvananthapuram", state:"Kerala", lat:8.5241, lng:76.9366},
+    {city:"Bhubaneswar", state:"Odisha", lat:20.2961, lng:85.8245},
+    {city:"Dehradun", state:"Uttarakhand", lat:30.3165, lng:78.0322},
+    {city:"Srinagar", state:"Jammu & Kashmir", lat:34.0837, lng:74.7973},
+    {city:"Ranchi", state:"Jharkhand", lat:23.3441, lng:85.3096},
+    {city:"Raipur", state:"Chhattisgarh", lat:21.2514, lng:81.6296},
+    {city:"Amritsar", state:"Punjab", lat:31.6340, lng:74.8723},
+    {city:"Varanasi", state:"Uttar Pradesh", lat:25.3176, lng:82.9739}
+  ];
+
+  var EVENTS = [
+    {key:"rainfall", label:"Rainfall", color:"#4FA8FF"},
+    {key:"thunderstorm", label:"Thunderstorm", color:"#9B8CFB"},
+    {key:"flooding", label:"Flooding", color:"#2FB6C4"},
+    {key:"heatwave", label:"Heatwave", color:"#FF7849"},
+    {key:"fog", label:"Fog", color:"#9CA9B7"},
+    {key:"dust_storm", label:"Dust Storm", color:"#D9A441"},
+    {key:"strong_winds", label:"Strong Winds", color:"#5FD3A0"}
+  ];
+
+  var SOURCES = ["X / Twitter", "Citizen Report App", "IMD API", "Public Dataset"];
+
+  function statusFromTrust(t){
+    if(t < 42) return "flagged";
+    if(t < 68) return "pending";
+    return "verified";
+  }
+
+  var state = {
+    reports: [],
+    filters:{ from:null, to:null, events:new Set(EVENTS.map(function(e){return e.key;})), state:"all", status:"all" },
+    isAdmin:false,
+    adminTab:"open",
+    adminSearch:"",
+    verifiedThisSession:0,
+    nextId:0,
+    charts:{},
+    map:null,
+    markerLayer:null,
+    dashInitialized:false
+  };
+
+  function fmtRelative(ts){
+    var diff = Date.now() - ts;
+    var mins = Math.floor(diff/60000);
+    if(mins < 1) return "just now";
+    if(mins < 60) return mins+"m ago";
+    var hrs = Math.floor(mins/60);
+    if(hrs < 24) return hrs+"h ago";
+    var days = Math.floor(hrs/24);
+    return days+"d ago";
+  }
+
+  function eventMeta(key){
+    for(var i=0;i<EVENTS.length;i++){ if(EVENTS[i].key===key) return EVENTS[i]; }
+    return EVENTS[0];
+  }
+
+  /* ================= NAVIGATION ================= */
+  function showView(name){
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+    document.getElementById("view-"+name).classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-nav")===name);
+    });
+    window.scrollTo({top:0, behavior:"auto"});
+    if(name === "dashboard"){
+      if(!state.dashInitialized){ initDashboard(); state.dashInitialized = true; }
+      else { applyFilters(); }
+      setTimeout(function(){ if(state.map) state.map.invalidateSize(); }, 50);
+    }
+    if(name === "admin" && state.isAdmin){ renderAdmin(); }
+    if(name === "forecast" && !state.forecastInitialized){ initForecast(); state.forecastInitialized = true; }
+    if(name === "report" && !state.reportFormInitialized){ initReportForm(); state.reportFormInitialized = true; }
+  }
+
+  document.addEventListener("click", function(e){
+    var el = e.target.closest("[data-nav]");
+    if(el){ showView(el.getAttribute("data-nav")); }
+  });
+
+  /* ================= HERO COUNTERS ================= */
+  function animateCounters(){
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll("[data-count]").forEach(function(el){
+      var target = parseFloat(el.getAttribute("data-count"));
+      var decimals = parseInt(el.getAttribute("data-decimal")||"0",10);
+      var suffix = el.getAttribute("data-suffix")||"";
+      var divisor = decimals>0 ? Math.pow(10,decimals) : 1;
+      var displayTarget = target/divisor;
+      if(reduce){ el.textContent = displayTarget.toFixed(decimals)+suffix; return; }
+      var startTs = null; var dur = 1400;
+      function step(ts){
+        if(!startTs) startTs = ts;
+        var p = Math.min(1, (ts-startTs)/dur);
+        var eased = 1 - Math.pow(1-p, 3);
+        var val = displayTarget*eased;
+        el.textContent = val.toLocaleString(undefined,{minimumFractionDigits:decimals, maximumFractionDigits:decimals})+suffix;
+        if(p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ================= DASHBOARD ================= */
+  function initDashboard(){
+    // event chips
+    var chipWrap = document.getElementById("eventChips");
+    EVENTS.forEach(function(ev){
+      var chip = document.createElement("span");
+      chip.className = "chip active";
+      chip.textContent = ev.label;
+      chip.setAttribute("data-key", ev.key);
+      chip.style.borderColor = "transparent";
+      chip.addEventListener("click", function(){
+        if(state.filters.events.has(ev.key)){ state.filters.events.delete(ev.key); chip.classList.remove("active"); }
+        else { state.filters.events.add(ev.key); chip.classList.add("active"); }
+        applyFilters();
+      });
+      chipWrap.appendChild(chip);
+    });
+
+    // state select
+    var stateSelect = document.getElementById("stateSelect");
+    var states = Array.from(new Set(CITIES.map(function(c){return c.state;}))).sort();
+    states.forEach(function(s){
+      var opt = document.createElement("option");
+      opt.value = s; opt.textContent = s;
+      stateSelect.appendChild(opt);
+    });
+    stateSelect.addEventListener("change", function(){ state.filters.state = stateSelect.value; applyFilters(); });
+    document.getElementById("statusSelect").addEventListener("change", function(e){ state.filters.status = e.target.value; applyFilters(); });
+
+    // date range defaults: last 30 days
+    var toDate = document.getElementById("toDate");
+    var fromDate = document.getElementById("fromDate");
+    var today = new Date();
+    var past = new Date(Date.now() - 30*86400000);
+    toDate.value = today.toISOString().slice(0,10);
+    fromDate.value = past.toISOString().slice(0,10);
+    state.filters.from = fromDate.value;
+    state.filters.to = toDate.value;
+    fromDate.addEventListener("change", function(){ state.filters.from = fromDate.value; applyFilters(); });
+    toDate.addEventListener("change", function(){ state.filters.to = toDate.value; applyFilters(); });
+
+    document.getElementById("resetFilters").addEventListener("click", function(){
+      state.filters.events = new Set(EVENTS.map(function(e){return e.key;}));
+      state.filters.state = "all"; state.filters.status = "all";
+      fromDate.value = past.toISOString().slice(0,10);
+      toDate.value = today.toISOString().slice(0,10);
+      state.filters.from = fromDate.value; state.filters.to = toDate.value;
+      stateSelect.value = "all"; document.getElementById("statusSelect").value = "all";
+      chipWrap.querySelectorAll(".chip").forEach(function(c){ c.classList.add("active"); });
+      applyFilters();
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", function(){
+      document.getElementById("updatedLine").textContent = "Refreshing…";
+      loadReports().then(function(){
+        document.getElementById("updatedLine").textContent = "Updated just now";
+      });
+    });
+
+    // map legend
+    var legend = document.getElementById("mapLegend");
+    EVENTS.forEach(function(ev){
+      var item = document.createElement("div");
+      item.className = "legend-item";
+      item.innerHTML = '<span class="legend-dot" style="background:'+ev.color+'"></span>'+ev.label;
+      legend.appendChild(item);
+    });
+
+    // map
+    state.map = L.map("map", {scrollWheelZoom:false}).setView([22.5, 80], 4.3);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom:18, subdomains:"abcd"
+    }).addTo(state.map);
+    state.markerLayer = L.layerGroup().addTo(state.map);
+
+    // charts
+    var lineCtx = document.getElementById("lineChart").getContext("2d");
+    state.charts.line = new Chart(lineCtx, {
+      type:"line",
+      data:{labels:[], datasets:[{label:"Reports", data:[], borderColor:"#1FC8A9", backgroundColor:"rgba(31,200,169,0.12)", fill:true, tension:0.35, pointRadius:0, borderWidth:2}]},
+      options: chartBaseOptions({legend:false})
+    });
+
+    var donutCtx = document.getElementById("donutChart").getContext("2d");
+    state.charts.donut = new Chart(donutCtx, {
+      type:"doughnut",
+      data:{labels:EVENTS.map(function(e){return e.label;}), datasets:[{data:EVENTS.map(function(){return 0;}), backgroundColor:EVENTS.map(function(e){return e.color;}), borderWidth:0}]},
+      options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:"right", labels:{color:"#7E97B2", boxWidth:10, font:{size:10}, padding:8}}}}
+    });
+
+    var barCtx = document.getElementById("barChart").getContext("2d");
+    state.charts.bar = new Chart(barCtx, {
+      type:"bar",
+      data:{labels:[], datasets:[{label:"Reports", data:[], backgroundColor:"#4FA8FF", borderRadius:4}]},
+      options: chartBaseOptions({legend:false, indexAxis:"y"})
+    });
+
+    applyFilters();
+  }
+
+  function chartBaseOptions(opts){
+    opts = opts||{};
+    var o = {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display: !!opts.legend } },
+      scales:{
+        x:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5A7290", font:{size:10}} },
+        y:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5A7290", font:{size:10}}, beginAtZero:true }
+      }
+    };
+    if(opts.indexAxis) o.indexAxis = opts.indexAxis;
+    return o;
+  }
+
+  function withinRange(ts, fromStr, toStr){
+    var t = new Date(ts).setHours(0,0,0,0);
+    if(fromStr){ var f = new Date(fromStr).setHours(0,0,0,0); if(t < f) return false; }
+    if(toStr){ var to = new Date(toStr).setHours(23,59,59,999); if(ts > to) return false; }
+    return true;
+  }
+
+  function getFiltered(){
+    var f = state.filters;
+    return state.reports.filter(function(r){
+      if(r.status === "rejected") return false;
+      if(!withinRange(r.ts, f.from, f.to)) return false;
+      if(!f.events.has(r.event)) return false;
+      if(f.state !== "all" && r.state !== f.state) return false;
+      if(f.status !== "all" && r.status !== f.status) return false;
+      return true;
+    });
+  }
+
+  function applyFilters(){
+    var filtered = getFiltered();
+    var dayMs = 86400000;
+    var now = Date.now();
+
+    document.getElementById("statTotal").textContent = filtered.length.toLocaleString();
+    document.getElementById("statVerified").textContent = filtered.filter(function(r){return r.status==="verified";}).length.toLocaleString();
+    document.getElementById("statActive").textContent = filtered.filter(function(r){return now - r.ts < dayMs;}).length.toLocaleString();
+    document.getElementById("statFlagged").textContent = filtered.filter(function(r){return r.status==="flagged";}).length.toLocaleString();
+
+    // map
+    if(state.markerLayer){
+      state.markerLayer.clearLayers();
+      filtered.slice(0,600).forEach(function(r){
+        var meta = eventMeta(r.event);
+        var marker = L.circleMarker([r.lat,r.lng], {
+          radius: r.status==="flagged" ? 4 : 6,
+          color: meta.color, weight: r.status==="flagged" ? 1 : 0,
+          fillColor: meta.color, fillOpacity: r.status==="flagged" ? 0.35 : 0.85
+        });
+        marker.bindPopup(
+          "<strong>"+meta.label+"</strong> — "+r.city+", "+r.state+"<br>"+
+          "<span style='color:#7E97B2'>"+fmtRelative(r.ts)+" · "+r.source+" · "+r.status+"</span><br>"+
+          "<span style='color:#5A7290'>"+r.text+"</span>"
+        );
+        marker.addTo(state.markerLayer);
+      });
+    }
+    document.getElementById("mapCountHint").textContent = filtered.length.toLocaleString()+" reports plotted";
+
+    // line chart: last 30 days count
+    if(state.charts.line){
+      var days = [];
+      var counts = [];
+      for(var i=29;i>=0;i--){
+        var d = new Date(now - i*dayMs);
+        var label = d.toLocaleDateString(undefined,{month:"short", day:"numeric"});
+        days.push(label);
+        var dayStart = new Date(d).setHours(0,0,0,0);
+        var dayEnd = dayStart + dayMs;
+        counts.push(filtered.filter(function(r){ return r.ts>=dayStart && r.ts<dayEnd; }).length);
+      }
+      state.charts.line.data.labels = days;
+      state.charts.line.data.datasets[0].data = counts;
+      state.charts.line.update();
+    }
+
+    // donut chart: category share
+    if(state.charts.donut){
+      var catCounts = EVENTS.map(function(ev){ return filtered.filter(function(r){return r.event===ev.key;}).length; });
+      state.charts.donut.data.datasets[0].data = catCounts;
+      state.charts.donut.update();
+    }
+
+    // bar chart: top states
+    if(state.charts.bar){
+      var byState = {};
+      filtered.forEach(function(r){ byState[r.state] = (byState[r.state]||0)+1; });
+      var entries = Object.keys(byState).map(function(k){ return [k, byState[k]]; });
+      entries.sort(function(a,b){ return b[1]-a[1]; });
+      entries = entries.slice(0,8);
+      state.charts.bar.data.labels = entries.map(function(e){return e[0];});
+      state.charts.bar.data.datasets[0].data = entries.map(function(e){return e[1];});
+      state.charts.bar.update();
+    }
+
+    // recent reports list
+    var list = document.getElementById("reportList");
+    var recent = filtered.slice().sort(function(a,b){ return b.ts-a.ts; }).slice(0,60);
+    document.getElementById("tableCountHint").textContent = "showing "+recent.length+" of "+filtered.length;
+    if(recent.length===0){
+      list.innerHTML = '<div class="empty-note">No reports match these filters. Try widening the date range.</div>';
+    } else {
+      list.innerHTML = recent.map(function(r){
+        var meta = eventMeta(r.event);
+        return '<div class="report-row">'+
+          '<span class="time">'+fmtRelative(r.ts)+'</span>'+
+          '<span class="loc"><strong>'+r.city+'</strong><span>'+r.state+'</span></span>'+
+          '<span class="cat-tag"><span class="cat-dot" style="background:'+meta.color+'"></span>'+meta.label+'</span>'+
+          '<span style="color:#7E97B2; font-size:0.78rem;">'+r.source+'</span>'+
+          '<span class="badge '+r.status+'">'+r.status+'</span>'+
+        '</div>';
+      }).join("");
+    }
+  }
+
+  /* ================= ADMIN ================= */
+  var ADMIN_TOKEN_KEY = "varshanet_admin_token";
+
+  function initAdmin(){
+    document.getElementById("loginBtn").addEventListener("click", function(){
+      var u = document.getElementById("loginUser").value.trim();
+      var p = document.getElementById("loginPass").value.trim();
+      var errorEl = document.getElementById("loginError");
+      if(!u || !p){ errorEl.textContent = "Enter a username and password to continue."; errorEl.style.display = "block"; return; }
+
+      var loginBtn = document.getElementById("loginBtn");
+      loginBtn.disabled = true;
+      fetch("/api/admin/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ username:u, password:p })
+      }).then(function(res){
+        return res.json().then(function(data){
+          if(!res.ok) throw new Error(data.error || "Invalid credentials");
+          return data;
+        });
+      }).then(function(data){
+        localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        state.isAdmin = true;
+        errorEl.style.display = "none";
+        document.getElementById("adminLogin").style.display = "none";
+        document.getElementById("adminShell").style.display = "block";
+        renderAdmin();
+      }).catch(function(err){
+        errorEl.textContent = err.message || "Invalid credentials.";
+        errorEl.style.display = "block";
+      }).finally(function(){
+        loginBtn.disabled = false;
+      });
+    });
+    document.getElementById("logoutBtn").addEventListener("click", function(){
+      state.isAdmin = false;
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      document.getElementById("adminLogin").style.display = "flex";
+      document.getElementById("adminShell").style.display = "none";
+    });
+    document.getElementById("statusTabs").addEventListener("click", function(e){
+      var chip = e.target.closest(".chip");
+      if(!chip) return;
+      document.querySelectorAll("#statusTabs .chip").forEach(function(c){ c.classList.remove("active"); });
+      chip.classList.add("active");
+      state.adminTab = chip.getAttribute("data-tab");
+      renderAdmin();
+    });
+    document.getElementById("queueSearch").addEventListener("input", function(e){
+      state.adminSearch = e.target.value.toLowerCase();
+      renderAdmin();
+    });
+
+    var srcCtx = document.getElementById("sourceChart").getContext("2d");
+    state.charts.source = new Chart(srcCtx, {
+      type:"bar",
+      data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:"#1FC8A9", borderRadius:4}]},
+      options: chartBaseOptions({legend:false})
+    });
+  }
+
+  function renderAdmin(){
+    var all = state.reports.filter(function(r){ return r.status!=="rejected"; });
+    var queue;
+    if(state.adminTab==="open") queue = all.filter(function(r){ return r.status==="pending" || r.status==="flagged"; });
+    else if(state.adminTab==="flagged") queue = all.filter(function(r){ return r.status==="flagged"; });
+    else queue = all.slice();
+
+    if(state.adminSearch){
+      queue = queue.filter(function(r){
+        return r.city.toLowerCase().indexOf(state.adminSearch)>-1 ||
+               r.text.toLowerCase().indexOf(state.adminSearch)>-1 ||
+               r.state.toLowerCase().indexOf(state.adminSearch)>-1;
+      });
+    }
+    queue.sort(function(a,b){ return a.trust-b.trust; });
+
+    var pendingCount = state.reports.filter(function(r){return r.status==="pending";}).length;
+    var flaggedCount = state.reports.filter(function(r){return r.status==="flagged";}).length;
+    var verifiedPool = state.reports.filter(function(r){return r.status==="verified" || r.status==="pending" || r.status==="flagged";});
+    var avgTrust = verifiedPool.length ? Math.round(verifiedPool.reduce(function(s,r){return s+r.trust;},0)/verifiedPool.length) : 0;
+
+    document.getElementById("adminPending").textContent = pendingCount;
+    document.getElementById("adminFlagged").textContent = flaggedCount;
+    document.getElementById("adminVerifiedToday").textContent = state.verifiedThisSession;
+    document.getElementById("adminAvgTrust").textContent = avgTrust;
+
+    var list = document.getElementById("queueList");
+    if(queue.length===0){
+      list.innerHTML = '<div class="empty-note">Queue is clear — nothing needs review right now.</div>';
+    } else {
+      list.innerHTML = queue.slice(0,80).map(function(r){
+        var meta = eventMeta(r.event);
+        var fillColor = r.trust<42 ? "#FF5A5F" : (r.trust<68 ? "#FFB020" : "#1FC8A9");
+        var dupNote = r.duplicateOf!==null ? '<span class="dup-badge">possible duplicate of #'+r.duplicateOf+'</span>' : '';
+        return '<div class="queue-row" data-id="'+r.id+'">'+
+          '<div class="queue-loc">'+
+            '<strong>'+r.city+', '+r.state+'</strong>'+
+            '<div class="snippet">'+r.text+'</div>'+
+            '<div class="queue-meta"><span class="cat-tag"><span class="cat-dot" style="background:'+meta.color+'"></span>'+meta.label+'</span><span>'+fmtRelative(r.ts)+'</span>'+dupNote+'</div>'+
+          '</div>'+
+          '<div style="font-size:0.8rem; color:#7E97B2;">'+r.source+'<br><span style="font-size:0.74rem; color:#5A7290;">'+(r.hasPhoto?'📷 photo ':'')+(r.hasVideo?'🎞 video':'')+'</span></div>'+
+          '<div class="trust-wrap">Trust score: <strong style="color:'+fillColor+'">'+r.trust+'</strong>'+
+            '<div class="trust-bar"><div class="trust-fill" style="width:'+r.trust+'%; background:'+fillColor+'"></div></div>'+
+          '</div>'+
+          '<div class="queue-actions">'+
+            '<button class="btn btn-sm btn-approve" data-action="approve" data-id="'+r.id+'">Approve</button>'+
+            '<button class="btn btn-sm btn-reject" data-action="reject" data-id="'+r.id+'">Reject</button>'+
+          '</div>'+
+        '</div>';
+      }).join("");
+    }
+
+    // source chart
+    if(state.charts.source){
+      var counts = SOURCES.map(function(s){ return all.filter(function(r){return r.source===s;}).length; });
+      state.charts.source.data.datasets[0].data = counts;
+      state.charts.source.update();
+    }
+
+    // duplicate clusters
+    var dupWrap = document.getElementById("dupClusters");
+    var clusters = state.reports.filter(function(r){ return r.duplicateOf!==null && r.status!=="rejected"; });
+    if(clusters.length===0){
+      dupWrap.innerHTML = '<div class="empty-note">No duplicate clusters detected.</div>';
+    } else {
+      dupWrap.innerHTML = clusters.slice(0,10).map(function(r){
+        return '<div class="dup-cluster"><strong>'+r.city+'</strong> — '+eventMeta(r.event).label+
+          '<div class="ids">report #'+r.id+' ↔ original #'+r.duplicateOf+'</div></div>';
+      }).join("");
+    }
+  }
+
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-action]");
+    if(!btn) return;
+    var id = parseInt(btn.getAttribute("data-id"),10);
+    var report = state.reports.filter(function(r){return r.id===id;})[0];
+    if(!report) return;
+    var newStatus = btn.getAttribute("data-action")==="approve" ? "verified" : "rejected";
+    var token = localStorage.getItem(ADMIN_TOKEN_KEY);
+
+    btn.disabled = true;
+    fetch("/api/reports/" + id + "/status", {
+      method: "PATCH",
+      headers: {"Content-Type":"application/json", "Authorization":"Bearer " + token},
+      body: JSON.stringify({ status:newStatus })
+    }).then(function(res){
+      if(res.status === 401){
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        state.isAdmin = false;
+        document.getElementById("adminLogin").style.display = "flex";
+        document.getElementById("adminShell").style.display = "none";
+        throw new Error("Session expired");
+      }
+      return res.json().then(function(data){
+        if(!res.ok) throw new Error(data.error || "Update failed");
+        return data;
+      });
+    }).then(function(updated){
+      report.status = updated.status;
+      report.duplicateOf = updated.duplicateOf;
+      if(newStatus === "verified") state.verifiedThisSession++;
+      renderAdmin();
+      if(state.dashInitialized) applyFilters();
+    }).catch(function(){
+      // session-expired case already redirected to login above; otherwise
+      // silently leave the queue as-is and let the admin retry
+    }).finally(function(){
+      btn.disabled = false;
+    });
+  });
+
+  /* ================= FORECAST (live, via Open-Meteo — no API key needed) ================= */
+  var WEATHER_ICONS = { Clear:"☀️", Clouds:"☁️", Rain:"🌧️", Drizzle:"🌦️", Fog:"🌫️", Snow:"❄️", Storm:"⛈️" };
+
+  // Looks up a city (free-text) and returns its live conditions, via our
+  // own /api/weather proxy (server talks to Open-Meteo — no key required).
+  function fetchCityWeather(cityName){
+    return fetch("/api/weather?city=" + encodeURIComponent(cityName)).then(function(res){
+      return res.json().then(function(data){
+        if(!res.ok) throw new Error(data.error || "City not found. Try a different spelling.");
+        return data;
+      });
+    });
+  }
+
+  function initForecast(){
+    var input = document.getElementById("forecastCity");
+    var btn = document.getElementById("forecastSearchBtn");
+    var loading = document.getElementById("forecastLoading");
+    var errorBox = document.getElementById("forecastError");
+    var resultBox = document.getElementById("forecastResult");
+
+    function runSearch(){
+      var city = input.value.trim();
+      if(!city){ return; }
+      errorBox.classList.remove("show");
+      resultBox.classList.remove("show");
+      loading.classList.add("show");
+      fetchCityWeather(city).then(function(data){
+        loading.classList.remove("show");
+        document.getElementById("forecastIcon").textContent = WEATHER_ICONS[data.main] || "☁️";
+        document.getElementById("forecastTemp").textContent = data.temp + "°C";
+        document.getElementById("forecastCityName").textContent = data.name;
+        document.getElementById("forecastHumidity").textContent = data.humidity + "%";
+        document.getElementById("forecastWind").textContent = data.wind + " km/h";
+        resultBox.classList.add("show");
+      }).catch(function(err){
+        loading.classList.remove("show");
+        errorBox.textContent = err.message || "Could not fetch weather data. Check your connection.";
+        errorBox.classList.add("show");
+      });
+    }
+
+    btn.addEventListener("click", runSearch);
+    input.addEventListener("keydown", function(e){ if(e.key==="Enter") runSearch(); });
+  }
+
+  /* ================= REPORT AN EVENT (citizen submission) ================= */
+  // Trust scoring itself now runs server-side (server/scoring.js) against
+  // live weather + duplicate-media checks nobody can tamper with from
+  // devtools. The client just submits the form and renders whatever score
+  // and reasons the server hands back.
+
+  function paintGauge(el, score, status){
+    var color = status==="flagged" ? "#FF5A5F" : (status==="pending" ? "#FFB020" : "#1FC8A9");
+    el.style.background = "conic-gradient(" + color + " " + (score*3.6) + "deg, rgba(255,255,255,0.08) 0deg)";
+    el.innerHTML = '<div style="position:absolute; inset:6px; border-radius:50%; background:var(--panel); display:flex; align-items:center; justify-content:center;">' + score + '</div>';
+    el.style.position = "relative";
+  }
+
+  function initReportForm(){
+    var catSelect = document.getElementById("reportCategory");
+    EVENTS.forEach(function(ev){
+      var opt = document.createElement("option");
+      opt.value = ev.key; opt.textContent = ev.label;
+      catSelect.appendChild(opt);
+    });
+
+    var latVal = null, lngVal = null;
+    var locBtn = document.getElementById("getLocationBtn");
+    var locStatus = document.getElementById("locationStatus");
+    locBtn.addEventListener("click", function(){
+      if(!navigator.geolocation){ locStatus.textContent = "Geolocation not supported by this browser."; return; }
+      locStatus.textContent = "Fetching location…";
+      navigator.geolocation.getCurrentPosition(function(pos){
+        latVal = pos.coords.latitude; lngVal = pos.coords.longitude;
+        locStatus.textContent = "Captured: " + latVal.toFixed(3) + ", " + lngVal.toFixed(3);
+      }, function(){
+        locStatus.textContent = "Could not fetch location. Report will still use the city you entered.";
+      });
+    });
+
+    var form = document.getElementById("reportForm");
+    var resultBox = document.getElementById("resultBox");
+    var resultText = document.getElementById("resultText");
+    var resultGauge = document.getElementById("resultGauge");
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      var category = catSelect.value;
+      var description = document.getElementById("reportDescription").value;
+      var city = document.getElementById("reportCity").value.trim();
+      var stateName = document.getElementById("reportState").value.trim() || "Unknown";
+      var fileInput = document.getElementById("reportMedia");
+      var file = fileInput.files && fileInput.files[0];
+
+      if(!category || !city){ return; }
+
+      var submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Checking against live weather…";
+
+      var fd = new FormData();
+      fd.append("category", category);
+      fd.append("description", description);
+      fd.append("city", city);
+      fd.append("state", stateName);
+      if(latVal !== null) fd.append("lat", latVal);
+      if(lngVal !== null) fd.append("lng", lngVal);
+      if(file) fd.append("media", file);
+
+      fetch("/api/reports", { method:"POST", body: fd })
+        .then(function(res){
+          return res.json().then(function(data){
+            if(!res.ok) throw new Error(data.error || "Submission failed. Please try again.");
+            return data;
+          });
+        })
+        .then(function(data){
+          var report = data.report;
+          var reasons = data.reasons;
+          var status = report.status;
+
+          state.reports.push(report);
+          if(status === "verified") state.verifiedThisSession++;
+
+          var stateSelectEl = document.getElementById("stateSelect");
+          if(stateSelectEl){
+            var exists = Array.prototype.some.call(stateSelectEl.options, function(o){ return o.value === report.state; });
+            if(!exists){
+              var opt = document.createElement("option");
+              opt.value = report.state; opt.textContent = report.state;
+              stateSelectEl.appendChild(opt);
+            }
+          }
+
+          resultBox.className = "result-box show status-" + status;
+          paintGauge(resultGauge, report.trust, status);
+          resultText.innerHTML =
+            '<strong>Report submitted — status: ' + status.toUpperCase() + '</strong>' +
+            '<ul>' + reasons.map(function(r){ return '<li>' + r + '</li>'; }).join("") + '</ul>' +
+            '<a href="#" data-nav="dashboard">View it on the Live Dashboard →</a>';
+
+          form.reset();
+          locStatus.textContent = "";
+          latVal = null; lngVal = null;
+        })
+        .catch(function(err){
+          resultBox.className = "result-box show status-flagged";
+          resultText.innerHTML = '<strong>Could not submit report</strong><p style="margin-top:8px;">' + (err.message || "Please try again.") + '</p>';
+        })
+        .finally(function(){
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Report";
+          if(state.dashInitialized) applyFilters();
+          if(state.isAdmin) renderAdmin();
+        });
+    });
+  }
+
+  /* ================= INIT ================= */
+  function loadReports(){
+    return fetch("/api/reports").then(function(res){ return res.json(); }).then(function(data){
+      state.reports = data;
+      if(state.dashInitialized) applyFilters();
+      if(state.isAdmin) renderAdmin();
+      return data;
+    }).catch(function(){ state.reports = state.reports || []; });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    animateCounters();
+    initAdmin();
+    loadReports();
+  });
+
+})();
+
+</script>
+</body>
+</html>
