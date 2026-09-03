@@ -1409,10 +1409,19 @@
     }).catch(function(){ state.reports = state.reports || []; });
   }
 
-  document.addEventListener("DOMContentLoaded", function(){
+    document.addEventListener("DOMContentLoaded", function(){
     animateCounters();
     initAdmin();
     loadReports();
+
+    // Auto-refresh: pull latest reports every 25s so the Live Dashboard
+    // and Admin review queue update without a manual page reload.
+    var AUTO_REFRESH_MS = 25000;
+    setInterval(function(){
+      if(document.visibilityState === "visible"){
+        loadReports();
+      }
+    }, AUTO_REFRESH_MS);
   });
 
 })();
