@@ -629,7 +629,8 @@
         </div>
         <div class="form-field">
           <label>Description</label>
-          <textarea id="reportDescription" rows="4" placeholder="Describe what you're seeing..."></textarea>
+                    <textarea id="reportDescription" rows="4" placeholder="Describe what you're seeing..."></textarea>
+          <p id="autoCategoryHint" class="submit-note" style="margin-top:6px; min-height:16px;"></p>
         </div>
         <div class="form-row2">
           <div class="form-field">
@@ -1299,12 +1300,47 @@
     el.style.position = "relative";
   }
 
+  var CATEGORY_KEYWORDS = {
+    rainfall: ["rain", "rainfall", "drizzle", "downpour", "showers", "pouring"],
+    thunderstorm: ["thunder", "lightning", "storm", "gust", "squall"],
+    flooding: ["flood", "waterlog", "submerged", "overflow", "inundat", "knee-deep"],
+    heatwave: ["heat", "scorching", "hot", "heatwave", "sweltering"],
+    fog: ["fog", "mist", "visibility", "haze"],
+    dust_storm: ["dust", "sandstorm", "dust storm", "orange sky"],
+    strong_winds: ["wind", "gust", "gale", "uprooted", "blown"]
+  };
+  function detectCategoryClient(text){
+    var lower = (text || "").toLowerCase();
+    if(!lower.trim()) return null;
+    var bestKey = null, bestCount = 0;
+    Object.keys(CATEGORY_KEYWORDS).forEach(function(key){
+      var count = CATEGORY_KEYWORDS[key].reduce(function(acc, kw){
+        return acc + (lower.indexOf(kw) > -1 ? 1 : 0);
+      }, 0);
+      if(count > bestCount){ bestCount = count; bestKey = key; }
+    });
+    return bestKey;
+  }
+
   function initReportForm(){
     var catSelect = document.getElementById("reportCategory");
     EVENTS.forEach(function(ev){
       var opt = document.createElement("option");
       opt.value = ev.key; opt.textContent = ev.label;
       catSelect.appendChild(opt);
+    });
+
+    var userPickedCategory = false;
+    catSelect.addEventListener("change", function(){ userPickedCategory = true; });
+    var descBox = document.getElementById("reportDescription");
+    var autoHint = document.getElementById("autoCategoryHint");
+    descBox.addEventListener("input", function(){
+      var detected = detectCategoryClient(descBox.value);
+      if(!detected){ autoHint.textContent = ""; return; }
+      var match = EVENTS.filter(function(ev){ return ev.key === detected; })[0];
+      autoHint.textContent = "\uD83E\uDD16 System detected: " + match.label +
+        (userPickedCategory ? "" : " (auto-selected below)");
+      if(!userPickedCategory){ catSelect.value = detected; }
     });
 
     var latVal = null, lngVal = null;
@@ -1358,9 +1394,15 @@
           });
         })
         .then(function(data){
-          var report = data.report;
+                    var report = data.report;
           var reasons = data.reasons;
           var status = report.status;
+          var autoCategory = data.autoCategory;
+          var autoLabel = null;
+          if(autoCategory){
+            var autoMatch = EVENTS.filter(function(ev){ return ev.key === autoCategory; })[0];
+            autoLabel = autoMatch ? autoMatch.label : autoCategory;
+          }
 
           state.reports.push(report);
           if(status === "verified") state.verifiedThisSession++;
@@ -1377,9 +1419,16 @@
 
           resultBox.className = "result-box show status-" + status;
           paintGauge(resultGauge, report.trust, status);
+                    var autoCatLine = "";
+          if(autoLabel){
+            autoCatLine = (autoCategory === category)
+              ? '<p style="margin:8px 0 0;">\uD83E\uDD16 System auto-detected category from text: <strong>' + autoLabel + '</strong> (matches selection)</p>'
+              : '<p style="margin:8px 0 0; color:var(--warn, #FFB020);">\uD83E\uDD16 System auto-detected category from text: <strong>' + autoLabel + '</strong> — differs from selected category, may need review</p>';
+          }
           resultText.innerHTML =
             '<strong>Report submitted — status: ' + status.toUpperCase() + '</strong>' +
             '<ul>' + reasons.map(function(r){ return '<li>' + r + '</li>'; }).join("") + '</ul>' +
+            autoCatLine +
             '<a href="#" data-nav="dashboard">View it on the Live Dashboard →</a>';
 
           form.reset();

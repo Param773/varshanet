@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const db = require("../db");
-const { scoreReport, statusFromTrust } = require("../scoring");
+const { scoreReport, statusFromTrust, detectCategory } = require("../scoring");
 const { fetchCityWeather } = require("../weather");
 const { requireAdmin } = require("../middleware/auth");
 
@@ -72,7 +72,7 @@ router.post("/", upload.single("media"), async (req, res) => {
     if (geoLat === null || Number.isNaN(geoLat)) geoLat = 22.5 + (Math.random() - 0.5) * 16;
     if (geoLng === null || Number.isNaN(geoLng)) geoLng = 80 + (Math.random() - 0.5) * 16;
 
-    const { trustScore, reasons } = scoreReport({
+        const { trustScore, reasons } = scoreReport({
       description,
       event: category,
       hasMedia,
@@ -82,12 +82,18 @@ router.post("/", upload.single("media"), async (req, res) => {
     });
     const status = statusFromTrust(trustScore);
 
+    // Rule-based auto-categorization from free text, independent of what the
+    // citizen picked in the dropdown. Stored alongside the report so the
+    // admin console can flag a mismatch between reported vs detected event.
+    const autoCategory = detectCategory(description);
+
     const report = db.addReport({
       city,
       state: stateName || "Unknown",
       lat: geoLat,
       lng: geoLng,
       event: category,
+      autoCategory,
       source: "Citizen Report App",
       ts: Date.now(),
       trust: trustScore,
@@ -100,7 +106,8 @@ router.post("/", upload.single("media"), async (req, res) => {
       mediaPath,
     });
 
-    res.json({ report, reasons });
+    res.json({ report, reasons, autoCategory });
+    
   } catch (err) {
     console.error("Failed to submit report:", err);
     res.status(500).json({ error: "Failed to submit report. Please try again." });

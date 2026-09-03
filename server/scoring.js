@@ -105,5 +105,30 @@ function scoreReport(o) {
   score = Math.max(0, Math.min(100, Math.round(score)));
   return { trustScore: score, reasons };
 }
+function detectCategory(text) {
+  const lower = (text || "").toLowerCase();
+  if (!lower.trim()) return null;
 
-module.exports = { scoreReport, statusFromTrust, CATEGORY_KEYWORDS, WEATHER_CONFLICTS, SUSPICIOUS_WORDS };
+  let bestKey = null;
+  let bestCount = 0;
+  Object.keys(CATEGORY_KEYWORDS).forEach((key) => {
+    const count = CATEGORY_KEYWORDS[key].reduce(
+      (acc, kw) => acc + (lower.indexOf(kw) > -1 ? 1 : 0),
+      0
+    );
+    if (count > bestCount) {
+      bestCount = count;
+      bestKey = key;
+    }
+  });
+  return bestKey;
+}
+
+module.exports = {
+  scoreReport,
+  statusFromTrust,
+  detectCategory,
+  CATEGORY_KEYWORDS,
+  WEATHER_CONFLICTS,
+  SUSPICIOUS_WORDS,
+};
