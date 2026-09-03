@@ -6,6 +6,7 @@ const path = require("path");
 
 const db = require("./db");
 const { generateSeedReports } = require("./seedData");
+const { runIngestion } = require("./ingest");
 
 const reportsRouter = require("./routes/reports");
 const adminRouter = require("./routes/admin");
@@ -40,3 +41,9 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`VarshaNet server running on http://localhost:${PORT}`);
 });
+
+// Live public-API ingestion: pull real Open-Meteo readings for major
+// Indian cities once at boot, then every 20 minutes.
+runIngestion();
+const INGEST_INTERVAL_MS = 20 * 60 * 1000;
+setInterval(runIngestion, INGEST_INTERVAL_MS);

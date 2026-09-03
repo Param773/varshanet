@@ -2,6 +2,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const { requireAdmin } = require("../middleware/auth");
+const { runIngestion } = require("../ingest");
+
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
@@ -25,6 +28,16 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "12h" });
   res.json({ token });
+});
+
+router.post("/ingest", requireAdmin, async (req, res) => {
+  try {
+    const created = await runIngestion();
+    res.json({ created: created.length, reports: created });
+  } catch (e) {
+    console.error("Manual ingestion failed:", e);
+    res.status(500).json({ error: "Ingestion failed. Please try again." });
+  }
 });
 
 module.exports = router;

@@ -684,7 +684,10 @@
         <h1>Review Queue</h1>
         <div class="sub">Moderate incoming weather reports before they reach the public feed</div>
       </div>
-      <button class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>
+      <div style="display:flex; gap:10px; align-items:center;">
+  <button class="btn btn-ghost btn-sm" id="ingestNowBtn">🔄 Pull Live Data Now</button>
+  <button class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>
+</div>
     </div>
 
     <div class="admin-stats">
@@ -1108,6 +1111,30 @@
       document.getElementById("adminLogin").style.display = "flex";
       document.getElementById("adminShell").style.display = "none";
     });
+    document.getElementById("ingestNowBtn").addEventListener("click", function(){
+  var btn = document.getElementById("ingestNowBtn");
+  var originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Pulling from live weather API…";
+  var token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  fetch("/api/admin/ingest", {
+    method: "POST",
+    headers: { "Authorization": "Bearer " + token }
+  })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      btn.textContent = (data.created || 0) + " new report(s) pulled — click to refresh again";
+      return loadReports();
+    })
+    .catch(function(){
+      btn.textContent = "Failed to pull live data. Try again.";
+    })
+    .finally(function(){
+      btn.disabled = false;
+      setTimeout(function(){ btn.textContent = originalLabel; }, 4000);
+    });
+});
+
     document.getElementById("statusTabs").addEventListener("click", function(e){
       var chip = e.target.closest(".chip");
       if(!chip) return;
