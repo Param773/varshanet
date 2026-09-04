@@ -23,8 +23,18 @@ async function safeJson(res) {
   }
 }
 
-async function fetchCityWeather(cityName) {
-  const REQUEST_HEADERS = { "User-Agent": "VarshaNet/1.0 (SIH 2026 hackathon project)" };
+const REQUEST_HEADERS = { "User-Agent": "VarshaNet/1.0 (SIH 2026 hackathon project)" };
+
+// A city's lat/lng doesn't change between calls, only its current weather
+// does — so geocoding results are cached in memory for the life of the
+// process. This means every ingestion run after the first only re-fetches
+// weather itself, roughly halving the API calls per cycle.
+const geoCache = new Map();
+
+async function geocodeCity(cityName) {
+  const key = cityName.trim().toLowerCase();
+  if (geoCache.has(key)) return geoCache.get(key);
+
   const geoUrl =
     "https://geocoding-api.open-meteo.com/v1/search?count=1&name=" + encodeURIComponent(cityName);
   const geoRes = await fetch(geoUrl, { headers: REQUEST_HEADERS });
@@ -33,6 +43,12 @@ async function fetchCityWeather(cityName) {
     throw new Error("City not found. Try a different spelling.");
   }
   const loc = geo.results[0];
+  geoCache.set(key, loc);
+  return loc;
+}
+
+async function fetchCityWeather(cityName) {
+  const loc = await geocodeCity(cityName);
   const wUrl =
     "https://api.open-meteo.com/v1/forecast?latitude=" +
     loc.latitude +

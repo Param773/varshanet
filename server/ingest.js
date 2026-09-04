@@ -4,7 +4,7 @@
 // in this project is historical seed data generated for demo purposes. This
 // module is different: it genuinely calls a live, free public weather API
 // (Open-Meteo, no key required — the same one server/weather.js already
-// uses for scoring) for a wide list of Indian cities, and whenever a city is
+// uses for scoring) for 200 Indian cities, and whenever a city is
 // *currently* experiencing notable weather, it auto-creates a real report
 // from that live reading.
 
@@ -113,6 +113,106 @@ const WATCH_CITIES = [
   { city: "Gaya", state: "Bihar" },
   { city: "Darbhanga", state: "Bihar" },
   { city: "Purnia", state: "Bihar" },
+  { city: "Firozabad", state: "Uttar Pradesh" },
+  { city: "Jhansi", state: "Uttar Pradesh" },
+  { city: "Muzaffarnagar", state: "Uttar Pradesh" },
+  { city: "Mathura", state: "Uttar Pradesh" },
+  { city: "Rampur", state: "Uttar Pradesh" },
+  { city: "Shahjahanpur", state: "Uttar Pradesh" },
+  { city: "Farrukhabad", state: "Uttar Pradesh" },
+  { city: "Mau", state: "Uttar Pradesh" },
+  { city: "Hapur", state: "Uttar Pradesh" },
+  { city: "Etawah", state: "Uttar Pradesh" },
+  { city: "Thane", state: "Maharashtra" },
+  { city: "Navi Mumbai", state: "Maharashtra" },
+  { city: "Akola", state: "Maharashtra" },
+  { city: "Latur", state: "Maharashtra" },
+  { city: "Dhule", state: "Maharashtra" },
+  { city: "Ichalkaranji", state: "Maharashtra" },
+  { city: "Chandrapur", state: "Maharashtra" },
+  { city: "Parbhani", state: "Maharashtra" },
+  { city: "Ahmednagar", state: "Maharashtra" },
+  { city: "Bhiwandi", state: "Maharashtra" },
+  { city: "Chapra", state: "Bihar" },
+  { city: "Katihar", state: "Bihar" },
+  { city: "Munger", state: "Bihar" },
+  { city: "Begusarai", state: "Bihar" },
+  { city: "Motihari", state: "Bihar" },
+  { city: "Bettiah", state: "Bihar" },
+  { city: "Saharsa", state: "Bihar" },
+  { city: "Siwan", state: "Bihar" },
+  { city: "Ara", state: "Bihar" },
+  { city: "Sasaram", state: "Bihar" },
+  { city: "Bhilwara", state: "Rajasthan" },
+  { city: "Pali", state: "Rajasthan" },
+  { city: "Barmer", state: "Rajasthan" },
+  { city: "Bhiwadi", state: "Rajasthan" },
+  { city: "Sriganganagar", state: "Rajasthan" },
+  { city: "Tonk", state: "Rajasthan" },
+  { city: "Sawai Madhopur", state: "Rajasthan" },
+  { city: "Churu", state: "Rajasthan" },
+  { city: "Jhunjhunu", state: "Rajasthan" },
+  { city: "Nagaur", state: "Rajasthan" },
+  { city: "Rajkot", state: "Gujarat" },
+  { city: "Bhavnagar", state: "Gujarat" },
+  { city: "Jamnagar", state: "Gujarat" },
+  { city: "Junagadh", state: "Gujarat" },
+  { city: "Gandhinagar", state: "Gujarat" },
+  { city: "Anand", state: "Gujarat" },
+  { city: "Nadiad", state: "Gujarat" },
+  { city: "Morbi", state: "Gujarat" },
+  { city: "Mehsana", state: "Gujarat" },
+  { city: "Bharuch", state: "Gujarat" },
+  { city: "Ujjain", state: "Madhya Pradesh" },
+  { city: "Sagar", state: "Madhya Pradesh" },
+  { city: "Dewas", state: "Madhya Pradesh" },
+  { city: "Satna", state: "Madhya Pradesh" },
+  { city: "Ratlam", state: "Madhya Pradesh" },
+  { city: "Rewa", state: "Madhya Pradesh" },
+  { city: "Katni", state: "Madhya Pradesh" },
+  { city: "Singrauli", state: "Madhya Pradesh" },
+  { city: "Burhanpur", state: "Madhya Pradesh" },
+  { city: "Khandwa", state: "Madhya Pradesh" },
+  { city: "Hubballi", state: "Karnataka" },
+  { city: "Belagavi", state: "Karnataka" },
+  { city: "Davanagere", state: "Karnataka" },
+  { city: "Ballari", state: "Karnataka" },
+  { city: "Vijayapura", state: "Karnataka" },
+  { city: "Shivamogga", state: "Karnataka" },
+  { city: "Tumakuru", state: "Karnataka" },
+  { city: "Raichur", state: "Karnataka" },
+  { city: "Bidar", state: "Karnataka" },
+  { city: "Hospet", state: "Karnataka" },
+  { city: "Tiruppur", state: "Tamil Nadu" },
+  { city: "Erode", state: "Tamil Nadu" },
+  { city: "Thoothukudi", state: "Tamil Nadu" },
+  { city: "Dindigul", state: "Tamil Nadu" },
+  { city: "Thanjavur", state: "Tamil Nadu" },
+  { city: "Ranipet", state: "Tamil Nadu" },
+  { city: "Sivakasi", state: "Tamil Nadu" },
+  { city: "Karur", state: "Tamil Nadu" },
+  { city: "Udhagamandalam", state: "Tamil Nadu" },
+  { city: "Kanchipuram", state: "Tamil Nadu" },
+  { city: "Nellore", state: "Andhra Pradesh" },
+  { city: "Kurnool", state: "Andhra Pradesh" },
+  { city: "Kadapa", state: "Andhra Pradesh" },
+  { city: "Anantapur", state: "Andhra Pradesh" },
+  { city: "Tirupati", state: "Andhra Pradesh" },
+  { city: "Chittoor", state: "Andhra Pradesh" },
+  { city: "Eluru", state: "Andhra Pradesh" },
+  { city: "Ongole", state: "Andhra Pradesh" },
+  { city: "Karimnagar", state: "Telangana" },
+  { city: "Khammam", state: "Telangana" },
+  { city: "Howrah", state: "West Bengal" },
+  { city: "Kharagpur", state: "West Bengal" },
+  { city: "Haldia", state: "West Bengal" },
+  { city: "Bardhaman", state: "West Bengal" },
+  { city: "Malda", state: "West Bengal" },
+  { city: "Baharampur", state: "West Bengal" },
+  { city: "Jalpaiguri", state: "West Bengal" },
+  { city: "Cooch Behar", state: "West Bengal" },
+  { city: "Krishnanagar", state: "West Bengal" },
+  { city: "Raiganj", state: "West Bengal" },
 ];
 
 // Don't re-create a report for the same city+event combo more than once
@@ -155,15 +255,21 @@ function describeEvent(event, w, city) {
   }
 }
 
+// Each city resolves to exactly one of these outcomes, so a single ingestion
+// run can report a clear breakdown instead of just a raw "created" count.
+const OUTCOME = { CREATED: "created", CALM: "calm", COOLDOWN: "cooldown", FAILED: "failed" };
+
 async function ingestCity(entry) {
   try {
     const w = await fetchCityWeather(entry.city);
     const event = detectEventFromWeather(w);
-    if (!event) return null;
+    if (!event) return { outcome: OUTCOME.CALM };
 
     const cooldownKey = entry.city + ":" + event;
     const last = recentlyIngested.get(cooldownKey);
-    if (last && Date.now() - last < REINGEST_COOLDOWN_MS) return null;
+    if (last && Date.now() - last < REINGEST_COOLDOWN_MS) {
+      return { outcome: OUTCOME.COOLDOWN };
+    }
 
     const description = describeEvent(event, w, entry.city);
     const { trustScore } = scoreReport({
@@ -196,32 +302,37 @@ async function ingestCity(entry) {
     });
 
     recentlyIngested.set(cooldownKey, Date.now());
-    return report;
+    return { outcome: OUTCOME.CREATED, report };
   } catch (e) {
     console.error(`Ingestion failed for ${entry.city}:`, e.message);
-    return null;
+    return { outcome: OUTCOME.FAILED, error: e.message };
   }
 }
 
 // Cities are checked in small parallel batches rather than one at a time —
-// with ~100 cities, a fully sequential pass would take too long for an
-// admin sitting there watching the "Pull Live Data Now" button.
+// with 200 cities, a fully sequential pass would take too long for an admin
+// sitting there watching the "Pull Live Data Now" button.
 const BATCH_SIZE = 8;
 const BATCH_PAUSE_MS = 300;
 
 async function runIngestion() {
   const created = [];
+  const tally = { created: 0, calm: 0, cooldown: 0, failed: 0 };
+
   for (let i = 0; i < WATCH_CITIES.length; i += BATCH_SIZE) {
     const batch = WATCH_CITIES.slice(i, i + BATCH_SIZE);
     const results = await Promise.all(batch.map(ingestCity));
     results.forEach((r) => {
-      if (r) created.push(r);
+      tally[r.outcome] += 1;
+      if (r.outcome === OUTCOME.CREATED) created.push(r.report);
     });
     await sleep(BATCH_PAUSE_MS);
   }
-  if (created.length) {
-    console.log(`Live ingestion: created ${created.length} report(s) from Open-Meteo.`);
-  }
+
+  console.log(
+    `Live ingestion summary — checked ${WATCH_CITIES.length} cities: ` +
+      `${tally.created} created, ${tally.calm} calm, ${tally.cooldown} on cooldown, ${tally.failed} failed.`
+  );
   return created;
 }
 
