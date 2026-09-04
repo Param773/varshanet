@@ -2,6 +2,8 @@
 // the scoring behaviour judges saw in the demo doesn't change — it just now
 // runs server-side, against data nobody can tamper with from devtools.
 
+const { classifyReportText } = require("./mlClassifier");
+
 const CATEGORY_KEYWORDS = {
   rainfall: ["rain", "rainfall", "drizzle", "downpour", "showers", "pouring"],
   thunderstorm: ["thunder", "lightning", "storm", "gust", "squall"],
@@ -45,13 +47,24 @@ function scoreReport(o) {
   const reasons = [];
   const desc = (o.description || "").trim();
   const lower = desc.toLowerCase();
-
   SUSPICIOUS_WORDS.forEach((w) => {
     if (lower.indexOf(w) > -1) {
       score -= 40;
       reasons.push(`Contains suspicious phrase: "${w}"`);
     }
   });
+
+  const mlResult = classifyReportText(desc);
+  if (mlResult && mlResult.confidence > 0.65) {
+    const pct = Math.round(mlResult.confidence * 100);
+    if (mlResult.label === "suspicious") {
+      score -= 20;
+      reasons.push(`ML text classifier flagged this description as potentially misleading (${pct}% confidence)`);
+    } else {
+      score += 5;
+      reasons.push(`ML text classifier assessed this description as consistent with genuine reports (${pct}% confidence)`);
+    }
+  }
 
   const keywords = CATEGORY_KEYWORDS[o.event] || [];
   const matched = keywords.some((k) => lower.indexOf(k) > -1);
