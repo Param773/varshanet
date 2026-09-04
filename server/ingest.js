@@ -147,7 +147,7 @@ const WATCH_CITIES = [
   { city: "Pali", state: "Rajasthan" },
   { city: "Barmer", state: "Rajasthan" },
   { city: "Bhiwadi", state: "Rajasthan" },
-  { city: "Sriganganagar", state: "Rajasthan" },
+  { city: "Sri Ganganagar", state: "Rajasthan" },
   { city: "Tonk", state: "Rajasthan" },
   { city: "Sawai Madhopur", state: "Rajasthan" },
   { city: "Churu", state: "Rajasthan" },
@@ -175,7 +175,7 @@ const WATCH_CITIES = [
   { city: "Khandwa", state: "Madhya Pradesh" },
   { city: "Hubballi", state: "Karnataka" },
   { city: "Belagavi", state: "Karnataka" },
-  { city: "Davanagere", state: "Karnataka" },
+   { city: "Davangere", state: "Karnataka" },
   { city: "Ballari", state: "Karnataka" },
   { city: "Vijayapura", state: "Karnataka" },
   { city: "Shivamogga", state: "Karnataka" },
@@ -191,7 +191,7 @@ const WATCH_CITIES = [
   { city: "Ranipet", state: "Tamil Nadu" },
   { city: "Sivakasi", state: "Tamil Nadu" },
   { city: "Karur", state: "Tamil Nadu" },
-  { city: "Udhagamandalam", state: "Tamil Nadu" },
+    { city: "Ooty", state: "Tamil Nadu" },
   { city: "Kanchipuram", state: "Tamil Nadu" },
   { city: "Nellore", state: "Andhra Pradesh" },
   { city: "Kurnool", state: "Andhra Pradesh" },
@@ -218,7 +218,7 @@ const WATCH_CITIES = [
 // Don't re-create a report for the same city+event combo more than once
 // every few hours, so a repeated poll doesn't spam the queue while the same
 // weather system is still sitting over a city.
-const REINGEST_COOLDOWN_MS = 3 * 60 * 60 * 1000; // 3 hours
+const REINGEST_COOLDOWN_MS = 20 * 60 * 1000; // 20 minutes — short enough for demo re-runs
 const recentlyIngested = new Map(); // "city:event" -> last-created timestamp
 
 function sleep(ms) {
