@@ -1215,9 +1215,12 @@
       state.charts.source.update();
     }
 
-    // duplicate clusters
+        // duplicate clusters — newest first, so a duplicate caught live during a
+    // demo always surfaces instead of being buried behind old seed data
     var dupWrap = document.getElementById("dupClusters");
-    var clusters = state.reports.filter(function(r){ return r.duplicateOf!==null && r.status!=="rejected"; });
+    var clusters = state.reports
+      .filter(function(r){ return r.duplicateOf!==null && r.status!=="rejected"; })
+      .sort(function(a,b){ return b.ts - a.ts; });
     if(clusters.length===0){
       dupWrap.innerHTML = '<div class="empty-note">No duplicate clusters detected.</div>';
     } else {
