@@ -35,7 +35,8 @@ function statusFromTrust(t) {
  * @param {string} o.description
  * @param {string} o.event         - category key, e.g. "rainfall"
  * @param {boolean} o.hasMedia
- * @param {boolean} o.mediaReused  - true if this file's hash matches an existing report
+  * @param {boolean} o.mediaReused  - true if this file's hash matches an existing report
+ * @param {boolean} [o.mediaNearDuplicate] - true if this image closely resembles (but isn't byte-identical to) an existing report's media
  * @param {string|null} o.officialMain - live weather "main" condition for the city, or null
  * @param {string} o.city
  */
@@ -84,9 +85,12 @@ function scoreReport(o) {
     reasons.push("No photo/video evidence attached");
   }
 
-  if (o.mediaReused) {
+    if (o.mediaReused) {
     score -= 30;
     reasons.push("Identical media file (by content hash) already used in another report");
+  } else if (o.mediaNearDuplicate) {
+    score -= 15;
+    reasons.push("Media closely resembles another submitted photo (possible re-upload or edited copy)");
   }
 
   if (o.officialMain) {

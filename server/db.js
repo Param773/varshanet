@@ -66,6 +66,23 @@ function findByMediaHash(hash) {
   return data.reports.find((r) => r.mediaHash === hash) || null;
 }
 
+function findNearDuplicateByPerceptualHash(hash, maxDistance) {
+  if (!hash) return null;
+  const { hammingDistance } = require("./perceptualHash");
+  const data = readData();
+  let best = null;
+  let bestDist = Infinity;
+  data.reports.forEach((r) => {
+    if (!r.perceptualHash) return;
+    const dist = hammingDistance(hash, r.perceptualHash);
+    if (dist <= maxDistance && dist < bestDist) {
+      bestDist = dist;
+      best = r;
+    }
+  });
+  return best;
+}
+
 // Only seeds if the store is currently empty — safe to call on every boot.
 function bulkSeed(reports) {
   const data = readData();
@@ -82,5 +99,6 @@ module.exports = {
   addReport,
   updateReportStatus,
   findByMediaHash,
+  findNearDuplicateByPerceptualHash,
   bulkSeed,
 };

@@ -8,6 +8,7 @@ const db = require("../db");
 const { scoreReport, statusFromTrust, detectCategory } = require("../scoring");
 const { fetchCityWeather } = require("../weather");
 const { requireAdmin } = require("../middleware/auth");
+const { computePerceptualHash } = require("../perceptualHash");
 
 const router = express.Router();
 
@@ -52,9 +53,25 @@ router.post("/", upload.single("media"), async (req, res) => {
       if (!fs.existsSync(fullPath)) fs.writeFileSync(fullPath, file.buffer);
     }
 
-    // Duplicate detection by actual file content, not just name/size.
+      // Duplicate detection by actual file content, not just name/size.
     const existingWithHash = mediaHash ? db.findByMediaHash(mediaHash) : null;
 
+    const NEAR_DUPLICATE_MAX_DISTANCE = 10;
+    let perceptualHash = null;
+    let nearDuplicateMatch = null;
+    if (file && hasPhoto) {
+      try {
+        perceptualHash = await computePerceptualHash(file.buffer);
+        if (!existingWithHash) {
+          nearDuplicateMatch = db.findNearDuplicateByPerceptualHash(
+            perceptualHash,
+            NEAR_DUPLICATE_MAX_DISTANCE
+          );
+        }
+      } catch (e) {
+        console.error("Perceptual hash failed:", e.message);
+      }
+    }
     // Cross-check against live weather for the named city. If the lookup
     // fails (bad spelling, network hiccup) scoring just proceeds without it,
     // same fallback behaviour as the original prototype.
@@ -72,11 +89,12 @@ router.post("/", upload.single("media"), async (req, res) => {
     if (geoLat === null || Number.isNaN(geoLat)) geoLat = 22.5 + (Math.random() - 0.5) * 16;
     if (geoLng === null || Number.isNaN(geoLng)) geoLng = 80 + (Math.random() - 0.5) * 16;
 
-        const { trustScore, reasons } = scoreReport({
+           const { trustScore, reasons } = scoreReport({
       description,
       event: category,
       hasMedia,
       mediaReused: !!existingWithHash,
+      mediaNearDuplicate: !!nearDuplicateMatch,
       officialMain,
       city,
     });
@@ -99,14 +117,19 @@ router.post("/", upload.single("media"), async (req, res) => {
       trust: trustScore,
       status,
       hasPhoto,
-      hasVideo,
+       hasVideo,
       text: description || "(no description provided)",
-      duplicateOf: existingWithHash ? existingWithHash.id : null,
+      duplicateOf: existingWithHash
+        ? existingWithHash.id
+        : nearDuplicateMatch
+        ? nearDuplicateMatch.id
+        : null,
       mediaHash,
       mediaPath,
+      perceptualHash,
     });
 
-    res.json({ report, reasons, autoCategory });
+    res.json({ report, reasons, autoCategory, nearDuplicate: !!nearDuplicateMatch });
     
   } catch (err) {
     console.error("Failed to submit report:", err);
