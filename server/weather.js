@@ -15,18 +15,19 @@ function weatherCodeToMain(code) {
 }
 
 async function safeJson(res) {
-  if (!res.ok) throw new Error("Weather service unavailable right now.");
+  if (!res.ok) throw new Error(`Weather service unavailable right now. (HTTP ${res.status})`);
   try {
     return await res.json();
   } catch (e) {
-    throw new Error("Weather service unavailable right now.");
+    throw new Error("Weather service unavailable right now. (bad response body)");
   }
 }
 
 async function fetchCityWeather(cityName) {
+  const REQUEST_HEADERS = { "User-Agent": "VarshaNet/1.0 (SIH 2026 hackathon project)" };
   const geoUrl =
     "https://geocoding-api.open-meteo.com/v1/search?count=1&name=" + encodeURIComponent(cityName);
-  const geoRes = await fetch(geoUrl);
+  const geoRes = await fetch(geoUrl, { headers: REQUEST_HEADERS });
   const geo = await safeJson(geoRes);
   if (!geo.results || !geo.results.length) {
     throw new Error("City not found. Try a different spelling.");
@@ -38,7 +39,7 @@ async function fetchCityWeather(cityName) {
     "&longitude=" +
     loc.longitude +
     "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto";
-  const wRes = await fetch(wUrl);
+  const wRes = await fetch(wUrl, { headers: REQUEST_HEADERS });
   const w = await safeJson(wRes);
   const cur = w.current || {};
   return {

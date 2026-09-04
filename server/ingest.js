@@ -33,6 +33,10 @@ const WATCH_CITIES = [
 const REINGEST_COOLDOWN_MS = 3 * 60 * 60 * 1000; // 3 hours
 const recentlyIngested = new Map();
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function detectEventFromWeather(w) {
   if (w.main === "Storm") return "thunderstorm";
   if (w.wind >= 40) return "strong_winds";
@@ -112,6 +116,7 @@ async function runIngestion() {
   for (const entry of WATCH_CITIES) {
     const report = await ingestCity(entry);
     if (report) created.push(report);
+    await sleep(400); // stagger requests so we don't burst-call the free weather API
   }
   if (created.length) {
     console.log(`Live ingestion: created ${created.length} report(s) from Open-Meteo.`);
