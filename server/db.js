@@ -23,6 +23,7 @@ let client = null;
 let dbHandle = null;
 let reportsCollection = null;
 let countersCollection = null;
+let adminsCollection = null;
 let connectPromise = null;
 
 async function connect() {
@@ -36,10 +37,12 @@ async function connect() {
     client = new MongoClient(MONGODB_URI);
     await client.connect();
     dbHandle = client.db(DB_NAME);
-    reportsCollection = dbHandle.collection("reports");
+        reportsCollection = dbHandle.collection("reports");
     countersCollection = dbHandle.collection("counters");
+    adminsCollection = dbHandle.collection("admins");
     await reportsCollection.createIndex({ id: 1 }, { unique: true });
     await reportsCollection.createIndex({ mediaHash: 1 });
+    await adminsCollection.createIndex({ username: 1 }, { unique: true });
     return dbHandle;
   })();
 
@@ -119,6 +122,47 @@ async function findNearDuplicateByPerceptualHash(hash, maxDistance) {
   return stripMongoId(best);
 }
 
+// --- Admin accounts ---
+// A flat, unranked list of admin logins — anyone already logged in can add
+// another. Appropriate for a small moderation team at this scale; nothing
+// here assumes only one admin exists anymore.
+
+async function getAdminByUsername(username) {
+  await connect();
+  const doc = await adminsCollection.findOne({ username });
+  return stripMongoId(doc);
+}
+
+async function createAdmin(username, passwordHash) {
+  await connect();
+  const existing = await adminsCollection.findOne({ username });
+  if (existing) throw new Error("An admin with that username already exists.");
+  const admin = { username, passwordHash, createdAt: Date.now() };
+  await adminsCollection.insertOne(admin);
+  return stripMongoId(admin);
+}
+
+async function listAdminUsernames() {
+  await connect();
+  const docs = await adminsCollection
+    .find({}, { projection: { username: 1, createdAt: 1 } })
+    .sort({ createdAt: 1 })
+    .toArray();
+  return docs.map((d) => ({ username: d.username, createdAt: d.createdAt }));
+}
+
+// Bootstraps the very first admin from the ADMIN_USERNAME/ADMIN_PASSWORD_HASH
+// env vars (the original single-admin setup), so existing deployments keep
+// working without any manual migration step. No-ops once any admin exists.
+async function seedDefaultAdminIfEmpty(username, passwordHash) {
+  await connect();
+  const count = await adminsCollection.countDocuments();
+  if (count > 0) return false;
+  if (!username || !passwordHash) return false;
+  await adminsCollection.insertOne({ username, passwordHash, createdAt: Date.now() });
+  return true;
+}
+
 // Only seeds if the collection is currently empty — safe to call on every
 // boot.
 async function bulkSeed(reports) {
@@ -146,4 +190,8 @@ module.exports = {
   findByMediaHash,
   findNearDuplicateByPerceptualHash,
   bulkSeed,
+  getAdminByUsername,
+  createAdmin,
+  listAdminUsernames,
+  seedDefaultAdminIfEmpty,
 };

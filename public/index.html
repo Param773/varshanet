@@ -715,9 +715,19 @@
           <div class="panel-head"><h3>Reports by Source</h3></div>
           <div class="panel-body chart-box" style="height:200px;"><canvas id="sourceChart"></canvas></div>
         </div>
-        <div class="panel">
+                <div class="panel">
           <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
           <div id="dupClusters"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Manage Admins</h3></div>
+          <div id="adminsList" style="margin-bottom:12px;"></div>
+          <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px;">
+            <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
+            <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+            <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
+            <p id="addAdminMsg" style="min-height:16px; font-size:13px; margin:0;"></p>
+          </form>
         </div>
       </div>
     </div>
@@ -1095,9 +1105,10 @@
         localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
         state.isAdmin = true;
         errorEl.style.display = "none";
-        document.getElementById("adminLogin").style.display = "none";
+                document.getElementById("adminLogin").style.display = "none";
         document.getElementById("adminShell").style.display = "block";
         renderAdmin();
+        loadAdmins();
       }).catch(function(err){
         errorEl.textContent = err.message || "Invalid credentials.";
         errorEl.style.display = "block";
@@ -1135,13 +1146,51 @@
     });
 });
 
-    document.getElementById("statusTabs").addEventListener("click", function(e){
+        document.getElementById("statusTabs").addEventListener("click", function(e){
       var chip = e.target.closest(".chip");
       if(!chip) return;
       document.querySelectorAll("#statusTabs .chip").forEach(function(c){ c.classList.remove("active"); });
       chip.classList.add("active");
       state.adminTab = chip.getAttribute("data-tab");
       renderAdmin();
+    });
+    document.getElementById("addAdminForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var msg = document.getElementById("addAdminMsg");
+      var usernameInput = document.getElementById("newAdminUsername");
+      var passwordInput = document.getElementById("newAdminPassword");
+      var username = usernameInput.value.trim();
+      var password = passwordInput.value;
+      if(!username || !password){
+        msg.textContent = "Enter a username and password.";
+        msg.style.color = "var(--danger, #FF6B6B)";
+        return;
+      }
+      var token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      msg.textContent = "Adding…";
+      msg.style.color = "";
+      fetch("/api/admin/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify({ username: username, password: password })
+      })
+        .then(function(res){
+          return res.json().then(function(data){
+            if(!res.ok) throw new Error(data.error || "Failed to add admin.");
+            return data;
+          });
+        })
+        .then(function(){
+          msg.textContent = "Added \u2713";
+          msg.style.color = "var(--success, #1FC8A9)";
+          usernameInput.value = "";
+          passwordInput.value = "";
+          loadAdmins();
+        })
+        .catch(function(err){
+          msg.textContent = err.message || "Failed to add admin.";
+          msg.style.color = "var(--danger, #FF6B6B)";
+        });
     });
     document.getElementById("queueSearch").addEventListener("input", function(e){
       state.adminSearch = e.target.value.toLowerCase();
@@ -1154,6 +1203,28 @@
       data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:"#1FC8A9", borderRadius:4}]},
       options: chartBaseOptions({legend:false})
     });
+  }
+
+    function loadAdmins(){
+    var token = localStorage.getItem(ADMIN_TOKEN_KEY);
+    var listEl = document.getElementById("adminsList");
+    fetch("/api/admin/admins", {
+      headers: { "Authorization": "Bearer " + token }
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        var admins = data.admins || [];
+        if(!admins.length){
+          listEl.innerHTML = '<div class="empty-note">No admin accounts found.</div>';
+          return;
+        }
+        listEl.innerHTML = admins.map(function(a){
+          return '<div class="dup-cluster"><strong>' + a.username + '</strong></div>';
+        }).join("");
+      })
+      .catch(function(){
+        listEl.innerHTML = '<div class="empty-note">Could not load admin list.</div>';
+      });
   }
 
   function renderAdmin(){

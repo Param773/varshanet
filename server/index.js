@@ -38,6 +38,22 @@ async function main() {
     console.log(`Seeded ${seeded.length} demo reports into MongoDB`);
   }
 
+    // Bootstraps the first admin account from env vars so existing setups
+  // keep working — no-ops once any admin already exists in the database.
+  if (
+    process.env.ADMIN_USERNAME &&
+    process.env.ADMIN_PASSWORD_HASH &&
+    !process.env.ADMIN_PASSWORD_HASH.startsWith("paste_")
+  ) {
+    const seededAdmin = await db.seedDefaultAdminIfEmpty(
+      process.env.ADMIN_USERNAME,
+      process.env.ADMIN_PASSWORD_HASH
+    );
+    if (seededAdmin) {
+      console.log(`Seeded default admin account "${process.env.ADMIN_USERNAME}" into MongoDB`);
+    }
+  }
+
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`VarshaNet server running on http://localhost:${PORT}`);
