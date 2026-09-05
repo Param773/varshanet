@@ -28,22 +28,29 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, "index.html"));
 });
 
-// Auto-seed demo history on first boot so the dashboard isn't empty.
-// No-ops once data/reports.json already has rows in it.
-const existing = db.getAllReports();
-if (existing.length === 0) {
-  const seeded = generateSeedReports(220);
-  db.bulkSeed(seeded);
-  console.log(`Seeded ${seeded.length} demo reports into data/reports.json`);
+async function main() {
+  // Auto-seed demo history on first boot so the dashboard isn't empty.
+  // No-ops once the reports collection already has rows in it.
+  const existing = await db.getAllReports();
+  if (existing.length === 0) {
+    const seeded = generateSeedReports(220);
+    await db.bulkSeed(seeded);
+    console.log(`Seeded ${seeded.length} demo reports into MongoDB`);
+  }
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`VarshaNet server running on http://localhost:${PORT}`);
+  });
+
+  // Live public-API ingestion: pull real Open-Meteo readings for major
+  // Indian cities once at boot, then every 20 minutes.
+  runIngestion();
+  const INGEST_INTERVAL_MS = 20 * 60 * 1000;
+  setInterval(runIngestion, INGEST_INTERVAL_MS);
 }
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`VarshaNet server running on http://localhost:${PORT}`);
+main().catch((err) => {
+  console.error("Fatal startup error:", err);
+  process.exit(1);
 });
-
-// Live public-API ingestion: pull real Open-Meteo readings for major
-// Indian cities once at boot, then every 20 minutes.
-runIngestion();
-const INGEST_INTERVAL_MS = 20 * 60 * 1000;
-setInterval(runIngestion, INGEST_INTERVAL_MS);

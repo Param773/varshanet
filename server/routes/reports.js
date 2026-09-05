@@ -22,8 +22,8 @@ const upload = multer({
 
 // GET /api/reports — full list, client filters/sorts it (same shape the
 // original prototype held in memory, just persisted now).
-router.get("/", (req, res) => {
-  res.json(db.getAllReports());
+router.get("/", async (req, res) => {
+  res.json(await db.getAllReports());
 });
 
 // POST /api/reports — citizen submits a report. multipart/form-data:
@@ -54,7 +54,7 @@ router.post("/", upload.single("media"), async (req, res) => {
     }
 
       // Duplicate detection by actual file content, not just name/size.
-    const existingWithHash = mediaHash ? db.findByMediaHash(mediaHash) : null;
+        const existingWithHash = mediaHash ? await db.findByMediaHash(mediaHash) : null;
 
     const NEAR_DUPLICATE_MAX_DISTANCE = 10;
     let perceptualHash = null;
@@ -62,8 +62,8 @@ router.post("/", upload.single("media"), async (req, res) => {
     if (file && hasPhoto) {
       try {
         perceptualHash = await computePerceptualHash(file.buffer);
-        if (!existingWithHash) {
-          nearDuplicateMatch = db.findNearDuplicateByPerceptualHash(
+                if (!existingWithHash) {
+          nearDuplicateMatch = await db.findNearDuplicateByPerceptualHash(
             perceptualHash,
             NEAR_DUPLICATE_MAX_DISTANCE
           );
@@ -105,7 +105,7 @@ router.post("/", upload.single("media"), async (req, res) => {
     // admin console can flag a mismatch between reported vs detected event.
     const autoCategory = detectCategory(description);
 
-    const report = db.addReport({
+        const report = await db.addReport({
       city,
       state: stateName || "Unknown",
       lat: geoLat,
@@ -138,13 +138,13 @@ router.post("/", upload.single("media"), async (req, res) => {
 });
 
 // PATCH /api/reports/:id/status — admin approves or rejects a queued report.
-router.patch("/:id/status", requireAdmin, (req, res) => {
+router.patch("/:id/status", requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { status } = req.body || {};
   if (!["verified", "rejected"].includes(status)) {
     return res.status(400).json({ error: 'status must be "verified" or "rejected"' });
   }
-  const updated = db.updateReportStatus(id, status);
+  const updated = await db.updateReportStatus(id, status);
   if (!updated) return res.status(404).json({ error: "Report not found" });
   res.json(updated);
 });

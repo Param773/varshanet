@@ -282,7 +282,7 @@ async function ingestCity(entry) {
     });
     const status = statusFromTrust(trustScore);
 
-    const report = db.addReport({
+       const report = await db.addReport({
       city: entry.city,
       state: entry.state,
       lat: w.lat,

@@ -1,100 +1,145 @@
-// Lightweight file-based data store.
+// MongoDB-backed data store (migrated from the original JSON-file store).
 //
-// VarshaNet's report volume for a hackathon deployment is modest (hundreds to
-// low thousands of rows), so a single JSON file is enough and it means the
-// project has zero native dependencies to compile during deploy. Swap this
-// module out for Postgres/Mongo later if you need real concurrent-write
-// safety at scale — every other file only talks to the functions exported
-// here, so that's the only file you'd need to change.
+// Every other file in this project only talks to the functions exported
+// here — none of them know or care that reports live in MongoDB instead of
+// a JSON file on disk. That's deliberate: it's the same function names and
+// shapes as before, just async now, so the migration didn't touch scoring,
+// routes, or the ingestion job's actual logic — only added `await`.
+//
+// This also fixes a real limitation of the old JSON-file store: on
+// Render's free tier the disk is ephemeral, so every redeploy/restart wiped
+// all citizen-submitted and live-ingested reports back to just the seed
+// data. A real external database persists across restarts.
+//
+// Needs MONGODB_URI set in the environment — a free MongoDB Atlas cluster
+// is enough for this scale.
 
-const fs = require("fs");
-const path = require("path");
+const { MongoClient } = require("mongodb");
 
-const DATA_DIR = path.join(__dirname, "..", "data");
-const REPORTS_FILE = path.join(DATA_DIR, "reports.json");
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = "varshanet";
 
-function ensureDataFile() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(REPORTS_FILE)) {
-    fs.writeFileSync(REPORTS_FILE, JSON.stringify({ nextId: 0, reports: [] }, null, 2));
-  }
+let client = null;
+let dbHandle = null;
+let reportsCollection = null;
+let countersCollection = null;
+let connectPromise = null;
+
+async function connect() {
+  if (dbHandle) return dbHandle;
+  if (connectPromise) return connectPromise;
+
+  connectPromise = (async () => {
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI is not set — add it to your environment variables.");
+    }
+    client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    dbHandle = client.db(DB_NAME);
+    reportsCollection = dbHandle.collection("reports");
+    countersCollection = dbHandle.collection("counters");
+    await reportsCollection.createIndex({ id: 1 }, { unique: true });
+    await reportsCollection.createIndex({ mediaHash: 1 });
+    return dbHandle;
+  })();
+
+  return connectPromise;
 }
 
-function readData() {
-  ensureDataFile();
-  const raw = fs.readFileSync(REPORTS_FILE, "utf-8");
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    // Corrupt or empty file — reset rather than crash the server.
-    const fresh = { nextId: 0, reports: [] };
-    fs.writeFileSync(REPORTS_FILE, JSON.stringify(fresh, null, 2));
-    return fresh;
-  }
+// Atomically reserves the next numeric id, so concurrent submissions never
+// collide even though the "id" field itself isn't Mongo's own _id.
+async function nextSequence() {
+  const result = await countersCollection.findOneAndUpdate(
+    { _id: "reportId" },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: "after" }
+  );
+  return result.seq;
 }
 
-function writeData(data) {
-  fs.writeFileSync(REPORTS_FILE, JSON.stringify(data, null, 2));
+// Mongo's own _id is an internal detail the rest of the app never asked
+// for — strip it so documents look exactly like the old JSON-file rows.
+function stripMongoId(doc) {
+  if (!doc) return null;
+  const { _id, ...rest } = doc;
+  return rest;
 }
 
-function getAllReports() {
-  return readData().reports;
+async function getAllReports() {
+  await connect();
+  const docs = await reportsCollection.find({}).sort({ id: 1 }).toArray();
+  return docs.map(stripMongoId);
 }
 
-function addReport(reportWithoutId) {
-  const data = readData();
-  const id = data.nextId++;
+async function addReport(reportWithoutId) {
+  await connect();
+  const id = await nextSequence();
   const report = { id, ...reportWithoutId };
-  data.reports.push(report);
-  writeData(data);
-  return report;
+  await reportsCollection.insertOne(report);
+  return stripMongoId(report);
 }
 
-function updateReportStatus(id, status) {
-  const data = readData();
-  const report = data.reports.find((r) => r.id === id);
-  if (!report) return null;
-  report.status = status;
-  if (status === "verified") report.duplicateOf = null;
-  writeData(data);
-  return report;
+async function updateReportStatus(id, status) {
+  await connect();
+  const update = { $set: { status } };
+  if (status === "verified") update.$set.duplicateOf = null;
+  const updated = await reportsCollection.findOneAndUpdate({ id }, update, {
+    returnDocument: "after",
+  });
+  return stripMongoId(updated);
 }
 
-function findByMediaHash(hash) {
+async function findByMediaHash(hash) {
   if (!hash) return null;
-  const data = readData();
-  return data.reports.find((r) => r.mediaHash === hash) || null;
+  await connect();
+  const doc = await reportsCollection.findOne({ mediaHash: hash });
+  return stripMongoId(doc);
 }
 
-function findNearDuplicateByPerceptualHash(hash, maxDistance) {
+// Scans existing reports for one whose image "looks like" this one — same
+// underlying photo, just resized, re-compressed, or lightly edited — even
+// though the file bytes (and therefore mediaHash) don't match exactly.
+async function findNearDuplicateByPerceptualHash(hash, maxDistance) {
   if (!hash) return null;
+  await connect();
   const { hammingDistance } = require("./perceptualHash");
-  const data = readData();
+  const candidates = await reportsCollection
+    .find({ perceptualHash: { $exists: true, $ne: null } })
+    .toArray();
+
   let best = null;
   let bestDist = Infinity;
-  data.reports.forEach((r) => {
-    if (!r.perceptualHash) return;
+  candidates.forEach((r) => {
     const dist = hammingDistance(hash, r.perceptualHash);
     if (dist <= maxDistance && dist < bestDist) {
       bestDist = dist;
       best = r;
     }
   });
-  return best;
+  return stripMongoId(best);
 }
 
-// Only seeds if the store is currently empty — safe to call on every boot.
-function bulkSeed(reports) {
-  const data = readData();
-  if (data.reports.length > 0) return false;
+// Only seeds if the collection is currently empty — safe to call on every
+// boot.
+async function bulkSeed(reports) {
+  await connect();
+  const count = await reportsCollection.countDocuments();
+  if (count > 0) return false;
+  if (!reports.length) return false;
+
   let nextId = 0;
-  data.reports = reports.map((r) => ({ id: nextId++, ...r }));
-  data.nextId = nextId;
-  writeData(data);
+  const withIds = reports.map((r) => ({ id: nextId++, ...r }));
+  await reportsCollection.insertMany(withIds);
+  await countersCollection.updateOne(
+    { _id: "reportId" },
+    { $set: { seq: nextId - 1 } },
+    { upsert: true }
+  );
   return true;
 }
 
 module.exports = {
+  connect,
   getAllReports,
   addReport,
   updateReportStatus,
