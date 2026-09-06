@@ -638,7 +638,7 @@
     background:var(--teal-dim); color:var(--teal); font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
     margin-right:8px; flex:none;
   }
-    .admin-row{display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft);}
+  .admin-row{display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft);}
   .admin-row:last-child{border-bottom:none;}
   .admin-name{color:var(--cloud); font-size:0.88rem; font-weight:500;}
   .admin-you-badge{margin-left:auto; font-size:0.68rem; font-family:var(--font-mono); color:var(--teal); background:var(--teal-dim); padding:3px 9px; border-radius:999px; flex:none;}
@@ -1065,7 +1065,7 @@
           <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
           <div id="dupClusters"></div>
         </div>
-                <div class="panel">
+        <div class="panel">
           <div class="panel-head"><h3>Manage Admins</h3></div>
           <div class="panel-body">
             <div id="adminsList" style="margin-bottom:14px;"></div>
@@ -1799,7 +1799,7 @@
     return bins;
   }
 
-        function loadAdmins(){
+    function loadAdmins(){
     var token = localStorage.getItem(ADMIN_TOKEN_KEY);
     var listEl = document.getElementById("adminsList");
     var currentUser = getCurrentAdminUsername(token);
