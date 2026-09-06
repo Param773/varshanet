@@ -8,6 +8,7 @@ const db = require("./db");
 const { generateSeedReports } = require("./seedData");
 const { runIngestion } = require("./ingest");
 const { runSachetIngestion } = require("./sachetIngest");
+const { runImdCapIngestion } = require("./imdCapIngest");
 
 const reportsRouter = require("./routes/reports");
 const adminRouter = require("./routes/admin");
@@ -71,6 +72,12 @@ async function main() {
   runSachetIngestion();
   const SACHET_INTERVAL_MS = 30 * 60 * 1000;
   setInterval(runSachetIngestion, SACHET_INTERVAL_MS);
+
+  // Live ingestion straight from IMD's own official alert feed, once at
+  // boot then every 30 minutes.
+  runImdCapIngestion();
+  const IMD_CAP_INTERVAL_MS = 30 * 60 * 1000;
+  setInterval(runImdCapIngestion, IMD_CAP_INTERVAL_MS);
 }
 
 main().catch((err) => {

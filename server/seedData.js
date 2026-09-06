@@ -40,8 +40,7 @@ const EVENTS = [
   { key: "strong_winds", label: "Strong Winds" },
 ];
 
-const SOURCES = ["X / Twitter", "Citizen Report App", "IMD API", "Public Dataset"];
-
+const SOURCES = ["X / Twitter", "Citizen Report App", "Weather API", "Public Dataset"];
 const SNIPPETS = {
   rainfall: [
     "Heavy rain since the last hour, water pooling near the main market.",

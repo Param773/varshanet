@@ -6,6 +6,7 @@ const db = require("../db");
 const { requireAdmin } = require("../middleware/auth");
 const { runIngestion } = require("../ingest");
 const { runSachetIngestion } = require("../sachetIngest");
+const { runImdCapIngestion } = require("../imdCapIngest");
 
 const router = express.Router();
 
@@ -26,18 +27,22 @@ router.post("/login", async (req, res) => {
   const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "12h" });
   res.json({ token });
 });
-
 router.post("/ingest", requireAdmin, async (req, res) => {
   try {
-    const [weatherReports, sachetReports] = await Promise.all([
+    const [weatherReports, sachetReports, imdReports] = await Promise.all([
       runIngestion(),
       runSachetIngestion(),
+      runImdCapIngestion(),
     ]);
-    const reports = [...weatherReports, ...sachetReports];
+    const reports = [...weatherReports, ...sachetReports, ...imdReports];
     res.json({
       created: reports.length,
       reports,
-      breakdown: { weatherApi: weatherReports.length, publicDataset: sachetReports.length },
+      breakdown: {
+        weatherApi: weatherReports.length,
+        publicDataset: sachetReports.length,
+        imdApi: imdReports.length,
+      },
     });
   } catch (e) {
     console.error("Manual ingestion failed:", e);

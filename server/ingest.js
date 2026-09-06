@@ -289,7 +289,7 @@ async function ingestCity(entry) {
       lng: w.lng,
       event,
       autoCategory: event,
-      source: "IMD API",
+            source: "Weather API",
       ts: Date.now(),
       trust: trustScore,
       status,
