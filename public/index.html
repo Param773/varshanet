@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{if(localStorage.getItem('varshanet-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VarshaNet — National Weather Big Data Analytics Platform</title>
@@ -42,6 +43,34 @@
     --shadow-lift:0 24px 60px -24px rgba(2,8,16,0.65);
     --shadow-soft:0 10px 30px -14px rgba(2,8,16,0.5);
   }
+
+  /* ---------- LIGHT / DAY THEME ---------- */
+  html[data-theme="light"]{
+    --ink:#F3F7FB;
+    --ink-2:#EAF1F8;
+    --panel:#FFFFFF;
+    --panel-2:#F3F7FB;
+    --panel-3:#E5EDF5;
+    --border:#DAE3EE;
+    --border-soft:#E7EEF5;
+    --mist:#48586B;
+    --mist-dim:#7C8BA0;
+    --cloud:#0C1526;
+    --shadow-lift:0 24px 60px -24px rgba(20,40,70,0.18);
+    --shadow-soft:0 10px 30px -14px rgba(20,40,70,0.14);
+  }
+  html[data-theme="light"] body{
+    background-image:
+      radial-gradient(ellipse 900px 520px at 12% -8%, rgba(34,211,166,0.10), transparent 60%),
+      radial-gradient(ellipse 760px 520px at 104% 4%, rgba(79,178,255,0.08), transparent 60%),
+      radial-gradient(ellipse 640px 420px at 50% 115%, rgba(253,183,80,0.05), transparent 60%),
+      radial-gradient(rgba(12,21,38,0.045) 1px, transparent 1px);
+  }
+  html[data-theme="light"] .navbar{background:rgba(255,255,255,0.86);}
+  html[data-theme="light"] .stat-item{background:rgba(255,255,255,0.88);}
+  html[data-theme="light"] ::-webkit-scrollbar-thumb{border-color:var(--ink);}
+  html[data-theme="light"] input[type=date]::-webkit-calendar-picker-indicator{filter:none; opacity:0.65;}
+  body, .navbar, .stat-item{transition:background-color .25s ease, border-color .25s ease;}
   *,*::before,*::after{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
@@ -74,8 +103,8 @@
   .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
 
   /* ---------- NAVBAR ---------- */
-    .navbar{
-    position:sticky; top:0; z-index:90;
+  .navbar{
+    position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 28px;
     background:rgba(8,13,22,0.78);
@@ -100,6 +129,15 @@
   .nav-btn:hover{color:var(--cloud); background:var(--panel-2);}
   .nav-btn.active{color:#04170F; background:var(--teal); font-weight:600; box-shadow:0 4px 18px -4px rgba(34,211,166,0.55);}
 
+  .theme-toggle{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:36px; height:36px; margin-left:6px; flex:none;
+    border:1px solid var(--border); border-radius:50%; background:var(--panel-2); color:var(--mist);
+    cursor:pointer; transition:all .18s ease;
+  }
+  .theme-toggle:hover{color:var(--cloud); border-color:var(--mist-dim); background:var(--panel-3);}
+  .theme-toggle svg{display:block;}
+
   /* ---------- BUTTONS ---------- */
   .btn{
     display:inline-flex; align-items:center; gap:8px;
@@ -119,7 +157,8 @@
 
   /* ---------- HERO ---------- */
   .hero{position:relative; padding:84px 28px 60px; overflow:hidden;}
-  .hero-inner{max-width:1180px; margin:0 auto; position:relative; z-index:2;}
+  .hero-inner{max-width:1180px; margin:0 auto; position:relative; z-index:2; display:grid; grid-template-columns:1.15fr 0.85fr; gap:40px; align-items:center;}
+  .hero-content{min-width:0;}
   .radar-wrap{position:absolute; top:-170px; right:-190px; width:640px; height:640px; z-index:1; pointer-events:none; opacity:0.6;}
   .radar-ring{position:absolute; inset:0; border-radius:50%; border:1px solid rgba(34,211,166,0.16);}
   .radar-ring:nth-child(2){inset:74px;}
@@ -137,11 +176,11 @@
   }
   .radar-blip{position:absolute; width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 0 0 rgba(34,211,166,0.6);}
   .radar-blip::after{content:""; position:absolute; inset:-8px; border-radius:50%; border:1px solid rgba(34,211,166,0.4); animation:blipRing 2.6s ease-out infinite;}
-  .radar-blip:nth-child(5){top:22%; left:58%; animation-delay:0s;}
-  .radar-blip:nth-child(6){top:64%; left:34%; background:var(--blue);}
-  .radar-blip:nth-child(6)::after{border-color:rgba(79,178,255,0.4); animation-delay:.9s;}
-  .radar-blip:nth-child(7){top:41%; left:76%; background:var(--amber);}
-  .radar-blip:nth-child(7)::after{border-color:rgba(253,183,80,0.4); animation-delay:1.7s;}
+  .radar-blip:nth-of-type(1){top:22%; left:58%; animation-delay:0s;}
+  .radar-blip:nth-of-type(2){top:64%; left:34%; background:var(--blue);}
+  .radar-blip:nth-of-type(2)::after{border-color:rgba(79,178,255,0.4); animation-delay:.9s;}
+  .radar-blip:nth-of-type(3){top:41%; left:76%; background:var(--amber);}
+  .radar-blip:nth-of-type(3)::after{border-color:rgba(253,183,80,0.4); animation-delay:1.7s;}
   @keyframes spin{to{transform:rotate(360deg);}}
   @keyframes blipRing{0%{transform:scale(0.3); opacity:1;}100%{transform:scale(2.4); opacity:0;}}
   .hero-eyebrow{
@@ -164,6 +203,46 @@
     margin-top:22px; max-width:56ch; font-size:1.06rem; color:var(--mist); line-height:1.65;
   }
   .hero-cta{margin-top:34px; display:flex; gap:14px; flex-wrap:wrap;}
+
+  /* ---------- HERO VISUAL (live glance card) ---------- */
+  .hero-visual{position:relative; z-index:2;}
+  .glance-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border); border-radius:20px; padding:26px;
+    box-shadow:var(--shadow-lift); position:relative; overflow:hidden;
+    animation:floaty 5s ease-in-out infinite;
+  }
+  .glance-card::before{
+    content:""; position:absolute; top:-1px; left:16px; right:16px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, rgba(34,211,166,0.7), transparent); opacity:0.9;
+  }
+  .glance-head{display:flex; align-items:center; justify-content:space-between;}
+  .glance-badge{display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:0.68rem; color:var(--teal); background:var(--teal-dim); padding:4px 10px; border-radius:999px; letter-spacing:0.05em;}
+  .glance-badge .dot-live{margin:0;}
+  .glance-city{font-size:0.76rem; color:var(--mist-dim); font-family:var(--font-mono);}
+  .glance-main{display:flex; align-items:center; gap:16px; margin-top:18px;}
+  .glance-icon{font-size:3rem; line-height:1; animation:floaty 3.5s ease-in-out infinite;}
+  .glance-temp{font-family:var(--font-mono); font-size:2.4rem; font-weight:500; color:var(--cloud);}
+  .glance-cond{font-size:0.9rem; color:var(--mist); margin-top:2px;}
+  .glance-metrics{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-soft);}
+  .glance-metric{text-align:center;}
+  .glance-metric .v{font-family:var(--font-mono); font-size:0.98rem; color:var(--cloud);}
+  .glance-metric .l{font-size:0.68rem; color:var(--mist-dim); margin-top:2px;}
+  .glance-float{
+    position:absolute; display:flex; align-items:center; gap:8px; padding:8px 13px;
+    background:var(--panel); border:1px solid var(--border); border-radius:999px; box-shadow:var(--shadow-soft);
+    font-size:0.74rem; color:var(--mist); white-space:nowrap; z-index:3;
+  }
+  .glance-float.f1{top:-14px; right:14px; animation:floaty 4.2s ease-in-out infinite; animation-delay:.3s;}
+  .glance-float.f2{bottom:-14px; left:8px; animation:floaty 4.6s ease-in-out infinite; animation-delay:.8s;}
+  .glance-float .dot{width:6px; height:6px; border-radius:50%; flex:none;}
+  @media (max-width:980px){
+    .hero-inner{grid-template-columns:1fr;}
+    .hero-visual{max-width:380px; margin:0 auto;}
+  }
+  @media (max-width:520px){
+    .glance-float{display:none;}
+  }
 
   .stats-ticker{
     margin-top:64px; display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
@@ -207,6 +286,14 @@
     content:""; position:absolute; top:24px; left:11%; right:11%; height:1px; z-index:0;
     background:repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 16px);
   }
+  .pipeline-pulse{
+    position:absolute; top:20px; left:11%; width:8px; height:8px; border-radius:50%;
+    background:var(--teal); box-shadow:0 0 10px 2px rgba(34,211,166,0.7); z-index:0;
+    animation:pipelineTravel 6s ease-in-out infinite;
+  }
+  @keyframes pipelineTravel{
+    0%{left:11%; opacity:0;} 8%{opacity:1;} 46%{opacity:1;} 50%{left:78%; opacity:0;} 100%{left:78%; opacity:0;}
+  }
   .pipeline-step{
     background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
     padding:22px 20px 24px; position:relative; z-index:1; transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
@@ -219,10 +306,10 @@
   .pipeline-step:hover{border-color:var(--accent); transform:translateY(-4px); box-shadow:var(--shadow-soft);}
   .pipeline-node{
     width:38px; height:38px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border);
-    display:flex; align-items:center; justify-content:center; margin-bottom:16px; transition:all .18s ease;
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px; transition:all .18s ease; position:relative; color:var(--accent);
   }
   .pipeline-step:hover .pipeline-node{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, var(--panel-2)); box-shadow:0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent);}
-  .pipeline-num{font-family:var(--font-mono); font-size:0.78rem; color:var(--accent); font-weight:600;}
+  .pipeline-num{font-family:var(--font-mono); font-size:0.78rem; color:var(--accent); font-weight:600; display:block; margin-top:2px;}
   .pipeline-title{margin-top:0; font-size:1.06rem; font-weight:600;}
   .pipeline-desc{margin-top:10px; font-size:0.88rem; color:var(--mist); line-height:1.6;}
 
@@ -255,33 +342,143 @@
     color:var(--mist-dim); font-size:0.82rem; text-align:center; max-width:720px; margin:0 auto; line-height:1.7;
   }
   footer.site-footer strong{color:var(--mist);}
+  .footer-links{display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap; margin-bottom:16px;}
+  .footer-links button{background:none; border:none; padding:0; cursor:pointer; color:var(--mist); font-size:0.82rem; font-family:var(--font-body); display:inline-flex; align-items:center; gap:6px; transition:color .15s ease;}
+  .footer-links button:hover{color:var(--teal);}
+  .footer-links span.sep{width:3px; height:3px; border-radius:50%; background:var(--mist-dim);}
+
+  /* ---------- TRUST GRID ---------- */
+  .trust-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+  .trust-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:22px 20px; text-align:left; transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    --accent:var(--teal);
+  }
+  .trust-card:nth-child(1){--accent:var(--teal);}
+  .trust-card:nth-child(2){--accent:var(--blue);}
+  .trust-card:nth-child(3){--accent:var(--violet);}
+  .trust-card:nth-child(4){--accent:var(--amber);}
+  .trust-card:hover{border-color:var(--accent); transform:translateY(-3px); box-shadow:var(--shadow-soft);}
+  .trust-icon{width:38px; height:38px; border-radius:10px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); display:flex; align-items:center; justify-content:center; margin-bottom:14px;}
+  .trust-card h4{font-size:0.98rem; font-weight:600;}
+  .trust-card p{margin-top:8px; font-size:0.84rem; color:var(--mist); line-height:1.55;}
+
+  /* ---------- COVERAGE MARQUEE ---------- */
+  .coverage-strip{padding:44px 0; border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft); overflow:hidden;}
+  .coverage-label{max-width:1180px; margin:0 auto 18px; padding:0 28px; font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.09em; color:var(--mist-dim);}
+  .coverage-track{display:flex; width:max-content; gap:14px; animation:tickerScroll 38s linear infinite;}
+  .coverage-strip:hover .coverage-track{animation-play-state:paused;}
+  .coverage-chip{
+    display:inline-flex; align-items:center; gap:7px; font-size:0.84rem; color:var(--mist);
+    border:1px solid var(--border); background:var(--panel); padding:8px 16px; border-radius:999px; white-space:nowrap;
+  }
+  .coverage-chip .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); flex:none;}
+
+  /* ---------- CTA BANNER ---------- */
+  .cta-banner{
+    max-width:1180px; margin:0 auto; padding:0 28px;
+  }
+  .cta-banner-inner{
+    position:relative; overflow:hidden; border-radius:24px; padding:52px 40px; text-align:center;
+    background:linear-gradient(135deg, rgba(34,211,166,0.14), rgba(79,178,255,0.10));
+    border:1px solid var(--border);
+  }
+  .cta-banner-inner::before, .cta-banner-inner::after{
+    content:""; position:absolute; border-radius:50%; filter:blur(60px); opacity:0.5; pointer-events:none;
+  }
+  .cta-banner-inner::before{width:220px; height:220px; top:-80px; left:-40px; background:radial-gradient(circle, rgba(34,211,166,0.4), transparent 70%);}
+  .cta-banner-inner::after{width:220px; height:220px; bottom:-90px; right:-30px; background:radial-gradient(circle, rgba(79,178,255,0.35), transparent 70%);}
+  .cta-banner-inner h2{font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; position:relative; z-index:1;}
+  .cta-banner-inner p{margin:12px auto 0; max-width:52ch; color:var(--mist); font-size:0.96rem; position:relative; z-index:1;}
+  .cta-banner-btns{margin-top:26px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1;}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
 
   /* ============ DASHBOARD ============ */
   .view{display:none;}
   .view.active{display:block; animation:viewIn .35s ease both;}
   @keyframes viewIn{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:translateY(0);}}
+
+  .dash-hero{position:relative; overflow:hidden;}
+  .dash-ambient{position:absolute; inset:-40px -40px auto -40px; height:280px; z-index:0; pointer-events:none;}
+
   .dash-header{
-    padding:30px 28px 0; max-width:1180px; margin:0 auto;
+    position:relative; z-index:2;
+    padding:34px 28px 0; max-width:1180px; margin:0 auto;
     display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;
   }
-  .dash-header h1{font-size:1.75rem;}
+  .dash-header .eyebrow-row{display:flex; align-items:center; gap:9px; margin-bottom:8px;}
+  .dash-header h1{font-size:1.85rem;}
   .dash-header .sub{color:var(--mist); font-size:0.88rem; margin-top:7px;}
   .updated-line{font-family:var(--font-mono); font-size:0.76rem; color:var(--mist-dim); margin-top:9px; display:flex; align-items:center; gap:7px;}
 
   .dash-stats{
+    position:relative; z-index:2;
     max-width:1180px; margin:24px auto 0; padding:0 28px;
-    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+    display:grid; grid-template-columns:repeat(6,1fr); gap:14px;
   }
   .stat-card{
     background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--border); border-radius:var(--radius-sm); padding:16px 18px;
-    transition:border-color .18s ease, transform .18s ease;
+    transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
   }
-  .stat-card:hover{transform:translateY(-2px);}
+  .stat-card:hover{transform:translateY(-2px); box-shadow:var(--shadow-soft);}
   .stat-card .num{font-family:var(--font-mono); font-size:1.55rem;}
   .stat-card .label{font-size:0.78rem; color:var(--mist); margin-top:3px;}
   .stat-card.teal{border-left-color:var(--teal);} .stat-card.teal .num{color:var(--teal);}
   .stat-card.amber{border-left-color:var(--amber);} .stat-card.amber .num{color:var(--amber);}
   .stat-card.red{border-left-color:var(--red);} .stat-card.red .num{color:var(--red);}
+  .stat-card.violet{border-left-color:var(--violet);} .stat-card.violet .num{color:var(--violet);}
+  .stat-card.blue{border-left-color:var(--blue);} .stat-card.blue .num{color:var(--blue);}
+
+  .dash-stats .stat-icon{width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; font-size:0.9rem; background:var(--panel-3); color:var(--mist);}
+  .dash-stats .stat-card.teal .stat-icon{background:var(--teal-dim); color:var(--teal);}
+  .dash-stats .stat-card.amber .stat-icon{background:var(--amber-dim); color:var(--amber);}
+  .dash-stats .stat-card.red .stat-icon{background:var(--red-dim); color:var(--red);}
+  .dash-stats .stat-card.violet .stat-icon{background:var(--violet-dim); color:var(--violet);}
+  .dash-stats .stat-card.blue .stat-icon{background:var(--blue-dim); color:var(--blue);}
+
+  /* ---------- LIVE ALERT TICKER ---------- */
+  .alert-ticker{
+    max-width:1180px; margin:20px auto 0; padding:0 28px;
+  }
+  .alert-ticker-inner{
+    display:flex; align-items:center; gap:12px;
+    background:linear-gradient(90deg, rgba(255,107,87,0.10), rgba(253,183,80,0.06));
+    border:1px solid var(--border); border-left:3px solid var(--red);
+    border-radius:var(--radius-sm); padding:0 16px; height:44px; overflow:hidden; position:relative;
+    box-shadow:var(--shadow-soft);
+  }
+  .alert-ticker-tag{
+    flex:none; display:flex; align-items:center; gap:6px; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--red);
+  }
+  .alert-ticker-tag .dot-live{margin:0;}
+  .alert-ticker-track{
+    flex:1; overflow:hidden; white-space:nowrap; position:relative; height:100%;
+  }
+  .alert-ticker-track ul{
+    list-style:none; margin:0; padding:0; display:flex; gap:48px; align-items:center; height:100%;
+    position:absolute; left:0; top:0; animation:tickerScroll 32s linear infinite;
+    font-size:0.82rem; color:var(--mist);
+  }
+  .alert-ticker-track:hover ul{animation-play-state:paused;}
+  .alert-ticker-track li{display:flex; align-items:center; gap:8px; white-space:nowrap;}
+  .alert-ticker-track li strong{color:var(--cloud); font-weight:600;}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- QUICK RANGE CHIPS ---------- */
+  .quick-range{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+  .quick-range .chip{font-size:0.72rem; padding:5px 10px;}
+
+  .charts-row3{display:grid; grid-template-columns:1.4fr 1fr; gap:20px;}
+  @media (max-width:900px){
+    .dash-stats{grid-template-columns:repeat(2,1fr);}
+    .charts-row3{grid-template-columns:1fr;}
+    .alert-ticker-tag span.tag-text{display:none;}
+    .dash-ambient{height:200px;}
+  }
 
   .dash-layout{
     max-width:1180px; margin:24px auto 80px; padding:0 28px;
@@ -296,8 +493,11 @@
   .filter-group{margin-bottom:20px;}
   .filter-group label{display:block; font-size:0.8rem; color:var(--mist); margin-bottom:8px; font-weight:500;}
   .date-row{display:flex; flex-direction:column; gap:8px;}
+  .date-row .date-field{display:flex; align-items:center; gap:8px;}
+  .date-row .date-field span{flex:none; width:32px; font-size:0.72rem; color:var(--mist-dim); font-family:var(--font-mono);}
+  .date-row input[type=date]{flex:1; min-width:0;}
   input[type=date],select,input[type=text],input[type=password]{
-    width:100%; background:var(--ink); border:1px solid var(--border); color:var(--cloud);
+    width:100%; max-width:100%; background:var(--ink); border:1px solid var(--border); color:var(--cloud);
     padding:9px 11px; border-radius:8px; font-size:0.82rem; font-family:var(--font-body);
     transition:border-color .15s ease, box-shadow .15s ease;
   }
@@ -347,8 +547,10 @@
   .report-row{
     display:grid; grid-template-columns:80px 1.3fr 1fr 1fr 90px; gap:10px; align-items:center;
     padding:12px 20px; border-bottom:1px solid var(--border-soft); font-size:0.82rem; transition:background .15s ease;
+    cursor:pointer;
   }
   .report-row:hover{background:var(--panel-2);}
+  .report-row:active{background:var(--panel-3);}
   .report-row:last-child{border-bottom:none;}
   .report-row .time{font-family:var(--font-mono); color:var(--mist-dim); font-size:0.74rem;}
   .report-row .loc strong{display:block; font-size:0.86rem;}
@@ -411,38 +613,210 @@
   .dup-cluster:last-child{border-bottom:none;}
   .dup-cluster .ids{font-family:var(--font-mono); color:var(--mist-dim); font-size:0.74rem; margin-top:4px;}
 
+  /* ---- admin: login radar (reuses homepage radar-ring/-sweep/-blip animation) ---- */
+  .login-visual .radar-wrap{top:-140px; right:-150px; width:420px; height:420px; opacity:0.55;}
+  .admin-login-wrap{
+    min-height:auto; display:grid; grid-template-columns:1fr 1.05fr; align-items:stretch;
+    max-width:980px; margin:56px auto; border-radius:20px; overflow:hidden;
+    box-shadow:var(--shadow-lift); border:1px solid var(--border); background:var(--panel);
+  }
+  .login-visual{
+    position:relative; background:linear-gradient(165deg, var(--panel-3), var(--ink-2) 75%);
+    padding:40px 36px; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden;
+  }
+  .login-visual::before{
+    content:""; position:absolute; inset:0;
+    background-image:radial-gradient(circle 300px at 90% 8%, rgba(34,211,166,0.24), transparent 70%),
+      radial-gradient(circle 240px at 6% 96%, rgba(79,178,255,0.18), transparent 70%);
+    pointer-events:none;
+  }
+  .login-visual-top{position:relative; z-index:2; display:flex; align-items:center; gap:10px;}
+  .login-visual-top .brand-mark{width:28px; height:28px;}
+  .login-visual-top span{font-family:var(--font-display); font-weight:700; color:var(--cloud); font-size:1rem;}
+  .login-visual h3{position:relative; z-index:2; font-size:1.4rem; line-height:1.4; margin-top:30px; color:var(--cloud); max-width:300px;}
+  .login-features{position:relative; z-index:2; display:flex; flex-direction:column; gap:15px; margin-top:26px;}
+  .login-feature{display:flex; gap:12px; align-items:flex-start;}
+  .login-feature-icon{flex:none; width:32px; height:32px; border-radius:9px; background:var(--teal-dim); color:var(--teal); display:flex; align-items:center; justify-content:center;}
+  .login-feature-text strong{display:block; font-size:0.84rem; color:var(--cloud);}
+  .login-feature-text span{font-size:0.76rem; color:var(--mist); line-height:1.4;}
+  .login-visual-foot{position:relative; z-index:2; display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:0.7rem; color:var(--mist-dim); margin-top:auto; padding-top:26px;}
+  .login-visual-foot .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); animation:pulseDot 2s infinite;}
+  .login-card-wrap{display:flex; align-items:center; justify-content:center; padding:44px 40px;}
+  .admin-login-wrap .login-card{box-shadow:none; border:none; background:none; padding:0; width:100%; max-width:320px;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(34,211,166,0.55);}70%{box-shadow:0 0 0 8px rgba(34,211,166,0);}100%{box-shadow:0 0 0 0 rgba(34,211,166,0);}}
+
+  /* ---- admin: topbar live indicator ---- */
+  .admin-live-badge{display:inline-flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:0.72rem; color:var(--teal); background:var(--teal-dim); border:1px solid rgba(34,211,166,0.3); padding:5px 12px; border-radius:999px;}
+  .admin-live-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); animation:pulseDot 2s infinite;}
+  .admin-synced{font-family:var(--font-mono); font-size:0.72rem; color:var(--mist-dim); margin-top:8px; display:block;}
+
+  /* ---- admin: stat cards ---- */
+  .admin-stats{grid-template-columns:repeat(5,1fr);}
+  .admin-stats .stat-card{display:flex; flex-direction:column; gap:2px;}
+  .admin-stats .stat-icon{width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; font-size:0.9rem; background:var(--panel-3); color:var(--mist);}
+  .admin-stats .stat-card.amber .stat-icon{background:var(--amber-dim); color:var(--amber);}
+  .admin-stats .stat-card.red .stat-icon{background:var(--red-dim); color:var(--red);}
+  .admin-stats .stat-card.teal .stat-icon{background:var(--teal-dim); color:var(--teal);}
+  .admin-stats .stat-card.blue .stat-icon{background:var(--blue-dim); color:var(--blue);}
+  .admin-stats .stat-card:hover{box-shadow:var(--shadow-soft); border-color:var(--mist-dim);}
+
+  /* ---- admin: charts row ---- */
+  .admin-charts-row{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;}
+  .trend-summary{display:flex; gap:20px; margin-top:4px;}
+  .trend-summary div{font-size:0.72rem; color:var(--mist-dim);}
+  .trend-summary strong{display:block; font-size:1.05rem; color:var(--cloud); font-family:var(--font-mono); margin-top:2px;}
+
+  /* ---- admin: insight chips ---- */
+  .insight-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .insight-item{background:var(--ink); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:12px 14px;}
+  .insight-item .lbl{font-size:0.71rem; color:var(--mist-dim); margin-bottom:5px;}
+  .insight-item .val{font-size:0.94rem; font-weight:600; color:var(--cloud); display:flex; align-items:center; gap:6px;}
+  .insight-dot{width:8px; height:8px; border-radius:50%; flex:none;}
+
+  /* ---- admin: queue row severity edge ---- */
+  .queue-row{border-left:3px solid transparent;}
+  .queue-row.sev-flagged{border-left-color:var(--red);}
+  .queue-row.sev-pending{border-left-color:var(--amber);}
+  .queue-row.sev-verified{border-left-color:var(--teal);}
+
+  /* ---- admin: manage admins list ---- */
+  .admin-person-row{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border-soft);}
+  .admin-person-row:last-child{border-bottom:none;}
+  .admin-avatar{width:30px; height:30px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:0.74rem; color:#04170F;}
+  .admin-person-meta strong{display:block; font-size:0.84rem; color:var(--cloud); font-weight:500;}
+  .admin-person-meta span{font-size:0.71rem; color:var(--mist-dim); font-family:var(--font-mono);}
+
+  /* ---- admin: activity feed ---- */
+  .activity-feed{max-height:220px; overflow-y:auto;}
+  .activity-item{display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-soft);}
+  .activity-item:last-child{border-bottom:none;}
+  .activity-dot{width:8px; height:8px; border-radius:50%; margin-top:5px; flex:none;}
+  .activity-text{font-size:0.8rem; color:var(--mist); line-height:1.5;}
+  .activity-text strong{color:var(--cloud); font-weight:600;}
+  .activity-time{font-size:0.7rem; color:var(--mist-dim); font-family:var(--font-mono); margin-top:2px;}
+
+  @media (max-width:980px){
+    .admin-login-wrap{grid-template-columns:1fr; margin:24px auto;}
+    .login-visual{display:none;}
+    .admin-stats{grid-template-columns:1fr 1fr;}
+    .admin-charts-row{grid-template-columns:1fr;}
+    .insight-grid{grid-template-columns:1fr;}
+  }
+
   /* ============ FORECAST ============ */
-  .forecast-wrap{max-width:640px; margin:0 auto; padding:68px 28px 80px;}
-  .forecast-head{text-align:center; margin-bottom:32px;}
+  .forecast-wrap{max-width:1160px; margin:0 auto; padding:68px 28px 80px; position:relative; overflow:hidden;}
+  .forecast-ambient{position:absolute; inset:-40px -40px auto -40px; height:520px; z-index:0; pointer-events:none;}
+  .amb-blob{position:absolute; border-radius:50%; filter:blur(70px); opacity:0.55;}
+  .amb-blob.b1{width:260px; height:260px; top:-60px; left:-40px; background:radial-gradient(circle, rgba(34,211,166,0.35), transparent 70%); animation:driftA 16s ease-in-out infinite;}
+  .amb-blob.b2{width:230px; height:230px; top:20px; right:-60px; background:radial-gradient(circle, rgba(79,178,255,0.32), transparent 70%); animation:driftB 19s ease-in-out infinite;}
+  .amb-blob.b3{width:180px; height:180px; top:260px; left:38%; background:radial-gradient(circle, rgba(253,183,80,0.22), transparent 70%); animation:driftA 22s ease-in-out infinite reverse;}
+  @keyframes driftA{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,24px);}}
+  @keyframes driftB{0%,100%{transform:translate(0,0);}50%{transform:translate(-26px,20px);}}
+  .forecast-head{text-align:center; margin-bottom:36px; position:relative; z-index:2;}
   .forecast-head .section-eyebrow{justify-content:center;}
   .forecast-head .section-eyebrow::before{display:none;}
+
+  .forecast-grid{display:grid; grid-template-columns:1.35fr 0.9fr; gap:28px; align-items:start; position:relative; z-index:2;}
+  .forecast-main{min-width:0;}
+
   .forecast-card{
+    --accent:var(--teal); position:relative; z-index:2;
     background:linear-gradient(160deg, var(--panel), var(--panel-2));
-    border:1px solid var(--border); border-radius:var(--radius); padding:30px; box-shadow:var(--shadow-lift);
+    border:1px solid var(--border); border-radius:var(--radius); padding:40px; box-shadow:var(--shadow-lift);
+    transition:border-color .3s ease;
   }
-  .forecast-search{display:flex; gap:10px;}
-  .forecast-search input{flex:1;}
-  .forecast-result{margin-top:26px; text-align:center; display:none;}
-  .forecast-result.show{display:block; animation:viewIn .3s ease both;}
-  .forecast-icon{font-size:3.4rem; line-height:1; animation:floaty 3.5s ease-in-out infinite;}
+  .forecast-card::before{
+    content:""; position:absolute; top:-1px; left:16px; right:16px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 70%, transparent), transparent);
+    opacity:0.9; transition:background .3s ease;
+  }
+  .forecast-search-label{font-size:0.72rem; color:var(--mist-dim); font-family:var(--font-mono); margin-bottom:10px; display:flex; align-items:center; gap:7px;}
+  .forecast-search-label::before{content:""; width:7px; height:7px; border-radius:2px; background:var(--teal); flex:none;}
+  .forecast-search{display:flex; gap:12px;}
+  .forecast-search input{flex:1; padding:16px 18px; font-size:1.02rem; border-radius:12px;}
+  .forecast-search .btn{padding:16px 30px; font-size:0.98rem; border-radius:12px;}
+
+  .chip-group-label{font-size:0.72rem; color:var(--mist-dim); font-family:var(--font-mono); margin:22px 0 10px;}
+  .city-chips{display:flex; gap:9px; flex-wrap:wrap; margin-top:0;}
+  .city-chips .chip{font-size:0.82rem; padding:8px 15px;}
+  .city-chips .chip::before{content:"📍"; font-size:0.72em; margin-right:4px; opacity:0.85;}
+  .recent-chips{display:none; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .recent-chips .recent-label{font-size:0.76rem; color:var(--mist-dim); font-family:var(--font-mono); flex:none;}
+
+  /* ---- forecast: sidebar ---- */
+  .forecast-sidebar{display:flex; flex-direction:column; gap:16px; position:sticky; top:88px;}
+  .forecast-sidebar .stat-card{padding:16px 18px;}
+  .forecast-fact-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+  /* ---- forecast: welcome / empty state ---- */
+  .forecast-empty{margin-top:30px; text-align:center; padding-top:14px; border-top:1px solid var(--border-soft);}
+  .forecast-empty-icons{display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:14px;}
+  .forecast-empty-icons span{font-size:1.7rem; opacity:0.85; animation:floaty 3.6s ease-in-out infinite;}
+  .forecast-empty-icons span:nth-child(2){animation-delay:.4s; font-size:2.1rem;}
+  .forecast-empty-icons span:nth-child(3){animation-delay:.8s;}
+  .forecast-empty p{color:var(--mist); font-size:0.88rem; max-width:340px; margin:0 auto;}
+  .forecast-empty-tips{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px;}
+  .forecast-empty-tip{background:var(--ink); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:12px 8px; font-size:0.74rem; color:var(--mist-dim);}
+  .forecast-empty-tip strong{display:block; font-size:0.85rem; color:var(--cloud); margin-bottom:2px;}
+
+  .forecast-loading{display:none; margin-top:28px;}
+  .forecast-loading.show{display:block;}
+  .skeleton-icon{width:64px; height:64px; border-radius:50%; margin:0 auto 16px; background:linear-gradient(90deg, var(--panel-2) 25%, var(--panel-3) 37%, var(--panel-2) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite;}
+  .skeleton-line{height:12px; border-radius:6px; margin:0 auto 8px; background:linear-gradient(90deg, var(--panel-2) 25%, var(--panel-3) 37%, var(--panel-2) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite;}
+  .skeleton-line.w60{width:60%;}
+  .skeleton-line.w40{width:40%;}
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  .forecast-error{margin-top:16px; text-align:center; display:none;}
+  .forecast-error.show{display:block; animation:viewIn .3s ease both;}
+  .forecast-error-icon{font-size:1.8rem;}
+  .forecast-error p{margin-top:8px; color:var(--red); font-size:0.86rem;}
+  .forecast-error .btn{margin-top:14px;}
+
+  .forecast-result{margin-top:8px; text-align:center; display:none;}
+  .forecast-result.show{display:block; animation:viewIn .35s ease both;}
+
+  .unit-toggle{display:inline-flex; gap:2px; padding:3px; border:1px solid var(--border); border-radius:999px; background:var(--ink);}
+  .unit-btn{border:none; background:none; color:var(--mist); font-size:0.76rem; font-weight:600; padding:5px 13px; border-radius:999px; cursor:pointer; transition:all .15s ease; font-family:var(--font-mono);}
+  .unit-btn.active{background:var(--teal); color:#04170F;}
+
+  .forecast-icon-wrap{
+    --accent:var(--teal); width:118px; height:118px; margin:16px auto 2px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+    transition:background .3s ease, box-shadow .3s ease;
+  }
+  .forecast-icon{font-size:3.8rem; line-height:1; animation:floaty 3.5s ease-in-out infinite;}
   @keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-  .forecast-temp{font-family:var(--font-mono); font-size:2.7rem; font-weight:500; margin-top:8px;}
+  .forecast-temp{font-family:var(--font-mono); font-size:3.4rem; font-weight:500;}
+  .forecast-condition{color:var(--cloud); font-size:1rem; font-weight:600; margin-top:2px;}
   .forecast-city{color:var(--mist); margin-top:4px; font-size:1.02rem;}
-  .forecast-details{display:flex; justify-content:center; gap:32px; margin-top:22px; padding-top:20px; border-top:1px solid var(--border-soft);}
+  .forecast-updated{margin-top:8px; font-family:var(--font-mono); font-size:0.72rem; color:var(--mist-dim); display:flex; align-items:center; justify-content:center; gap:6px;}
+  .forecast-details{display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:16px 10px; margin-top:22px; padding-top:20px; border-top:1px solid var(--border-soft);}
   .forecast-detail{text-align:center;}
+  .forecast-detail .ico{font-size:1.05rem; margin-bottom:4px;}
   .forecast-detail .val{font-family:var(--font-mono); font-size:1.15rem; color:var(--cloud);}
   .forecast-detail .lbl{font-size:0.76rem; color:var(--mist-dim); margin-top:3px;}
-  .forecast-error{margin-top:16px; color:var(--red); font-size:0.86rem; text-align:center; display:none;}
-  .forecast-error.show{display:block;}
-  .forecast-loading{margin-top:16px; color:var(--mist); font-size:0.86rem; text-align:center; display:none;}
-  .forecast-loading.show{display:block;}
-  .forecast-hint{margin-top:20px; text-align:center; color:var(--mist-dim); font-size:0.84rem;}
+  .forecast-hint{margin-top:20px; text-align:center; color:var(--mist-dim); font-size:0.84rem; position:relative; z-index:2;}
   .forecast-hint button{background:none; border:none; color:var(--teal); cursor:pointer; font-size:0.84rem; padding:0; text-decoration:underline;}
 
+  @media (max-width:980px){
+    .forecast-grid{grid-template-columns:1fr;}
+    .forecast-sidebar{position:static;}
+  }
+  @media (max-width:520px){
+    .forecast-empty-tips{grid-template-columns:1fr;}
+    .forecast-card{padding:26px 22px;}
+    .forecast-fact-grid{grid-template-columns:1fr;}
+  }
+
   /* ============ REPORT FORM ============ */
-  .report-wrap{max-width:640px; margin:0 auto; padding:60px 28px 80px;}
-  .report-head{margin-bottom:28px;}
+  .visually-hidden{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+  .report-wrap{max-width:980px; margin:0 auto; padding:60px 28px 80px;}
+  .report-head{margin-bottom:28px; max-width:640px;}
   .report-head .sub{color:var(--mist); margin-top:8px; font-size:0.92rem; line-height:1.6;}
+  .report-grid{display:grid; grid-template-columns:1.55fr 1fr; gap:24px; align-items:start;}
   .form-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:30px; box-shadow:var(--shadow-soft);}
   .form-field{margin-bottom:18px;}
   .form-field label{display:block; font-size:0.84rem; color:var(--mist); margin-bottom:7px; font-weight:500;}
@@ -460,7 +834,10 @@
     padding:6px 12px; margin-right:10px; cursor:pointer; font-family:var(--font-body); font-size:0.78rem;
   }
   .loc-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
-  .loc-status{font-size:0.78rem; color:var(--mist-dim);}
+  .loc-status{font-size:0.78rem; color:var(--mist-dim); margin-top:6px;}
+  .loc-chip{display:inline-flex; align-items:center; gap:8px; background:var(--panel-2); border:1px solid var(--border); padding:6px 8px 6px 12px; border-radius:999px; font-size:0.78rem; color:var(--cloud); margin-top:10px; font-family:var(--font-mono);}
+  .loc-chip-clear{width:18px; height:18px; border-radius:50%; border:none; background:var(--panel-3); color:var(--mist); cursor:pointer; font-size:0.85rem; line-height:1; display:flex; align-items:center; justify-content:center; flex:none;}
+  .loc-chip-clear:hover{background:var(--red-dim); color:var(--red);}
   .form-row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   .submit-note{font-size:0.78rem; color:var(--mist-dim); margin-top:10px; text-align:center;}
   .result-box{margin-top:22px; padding:20px; border-radius:var(--radius-sm); border:1px solid var(--border); display:none; gap:18px; align-items:flex-start;}
@@ -477,10 +854,53 @@
   .result-text ul{margin:0; padding-left:18px; font-size:0.84rem; color:var(--mist); line-height:1.7;}
   .result-text a{color:var(--teal); font-size:0.84rem; display:inline-block; margin-top:10px;}
 
+  /* ---- category chip picker ---- */
+  .cat-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(108px,1fr)); gap:8px; margin-bottom:2px;}
+  .cat-chip{
+    display:flex; flex-direction:column; align-items:center; gap:6px; padding:12px 8px;
+    border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--ink); color:var(--mist);
+    cursor:pointer; font-size:0.76rem; font-weight:500; transition:all .15s ease; text-align:center; font-family:var(--font-body);
+  }
+  .cat-chip:hover{border-color:var(--mist-dim); color:var(--cloud); transform:translateY(-1px);}
+  .cat-chip.active{font-weight:700;}
+  .cat-chip-icon{font-size:1.35rem; line-height:1;}
+  .field-error{color:var(--red); font-size:0.76rem; margin-top:6px; min-height:0;}
+  input.input-error, textarea.input-error{border-color:var(--red) !important;}
+
+  /* ---- description meta row ---- */
+  .field-meta-row{display:flex; justify-content:space-between; align-items:center; margin-top:8px; gap:10px; flex-wrap:wrap;}
+  .auto-detect-badge{display:none; align-items:center; gap:6px; font-size:0.75rem; font-weight:600; padding:4px 11px; border-radius:999px; border:1px solid; margin:0;}
+  .char-counter{font-size:0.72rem; color:var(--mist-dim); font-family:var(--font-mono); margin-left:auto;}
+
+  /* ---- upload dropzone ---- */
+  .upload-zone{
+    display:flex; align-items:center; gap:14px; border:1.5px dashed var(--border); border-radius:var(--radius-sm);
+    padding:16px 18px; cursor:pointer; transition:all .15s ease; background:var(--ink);
+  }
+  .upload-zone:hover, .upload-zone.dragover{border-color:var(--teal); background:var(--teal-dim);}
+  .upload-icon{font-size:1.55rem; flex:none;}
+  .upload-text{font-size:0.84rem; color:var(--mist); line-height:1.5;}
+  .upload-text strong{color:var(--cloud);}
+  .upload-hint{font-size:0.74rem; color:var(--mist-dim);}
+  .upload-preview{display:flex; align-items:center; gap:12px; border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; background:var(--panel-2);}
+  .upload-preview img{width:44px; height:44px; object-fit:cover; border-radius:8px; flex:none;}
+  .upload-preview-icon{font-size:1.6rem; flex:none;}
+  .upload-preview-name{flex:1; font-size:0.82rem; color:var(--cloud); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .upload-preview-remove{width:22px; height:22px; border-radius:50%; border:none; background:var(--panel-3); color:var(--mist); cursor:pointer; font-size:0.9rem; flex:none;}
+  .upload-preview-remove:hover{background:var(--red-dim); color:var(--red);}
+
+  /* ---- sidebar ---- */
+  .report-sidebar{display:flex; flex-direction:column; gap:16px; position:sticky; top:88px;}
+  .steps-list{margin:0; padding-left:18px; font-size:0.84rem; color:var(--mist); line-height:1.85;}
+  .steps-list strong{color:var(--cloud);}
+  .trust-guide-row{display:flex; align-items:center; gap:9px; font-size:0.82rem; color:var(--mist); padding:6px 0;}
+  .trust-guide-row:not(:last-child){border-bottom:1px solid var(--border-soft);}
+  .tips-list{margin:0; padding-left:18px; font-size:0.84rem; color:var(--mist); line-height:1.85;}
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:980px){
     .pipeline{grid-template-columns:1fr 1fr;}
-    .pipeline::before{display:none;}
+    .pipeline::before, .pipeline-pulse{display:none;}
     .preview-grid{grid-template-columns:1fr;}
     .stats-ticker{grid-template-columns:1fr 1fr;}
     .dash-layout, .admin-layout{grid-template-columns:1fr;}
@@ -492,178 +912,29 @@
     .queue-row{grid-template-columns:1fr;}
     .queue-actions{flex-direction:row;}
     .form-row2{grid-template-columns:1fr;}
+    .report-grid{grid-template-columns:1fr;}
+    .report-sidebar{position:static;}
     .forecast-details{gap:20px;}
+    .trust-grid{grid-template-columns:1fr 1fr;}
   }
   @media (max-width:720px){
     .navbar{padding:12px 16px;}
     .nav-links{width:100%; overflow-x:auto; justify-content:flex-start; scrollbar-width:none; -ms-overflow-style:none;}
     .nav-links::-webkit-scrollbar{display:none;}
     .radar-wrap{opacity:0.35; width:420px; height:420px; top:-90px; right:-140px;}
+    .trust-grid{grid-template-columns:1fr;}
+    .cta-banner-inner{padding:40px 22px;}
   }
   @media (prefers-reduced-motion:reduce){
     .radar-sweep, .dot-live, .forecast-icon, .radar-blip::after, .view.active{animation:none;}
+    .glance-card, .glance-icon, .glance-float, .pipeline-pulse, .coverage-track{animation:none;}
+    .reveal{opacity:1; transform:none; transition:none;}
     html{scroll-behavior:auto;}
   }
 
-  /* ---------- SKIP LINK ---------- */
-  .skip-link{
-    position:fixed; top:-60px; left:12px; z-index:200;
-    background:var(--teal); color:#00261F; font-weight:600; font-size:0.85rem;
-    padding:10px 16px; border-radius:8px; transition:top .18s ease;
-  }
-  .skip-link:focus{top:12px;}
-
-  /* ---------- TOP LOADING BAR ---------- */
-  .top-loader{position:fixed; top:0; left:0; height:2.5px; width:0%; z-index:300;
-    background:linear-gradient(90deg, var(--teal), var(--blue)); transition:width .25s ease, opacity .3s ease .15s; opacity:0;
-    box-shadow:0 0 10px rgba(34,211,166,0.7);}
-  .top-loader.active{opacity:1;}
-
-  /* ---------- NAV: HAMBURGER + MOBILE DRAWER ---------- */
-  .nav-toggle{
-    display:none; align-items:center; justify-content:center; width:38px; height:38px;
-    border-radius:9px; border:1px solid var(--border); background:var(--panel-2); color:var(--cloud);
-    cursor:pointer; flex:none;
-  }
-  .nav-toggle svg{pointer-events:none;}
-  .nav-backdrop{position:fixed; inset:0; background:rgba(4,8,14,0.6); backdrop-filter:blur(2px); z-index:55; opacity:0; pointer-events:none; transition:opacity .22s ease;}
-  .nav-backdrop.open{opacity:1; pointer-events:auto;}
-
-  /* ---------- STAT CARD ENRICHMENT (home hero ticker) ---------- */
-  .stat-item{display:flex; flex-direction:column;}
-  .stat-item-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
-
-  /* ---------- DASHBOARD STAT CARDS: sparkline + delta ---------- */
-  .stat-card{position:relative; overflow:hidden;}
-  .stat-card-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
-  .stat-spark{flex:none; opacity:0.9;}
-  .stat-spark path{fill:none; stroke-width:1.6;}
-  .stat-spark .spark-fill{stroke:none;}
-  .stat-delta{display:inline-flex; align-items:center; gap:3px; font-size:0.72rem; font-family:var(--font-mono); margin-top:6px; font-weight:600;}
-  .stat-delta.up{color:var(--teal);}
-  .stat-delta.down{color:var(--red);}
-  .stat-delta.flat{color:var(--mist-dim);}
-  .stat-delta svg{flex:none;}
-  .stat-card.red .stat-delta.up{color:var(--red);}
-  .stat-card.red .stat-delta.down{color:var(--teal);}
-
-  /* trust-ring on admin avg trust card */
-  .trust-ring-wrap{position:absolute; top:12px; right:14px; width:38px; height:38px;}
-  .trust-ring-wrap svg{transform:rotate(-90deg);}
-  .trust-ring-bg{fill:none; stroke:var(--border); stroke-width:3;}
-  .trust-ring-fg{fill:none; stroke:var(--teal); stroke-width:3; stroke-linecap:round; transition:stroke-dasharray .6s ease;}
-
-  /* ---------- SKELETON LOADERS ---------- */
-  @keyframes shimmer{0%{background-position:-200px 0;}100%{background-position:calc(200px + 100%) 0;}}
-  .skel{
-    border-radius:6px; background:linear-gradient(90deg, var(--panel-2) 0%, var(--panel-3) 40%, var(--panel-2) 80%);
-    background-size:200px 100%; animation:shimmer 1.4s ease-in-out infinite;
-  }
-  .skel-row{display:grid; grid-template-columns:80px 1.3fr 1fr 1fr 90px; gap:10px; align-items:center; padding:12px 20px; border-bottom:1px solid var(--border-soft);}
-  .skel-row .skel{height:12px;}
-  .skel-queue-row{padding:16px 20px; border-bottom:1px solid var(--border-soft);}
-  .skel-queue-row .skel{height:12px; margin-bottom:8px;}
-  .skel-queue-row .skel:last-child{margin-bottom:0; width:60%;}
-  @media (prefers-reduced-motion:reduce){ .skel{animation:none;} }
-
-  /* ---------- TOASTS ---------- */
-  .toast-stack{position:fixed; bottom:20px; right:20px; z-index:400; display:flex; flex-direction:column; gap:10px; max-width:340px;}
-  .toast{
-    display:flex; align-items:flex-start; gap:10px; padding:13px 16px; border-radius:12px;
-    background:var(--panel-2); border:1px solid var(--border); box-shadow:var(--shadow-lift);
-    font-size:0.85rem; color:var(--cloud); animation:toastIn .25s ease both;
-  }
-  .toast .icon{flex:none; margin-top:1px;}
-  .toast.success{border-color:rgba(34,211,166,0.4);} .toast.success .icon{color:var(--teal);}
-  .toast.error{border-color:rgba(255,107,87,0.4);} .toast.error .icon{color:var(--red);}
-  .toast.info{border-color:rgba(79,178,255,0.4);} .toast.info .icon{color:var(--blue);}
-  .toast-close{margin-left:auto; background:none; border:none; color:var(--mist-dim); cursor:pointer; padding:0; flex:none;}
-  @keyframes toastIn{from{opacity:0; transform:translateY(8px) scale(0.98);}to{opacity:1; transform:translateY(0) scale(1);}}
-  .toast.leaving{animation:toastOut .18s ease both;}
-  @keyframes toastOut{to{opacity:0; transform:translateX(12px);}}
-
-  /* ---------- MAP TOOLBAR / HEATMAP TOGGLE ---------- */
-  .map-toolbar{display:flex; align-items:center; gap:8px;}
-  .map-toggle-btn{
-    display:inline-flex; align-items:center; gap:6px; font-size:0.74rem; font-family:var(--font-mono);
-    padding:5px 11px; border-radius:999px; border:1px solid var(--border); background:var(--ink);
-    color:var(--mist); cursor:pointer; transition:all .15s ease;
-  }
-  .map-toggle-btn:hover{color:var(--cloud); border-color:var(--mist-dim);}
-  .map-toggle-btn.active{background:var(--teal-dim); border-color:var(--teal); color:var(--teal);}
-
-  /* ---------- CSV EXPORT BUTTON ---------- */
-  .export-btn{
-    display:inline-flex; align-items:center; gap:5px; font-size:0.74rem; font-family:var(--font-mono);
-    color:var(--mist); background:none; border:1px solid var(--border); padding:5px 11px; border-radius:999px;
-    cursor:pointer; transition:all .15s ease;
-  }
-  .export-btn:hover{color:var(--teal); border-color:var(--teal);}
-
-  /* ---------- EMPTY STATE ---------- */
-  .empty-note{display:flex; flex-direction:column; align-items:center; gap:10px;}
-  .empty-note svg{opacity:0.45;}
-  .empty-note .empty-title{color:var(--mist); font-weight:600; font-size:0.9rem;}
-  .empty-note .empty-sub{color:var(--mist-dim); font-size:0.78rem;}
-
-  /* ---------- SCROLL REVEAL ---------- */
-  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
-  .reveal.in{opacity:1; transform:translateY(0);}
-  @media (prefers-reduced-motion:reduce){ .reveal{opacity:1; transform:none; transition:none;} }
-
-  /* ---------- BACK TO TOP ---------- */
-  .to-top{
-    position:fixed; bottom:22px; right:22px; z-index:120; width:42px; height:42px; border-radius:50%;
-    background:var(--panel-2); border:1px solid var(--border); color:var(--cloud); display:flex;
-    align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-lift);
-    opacity:0; pointer-events:none; transform:translateY(8px); transition:all .22s ease;
-  }
-  .to-top.show{opacity:1; pointer-events:auto; transform:translateY(0);}
-  .to-top:hover{border-color:var(--teal); color:var(--teal);}
-
-  /* ---------- FORECAST: condition theming ---------- */
-  .forecast-card{transition:background .5s ease, border-color .5s ease;}
-  .forecast-card[data-cond="Rain"], .forecast-card[data-cond="Drizzle"]{background:linear-gradient(160deg, #0E2436, #16283C);}
-  .forecast-card[data-cond="Storm"]{background:linear-gradient(160deg, #1a1830, #16283C);}
-  .forecast-card[data-cond="Clear"]{background:linear-gradient(160deg, #22301c, #16283C);}
-  .forecast-card[data-cond="Snow"]{background:linear-gradient(160deg, #1c2e3a, #16283C);}
-  .forecast-card[data-cond="Fog"]{background:linear-gradient(160deg, #22283a, #16283C);}
-
-  /* ---------- ADMIN: source/queue polish ---------- */
-  .queue-row{border-left:3px solid transparent;}
-  .queue-row[data-status="flagged"]{border-left-color:var(--red);}
-  .queue-row[data-status="pending"]{border-left-color:var(--amber);}
-  .admin-avatar{
-    display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%;
-    background:var(--teal-dim); color:var(--teal); font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
-    margin-right:8px; flex:none;
-  }
-  .admin-row{display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft);}
-  .admin-row:last-child{border-bottom:none;}
-  .admin-name{color:var(--cloud); font-size:0.88rem; font-weight:500;}
-  .admin-you-badge{margin-left:auto; font-size:0.68rem; font-family:var(--font-mono); color:var(--teal); background:var(--teal-dim); padding:3px 9px; border-radius:999px; flex:none;}
-
-  /* ---------- MISC RESPONSIVE FOR NEW BITS ---------- */
-  @media (max-width:720px){
-    .nav-toggle{display:flex;}
-    .navbar .nav-links{
-      position:fixed; top:65px; right:0; bottom:0; width:min(78vw,300px);
-      background:var(--ink-2); border-left:1px solid var(--border-soft);
-      flex-direction:column; align-items:stretch; padding:16px; gap:4px;
-      overflow-y:auto; transform:translateX(100%); transition:transform .28s ease; z-index:60;
-      box-shadow:-16px 0 40px -20px rgba(0,0,0,0.6);
-    }
-    .navbar .nav-links.open{transform:translateX(0);}
-    .navbar .nav-links .nav-btn{width:100%; text-align:left; padding:13px 14px; border-radius:10px;}
-    .skel-row{grid-template-columns:1fr 1fr;}
-    .stat-spark{display:none;}
-  }
 </style>
 </head>
 <body>
-
-<a href="#main-content" class="skip-link">Skip to content</a>
-<div class="top-loader" id="topLoader"></div>
 
 <nav class="navbar">
   <div class="brand" data-nav="home">
@@ -680,20 +951,19 @@
     </svg>
     <span class="brand-text">VarshaNet<small>NATIONAL WEATHER DATA PLATFORM</small></span>
   </div>
-  <div class="nav-links" id="navLinks">
+  <div class="nav-links">
     <button class="nav-btn active" data-nav="home">Home</button>
     <button class="nav-btn" data-nav="forecast">Forecast</button>
     <button class="nav-btn" data-nav="dashboard">Live Dashboard</button>
     <button class="nav-btn" data-nav="report">Report an Event</button>
     <button class="nav-btn" data-nav="admin">Admin Console</button>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" title="Switch theme">
+      <svg id="themeIconSun" width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg id="themeIconMoon" width="17" height="17" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M21 12.5A9 9 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
   </div>
-  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-  </button>
 </nav>
-<div class="nav-backdrop" id="navBackdrop"></div>
 
-<main id="main-content">
 <!-- ============ HOME ============ -->
 <div class="view active" id="view-home">
   <section class="hero">
@@ -703,35 +973,60 @@
       <div class="radar-blip"></div><div class="radar-blip"></div><div class="radar-blip"></div>
     </div>
     <div class="hero-inner">
-      <span class="hero-eyebrow"><span class="dot-live"></span>SMART INDIA HACKATHON 2026 · PS 26069</span>
-      <h1 class="hero-title">The monsoon is already <em>posting</em> about itself.</h1>
-      <p class="hero-sub">VarshaNet pulls live weather signals from X, citizen reports, IMD APIs and open datasets — filters out the noise with machine learning, and turns scattered <strong>#IMD</strong> posts into one verified, real-time map of India's weather.</p>
-      <div class="hero-cta">
-        <button class="btn btn-primary" data-nav="dashboard">Open Live Dashboard <span class="btn-arrow">→</span></button>
-        <button class="btn btn-ghost" data-nav="admin">Admin Console</button>
+      <div class="hero-content">
+        <span class="hero-eyebrow"><span class="dot-live"></span>SMART INDIA HACKATHON 2026 · PS 26069</span>
+        <h1 class="hero-title">The monsoon is already <em>posting</em> about itself.</h1>
+        <p class="hero-sub">VarshaNet pulls live weather signals from X, citizen reports, IMD APIs and open datasets — filters out the noise with machine learning, and turns scattered <strong>#IMD</strong> posts into one verified, real-time map of India's weather.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" data-nav="dashboard">Open Live Dashboard <span class="btn-arrow">→</span></button>
+          <button class="btn btn-ghost" data-nav="admin">Admin Console</button>
+        </div>
+        <div class="stats-ticker">
+          <div class="stat-item">
+            <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 19V10M11 19V5M18 19v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <div class="stat-num" data-count="128430">0</div><div class="stat-label">Reports ingested</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9.4" r="2.3" stroke="currentColor" stroke-width="2"/></svg>
+            <div class="stat-num" data-count="612">0</div><div class="stat-label">Cities &amp; towns covered</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <div class="stat-num" data-count="42" data-suffix=" min" data-decimal="1">0</div><div class="stat-label">Median time to verify</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6 8v6l-4-2v-4L4 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            <div class="stat-num" data-count="9842">0</div><div class="stat-label">Fake reports filtered</div>
+          </div>
+        </div>
       </div>
-      <div class="stats-ticker">
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 19V10M11 19V5M18 19v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <div class="stat-num" data-count="128430">0</div><div class="stat-label">Reports ingested</div>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9.4" r="2.3" stroke="currentColor" stroke-width="2"/></svg>
-          <div class="stat-num" data-count="612">0</div><div class="stat-label">Cities &amp; towns covered</div>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <div class="stat-num" data-count="42" data-suffix=" min" data-decimal="1">0</div><div class="stat-label">Median time to verify</div>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6 8v6l-4-2v-4L4 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-          <div class="stat-num" data-count="9842">0</div><div class="stat-label">Fake reports filtered</div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="glance-card">
+          <div class="glance-float f1"><span class="dot" style="background:var(--teal)"></span>Verified 2 min ago</div>
+          <div class="glance-head">
+            <span class="glance-badge"><span class="dot-live"></span>LIVE GLANCE</span>
+            <span class="glance-city">New Delhi</span>
+          </div>
+          <div class="glance-main">
+            <div class="glance-icon">⛈️</div>
+            <div>
+              <div class="glance-temp">31°</div>
+              <div class="glance-cond">Thunderstorms nearby</div>
+            </div>
+          </div>
+          <div class="glance-metrics">
+            <div class="glance-metric"><div class="v">78%</div><div class="l">Humidity</div></div>
+            <div class="glance-metric"><div class="v">22 km/h</div><div class="l">Wind</div></div>
+            <div class="glance-metric"><div class="v">96</div><div class="l">Trust score</div></div>
+          </div>
+          <div class="glance-float f2"><span class="dot" style="background:var(--amber)"></span>412 reports today</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="sources-strip">
+  <section class="sources-strip reveal">
     <div class="sources-inner">
       <span class="sources-label">PULLING SIGNAL FROM</span>
       <span class="source-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>X / Twitter</span>
@@ -742,7 +1037,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section reveal">
     <div class="wrap">
       <div class="section-head">
         <div class="section-eyebrow">HOW IT WORKS</div>
@@ -750,23 +1045,36 @@
         <p class="section-sub">Four stages turn an unstructured, unverified post into a trustworthy point on the map.</p>
       </div>
       <div class="pipeline">
+        <div class="pipeline-pulse" aria-hidden="true"></div>
         <div class="pipeline-step">
-          <div class="pipeline-node"><span class="pipeline-num">01</span></div>
+          <div class="pipeline-node">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="pipeline-num">01</span>
           <div class="pipeline-title">Ingest</div>
           <p class="pipeline-desc">Crawl #IMD and weather hashtags across social platforms, citizen app submissions, public datasets and open APIs — capturing text, media, GPS and timestamp as it lands.</p>
         </div>
         <div class="pipeline-step">
-          <div class="pipeline-node"><span class="pipeline-num">02</span></div>
+          <div class="pipeline-node">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <span class="pipeline-num">02</span>
           <div class="pipeline-title">Verify</div>
           <p class="pipeline-desc">Score every report for authenticity, cross-check the source, and cluster near-identical posts so duplicates never reach the map twice.</p>
         </div>
         <div class="pipeline-step">
-          <div class="pipeline-node"><span class="pipeline-num">03</span></div>
+          <div class="pipeline-node">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <span class="pipeline-num">03</span>
           <div class="pipeline-title">Categorize</div>
           <p class="pipeline-desc">Classify each verified report into rainfall, thunderstorm, flooding, heatwave, fog, dust storm or strong winds — automatically, with no manual tagging.</p>
         </div>
         <div class="pipeline-step">
-          <div class="pipeline-node"><span class="pipeline-num">04</span></div>
+          <div class="pipeline-node">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12l4-6 4 4 4-8 6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="pipeline-num">04</span>
           <div class="pipeline-title">Visualize</div>
           <p class="pipeline-desc">Plot everything on a live map with date, location and event filters, so analysts see what's happening as it happens.</p>
         </div>
@@ -774,7 +1082,70 @@
     </div>
   </section>
 
-  <section class="section" style="padding-top:0;">
+  <section class="section reveal" style="padding-top:0;">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-eyebrow">WHY VARSHANET</div>
+        <h2 class="section-title">Built to be trusted, not just fast</h2>
+        <p class="section-sub">Every design choice optimizes for one thing: a map you can actually rely on during a monsoon.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card">
+          <div class="trust-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <h4>Govt-grade sourcing</h4>
+          <p>Cross-checked directly against live IMD station data, not just social sentiment.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 4v16h16M8 15l3-4 3 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h4>ML-verified, always</h4>
+          <p>Every report is trust-scored and de-duplicated before it ever reaches the map.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 4v16" stroke="currentColor" stroke-width="2"/></svg></div>
+          <h4>Open &amp; auditable</h4>
+          <p>Filter, inspect and export the exact data behind every point on the map.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.2" stroke="currentColor" stroke-width="2"/></svg></div>
+          <h4>Built for Bharat scale</h4>
+          <p>Designed to hold up across 700+ stations and every state and union territory.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="coverage-strip reveal">
+    <div class="coverage-label">LIVE ACROSS INDIA</div>
+    <div class="coverage-track" aria-hidden="true">
+      <span class="coverage-chip"><span class="dot"></span>Delhi</span>
+      <span class="coverage-chip"><span class="dot"></span>Mumbai</span>
+      <span class="coverage-chip"><span class="dot"></span>Bengaluru</span>
+      <span class="coverage-chip"><span class="dot"></span>Chennai</span>
+      <span class="coverage-chip"><span class="dot"></span>Kolkata</span>
+      <span class="coverage-chip"><span class="dot"></span>Hyderabad</span>
+      <span class="coverage-chip"><span class="dot"></span>Jaipur</span>
+      <span class="coverage-chip"><span class="dot"></span>Lucknow</span>
+      <span class="coverage-chip"><span class="dot"></span>Bhopal</span>
+      <span class="coverage-chip"><span class="dot"></span>Guwahati</span>
+      <span class="coverage-chip"><span class="dot"></span>Patna</span>
+      <span class="coverage-chip"><span class="dot"></span>Kochi</span>
+      <!-- duplicate set for seamless loop -->
+      <span class="coverage-chip"><span class="dot"></span>Delhi</span>
+      <span class="coverage-chip"><span class="dot"></span>Mumbai</span>
+      <span class="coverage-chip"><span class="dot"></span>Bengaluru</span>
+      <span class="coverage-chip"><span class="dot"></span>Chennai</span>
+      <span class="coverage-chip"><span class="dot"></span>Kolkata</span>
+      <span class="coverage-chip"><span class="dot"></span>Hyderabad</span>
+      <span class="coverage-chip"><span class="dot"></span>Jaipur</span>
+      <span class="coverage-chip"><span class="dot"></span>Lucknow</span>
+      <span class="coverage-chip"><span class="dot"></span>Bhopal</span>
+      <span class="coverage-chip"><span class="dot"></span>Guwahati</span>
+      <span class="coverage-chip"><span class="dot"></span>Patna</span>
+      <span class="coverage-chip"><span class="dot"></span>Kochi</span>
+    </div>
+  </section>
+
+  <section class="section reveal" style="padding-top:0;">
     <div class="wrap">
       <div class="section-head">
         <div class="section-eyebrow">TWO WAYS IN</div>
@@ -803,63 +1174,191 @@
       </div>
     </div>
   </section>
+
+  <section class="cta-banner reveal">
+    <div class="cta-banner-inner">
+      <h2>Ready to see India's weather, verified?</h2>
+      <p>Jump into the live map, filter by state or event type, and watch reports get scored in real time.</p>
+      <div class="cta-banner-btns">
+        <button class="btn btn-primary" data-nav="dashboard">Open Live Dashboard <span class="btn-arrow">→</span></button>
+        <button class="btn btn-ghost" data-nav="report">Submit a Report</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <button type="button" data-nav="forecast">Forecast</button><span class="sep"></span>
+      <button type="button" data-nav="dashboard">Live Dashboard</button><span class="sep"></span>
+      <button type="button" data-nav="report">Report an Event</button><span class="sep"></span>
+      <button type="button" data-nav="admin">Admin Console</button>
+    </div>
+    <strong>VarshaNet</strong> — a prototype built for Smart India Hackathon 2026 (PS 26069), for the Ministry of Earth Sciences · India Meteorological Department. Dashboard combines seeded historical data with real citizen submissions from this deployment.
+  </footer>
 </div>
 
 <!-- ============ FORECAST ============ -->
 <div class="view" id="view-forecast">
   <div class="forecast-wrap">
+    <div class="forecast-ambient" aria-hidden="true">
+      <div class="amb-blob b1"></div><div class="amb-blob b2"></div><div class="amb-blob b3"></div>
+    </div>
     <div class="forecast-head">
       <div class="section-eyebrow" style="text-align:center;"><span class="dot-live"></span>LIVE STATION READOUT</div>
       <h1 class="section-title">Real-time weather for any city</h1>
       <p class="section-sub">Search live conditions, or cross-check them against citizen and social-media reports on the <button type="button" class="nav-btn" data-nav="dashboard" style="display:inline; padding:0; background:none; color:var(--teal); text-decoration:underline; font-size:inherit; font-weight:inherit;">Live Dashboard</button>.</p>
     </div>
-    <div class="forecast-card" id="forecastCard">
-      <div class="forecast-search">
-        <input type="text" id="forecastCity" placeholder="Enter city name" spellcheck="false">
-        <button class="btn btn-primary" id="forecastSearchBtn">Search</button>
-      </div>
-      <div class="forecast-loading" id="forecastLoading">Fetching live conditions…</div>
-      <div class="forecast-error" id="forecastError"></div>
-      <div class="forecast-result" id="forecastResult">
-        <div class="forecast-icon" id="forecastIcon">☁️</div>
-        <div class="forecast-temp" id="forecastTemp">--°C</div>
-        <div class="forecast-city" id="forecastCityName">Search a city</div>
-        <div class="forecast-details">
-          <div class="forecast-detail"><div class="val" id="forecastHumidity">--%</div><div class="lbl">Humidity</div></div>
-          <div class="forecast-detail"><div class="val" id="forecastWind">-- km/h</div><div class="lbl">Wind Speed</div></div>
+
+    <div class="forecast-grid">
+      <div class="forecast-main">
+        <div class="forecast-card" id="forecastCard">
+          <div class="forecast-search-label">SEARCH A STATION</div>
+          <div class="forecast-search">
+            <input type="text" id="forecastCity" placeholder="Enter city name — e.g. Jaipur, Patna, Kochi…" spellcheck="false">
+            <button class="btn btn-primary" id="forecastSearchBtn">Search</button>
+          </div>
+          <div class="chip-group-label">POPULAR CITIES</div>
+          <div class="city-chips" id="popularCities">
+            <span class="chip" data-city="Delhi">Delhi</span>
+            <span class="chip" data-city="Mumbai">Mumbai</span>
+            <span class="chip" data-city="Bengaluru">Bengaluru</span>
+            <span class="chip" data-city="Chennai">Chennai</span>
+            <span class="chip" data-city="Kolkata">Kolkata</span>
+            <span class="chip" data-city="Hyderabad">Hyderabad</span>
+          </div>
+          <div class="recent-chips" id="recentCities">
+            <span class="recent-label">Recent</span>
+            <span id="recentCitiesList"></span>
+          </div>
+
+          <div class="forecast-empty" id="forecastEmpty">
+            <div class="forecast-empty-icons"><span>🌤️</span><span>🌦️</span><span>⛈️</span></div>
+            <p>Pick a city above, or search any city in India to pull its live station reading.</p>
+            <div class="forecast-empty-tips">
+              <div class="forecast-empty-tip"><strong>Live data</strong>Pulled fresh on every search</div>
+              <div class="forecast-empty-tip"><strong>°C / °F</strong>Switch units after searching</div>
+              <div class="forecast-empty-tip"><strong>Cross-check</strong>Compare with citizen reports</div>
+            </div>
+          </div>
+
+          <div class="forecast-loading" id="forecastLoading">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-line w60"></div>
+            <div class="skeleton-line w40"></div>
+          </div>
+
+          <div class="forecast-error" id="forecastError">
+            <div class="forecast-error-icon">⚠️</div>
+            <p id="forecastErrorText"></p>
+            <button type="button" class="btn btn-ghost btn-sm" id="forecastRetryBtn">Try again</button>
+          </div>
+
+          <div class="forecast-result" id="forecastResult">
+            <div class="unit-toggle" id="unitToggle">
+              <button type="button" class="unit-btn active" data-unit="c">°C</button>
+              <button type="button" class="unit-btn" data-unit="f">°F</button>
+            </div>
+            <div class="forecast-icon-wrap" id="forecastIconWrap">
+              <div class="forecast-icon" id="forecastIcon">☁️</div>
+            </div>
+            <div class="forecast-temp" id="forecastTemp">--°</div>
+            <div class="forecast-condition" id="forecastCondition">--</div>
+            <div class="forecast-city" id="forecastCityName">Search a city</div>
+            <div class="forecast-updated" id="forecastUpdated"></div>
+            <div class="forecast-details" id="forecastDetails">
+              <div class="forecast-detail"><div class="ico">💧</div><div class="val">--%</div><div class="lbl">Humidity</div></div>
+              <div class="forecast-detail"><div class="ico">🌬️</div><div class="val">-- km/h</div><div class="lbl">Wind</div></div>
+            </div>
+          </div>
         </div>
+        <p class="forecast-hint">See live citizen &amp; social-media weather reports on the <button type="button" data-nav="dashboard" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">Dashboard</button>, or <button type="button" data-nav="report" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">submit one yourself</button>.</p>
       </div>
+
+      <aside class="forecast-sidebar">
+        <div class="forecast-fact-grid">
+          <div class="stat-card teal"><div class="num">700+</div><div class="label">IMD stations tracked</div></div>
+          <div class="stat-card blue"><div class="num">28+8</div><div class="label">States &amp; UTs covered</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>How this readout works</h3></div>
+          <div class="panel-body">
+            <ol class="steps-list">
+              <li><strong>You search</strong> — type a city or tap a popular one.</li>
+              <li><strong>Live pull</strong> — fresh data is fetched for that station instantly.</li>
+              <li><strong>Cross-check</strong> — compare it against citizen reports on the Dashboard.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Reading the numbers</h3></div>
+          <div class="panel-body">
+            <ul class="tips-list">
+              <li>Temperature updates on every fresh search</li>
+              <li>Toggle °C / °F anytime after a result loads</li>
+              <li>Humidity &amp; wind speed reflect the same station</li>
+              <li>Timestamp shows exactly when data was pulled</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Didn't find your city?</h3></div>
+          <div class="panel-body" style="font-size:0.84rem; color:var(--mist); line-height:1.7;">
+            Try the nearest major city or district headquarters — most towns share a station with the closest IMD center.
+          </div>
+        </div>
+      </aside>
     </div>
-    <p class="forecast-hint">See live citizen &amp; social-media weather reports on the <button type="button" data-nav="dashboard" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">Dashboard</button>, or <button type="button" data-nav="report" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;">submit one yourself</button>.</p>
   </div>
 </div>
 
 <!-- ============ DASHBOARD ============ -->
 <div class="view" id="view-dashboard">
-  <div class="dash-header">
-    <div>
-      <h1>Live Weather Feed</h1>
-      <div class="sub">Real-time reports across India · seeded history + live citizen submissions</div>
-      <div class="updated-line"><span class="dot-live"></span><span id="updatedLine">Updated just now</span></div>
+  <div class="dash-hero">
+    <div class="dash-ambient" aria-hidden="true">
+      <div class="amb-blob b1"></div><div class="amb-blob b2"></div><div class="amb-blob b3"></div>
     </div>
-    <button class="btn btn-primary btn-sm" id="refreshBtn">↻ Refresh feed</button>
-  </div>
+    <div class="dash-header">
+      <div>
+        <div class="eyebrow-row"><span class="section-eyebrow"><span class="dot-live"></span>LIVE NETWORK</span></div>
+        <h1>Live Weather Feed</h1>
+        <div class="sub">Real-time reports across India · seeded history + live citizen submissions</div>
+        <div class="updated-line"><span class="dot-live"></span><span id="updatedLine">Updated just now</span></div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="refreshBtn">↻ Refresh feed</button>
+    </div>
 
-  <div class="dash-stats">
-    <div class="stat-card">
-      <div class="stat-card-top"><div><div class="num" id="statTotal">0</div><div class="label">Total reports</div></div><div class="stat-spark" id="sparkTotal"></div></div>
-      <div class="stat-delta flat" id="deltaTotal"></div>
+    <div class="dash-stats">
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="num" id="statTotal">0</div><div class="label">Total reports</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="num" id="statVerified">0</div><div class="label">Verified</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <div class="num" id="statActive">0</div><div class="label">Active events (24h)</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v11M12 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="num" id="statFlagged">0</div><div class="label">Flagged / duplicate</div>
+      </div>
+      <div class="stat-card violet">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <div class="num" id="statAvgTrust">—</div><div class="label">Avg. trust score</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.2" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="num" id="statTopState">—</div><div class="label">Most active state</div>
+      </div>
     </div>
-    <div class="stat-card teal">
-      <div class="stat-card-top"><div><div class="num" id="statVerified">0</div><div class="label">Verified</div></div><div class="stat-spark" id="sparkVerified"></div></div>
-      <div class="stat-delta flat" id="deltaVerified"></div>
-    </div>
-    <div class="stat-card amber"><div class="num" id="statActive">0</div><div class="label">Active events (24h)</div>
-      <div class="stat-delta flat"><span class="dot-live" style="margin-top:1px;"></span>&nbsp;live window</div>
-    </div>
-    <div class="stat-card red">
-      <div class="stat-card-top"><div><div class="num" id="statFlagged">0</div><div class="label">Flagged / duplicate</div></div><div class="stat-spark" id="sparkFlagged"></div></div>
-      <div class="stat-delta flat" id="deltaFlagged"></div>
+
+    <div class="alert-ticker">
+      <div class="alert-ticker-inner">
+        <span class="alert-ticker-tag"><span class="dot-live"></span><span class="tag-text">Live alerts</span></span>
+        <div class="alert-ticker-track"><ul id="alertTickerList"><li>Scanning latest reports…</li></ul></div>
+      </div>
     </div>
   </div>
 
@@ -868,9 +1367,15 @@
       <h4>Filters</h4>
       <div class="filter-group">
         <label>Date range</label>
+        <div class="quick-range" id="quickRange">
+          <span class="chip" data-range="1">Today</span>
+          <span class="chip" data-range="7">7D</span>
+          <span class="chip active" data-range="30">30D</span>
+          <span class="chip" data-range="90">90D</span>
+        </div>
         <div class="date-row">
-          <input type="date" id="fromDate">
-          <input type="date" id="toDate">
+          <div class="date-field"><span>From</span><input type="date" id="fromDate"></div>
+          <div class="date-field"><span>To</span><input type="date" id="toDate"></div>
         </div>
       </div>
       <div class="filter-group">
@@ -893,51 +1398,52 @@
       <button class="btn btn-ghost btn-reset" id="resetFilters">Reset filters</button>
     </aside>
 
-    <div class="dash-main">
+    <main class="dash-main">
       <div class="panel panel-map">
-        <div class="panel-head">
-          <h3>Report Map</h3>
-          <div class="map-toolbar">
-            <span class="hint" id="mapCountHint">— reports plotted</span>
-            <button class="map-toggle-btn" id="heatmapToggle" type="button" aria-pressed="false">🔥 Density heatmap</button>
-          </div>
-        </div>
+        <div class="panel-head"><h3>🗺️ Report Map</h3><span class="hint" id="mapCountHint">— reports plotted</span></div>
         <div id="map"></div>
         <div class="map-legend" id="mapLegend"></div>
       </div>
 
       <div class="charts-row">
         <div class="panel">
-          <div class="panel-head"><h3>Reports Over Time</h3></div>
+          <div class="panel-head"><h3>📈 Reports Over Time</h3></div>
           <div class="panel-body chart-box"><canvas id="lineChart"></canvas></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Event Category Share</h3></div>
+          <div class="panel-head"><h3>🥧 Event Category Share</h3></div>
           <div class="panel-body chart-box"><canvas id="donutChart"></canvas></div>
         </div>
       </div>
 
       <div class="charts-row2">
         <div class="panel">
-          <div class="panel-head"><h3>Top States</h3></div>
+          <div class="panel-head"><h3>🏆 Top States</h3></div>
           <div class="panel-body chart-box"><canvas id="barChart"></canvas></div>
         </div>
         <div class="panel">
           <div class="panel-head">
-            <h3>Recent Reports</h3>
-            <div style="display:flex; align-items:center; gap:10px;">
+            <h3>📝 Recent Reports</h3>
+            <span style="display:flex; align-items:center; gap:10px;">
               <span class="hint" id="tableCountHint"></span>
-              <button class="export-btn" id="exportCsvBtn" type="button">⬇ Export CSV</button>
-            </div>
+              <button class="btn btn-ghost btn-sm" id="exportCsvBtn" title="Download filtered reports as CSV">⬇ CSV</button>
+            </span>
           </div>
-          <div class="report-list" id="reportList">
-            <div class="skel-row"><div class="skel" style="width:70%"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:50%"></div><div class="skel" style="width:70%"></div></div>
-            <div class="skel-row"><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:55%"></div><div class="skel" style="width:65%"></div><div class="skel" style="width:60%"></div></div>
-            <div class="skel-row"><div class="skel" style="width:65%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:50%"></div><div class="skel" style="width:55%"></div><div class="skel" style="width:65%"></div></div>
-          </div>
+          <div class="report-list" id="reportList"></div>
         </div>
       </div>
-    </div>
+
+      <div class="charts-row3">
+        <div class="panel">
+          <div class="panel-head"><h3>🕒 Reports by Hour of Day</h3><span class="hint">local time</span></div>
+          <div class="panel-body chart-box"><canvas id="hourChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>✅ Verification Split</h3></div>
+          <div class="panel-body chart-box"><canvas id="statusDonutChart"></canvas></div>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
 
@@ -948,47 +1454,102 @@
       <h1 class="section-title">Report a weather event</h1>
       <p class="sub">Your report is checked against live official weather data and scored automatically before appearing on the Live Dashboard.</p>
     </div>
-    <div class="form-card">
-      <form id="reportForm">
-        <div class="form-field">
-          <label>Event category</label>
-          <select id="reportCategory" required>
-            <option value="">Select category</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Description</label>
-                    <textarea id="reportDescription" rows="4" placeholder="Describe what you're seeing..."></textarea>
-          <p id="autoCategoryHint" class="submit-note" style="margin-top:6px; min-height:16px;"></p>
-        </div>
-        <div class="form-row2">
+
+    <div class="report-grid">
+      <div class="form-card">
+        <form id="reportForm" novalidate>
           <div class="form-field">
-            <label>City</label>
-            <input type="text" id="reportCity" placeholder="e.g. Mumbai" required>
+            <label>Event category</label>
+            <div class="cat-grid" id="catGrid"></div>
+            <select id="reportCategory" class="visually-hidden">
+              <option value="">Select category</option>
+            </select>
+            <p class="field-error" id="categoryError"></p>
           </div>
           <div class="form-field">
-            <label>State</label>
-            <input type="text" id="reportState" placeholder="e.g. Maharashtra">
+            <label>Description</label>
+            <textarea id="reportDescription" rows="4" maxlength="400" placeholder="Describe what you're seeing — intensity, duration, nearby landmarks..."></textarea>
+            <div class="field-meta-row">
+              <span id="autoCategoryHint" class="auto-detect-badge"></span>
+              <span class="char-counter" id="descCounter">0 / 400</span>
+            </div>
           </div>
-        </div>
-        <div class="form-field">
-          <label>Location</label>
-          <div class="loc-row">
-            <button type="button" class="btn btn-sm btn-ghost" id="getLocationBtn">📍 Use My Current Location</button>
-            <span class="loc-status" id="locationStatus"></span>
+          <div class="form-row2">
+            <div class="form-field">
+              <label>City</label>
+              <input type="text" id="reportCity" placeholder="e.g. Mumbai" required>
+              <p class="field-error" id="cityError"></p>
+            </div>
+            <div class="form-field">
+              <label>State</label>
+              <input type="text" id="reportState" placeholder="e.g. Maharashtra">
+            </div>
           </div>
+          <div class="form-field">
+            <label>Location</label>
+            <div class="loc-row">
+              <button type="button" class="btn btn-sm btn-ghost" id="getLocationBtn">📍 Use My Current Location</button>
+            </div>
+            <p class="loc-status" id="locationStatus"></p>
+            <div class="loc-chip" id="locChip" style="display:none;">
+              <span id="locChipText"></span>
+              <button type="button" class="loc-chip-clear" id="locClearBtn" aria-label="Clear captured location">×</button>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Photo / video (optional)</label>
+            <label class="upload-zone" id="uploadZone">
+              <input type="file" id="reportMedia" accept="image/*,video/*" class="visually-hidden">
+              <span class="upload-icon">📎</span>
+              <span class="upload-text"><strong>Click to upload</strong> or drag &amp; drop<br><span class="upload-hint">A photo or short clip strengthens your report</span></span>
+            </label>
+            <div class="upload-preview" id="uploadPreview" style="display:none;">
+              <img id="uploadPreviewImg" style="display:none;" alt="">
+              <span class="upload-preview-icon" id="uploadPreviewIcon" style="display:none;">🎞️</span>
+              <span class="upload-preview-name" id="uploadPreviewName"></span>
+              <button type="button" class="upload-preview-remove" id="uploadRemoveBtn" aria-label="Remove file">×</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit Report</button>
+          <p class="submit-note">Your report is scored on the VarshaNet server against live IMD-style weather data and saved to the Live Dashboard &amp; Admin Console.</p>
+        </form>
+        <div id="resultBox" class="result-box">
+          <div class="result-gauge" id="resultGauge"></div>
+          <div class="result-text" id="resultText"></div>
         </div>
-        <div class="form-field">
-          <label>Photo / video (optional)</label>
-          <input type="file" id="reportMedia" accept="image/*,video/*">
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit Report</button>
-        <p class="submit-note">Your report is scored on the VarshaNet server against live IMD-style weather data and saved to the Live Dashboard &amp; Admin Console.</p>
-      </form>
-      <div id="resultBox" class="result-box">
-        <div class="result-gauge" id="resultGauge"></div>
-        <div class="result-text" id="resultText"></div>
       </div>
+
+      <aside class="report-sidebar">
+        <div class="panel">
+          <div class="panel-head"><h3>How verification works</h3></div>
+          <div class="panel-body">
+            <ol class="steps-list">
+              <li><strong>You submit</strong> — category, description and location.</li>
+              <li><strong>Auto cross-check</strong> — compared against live weather data for your area.</li>
+              <li><strong>Trust score assigned</strong> — verified, pending or flagged for review.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Trust score guide</h3></div>
+          <div class="panel-body">
+            <div class="trust-guide-row"><span class="cat-dot" style="background:var(--teal)"></span> 68–100 · matches live weather data closely</div>
+            <div class="trust-guide-row"><span class="cat-dot" style="background:var(--amber)"></span> 42–67 · plausible, held for review</div>
+            <div class="trust-guide-row"><span class="cat-dot" style="background:var(--red)"></span> Below 42 · conflicts with live data</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Tips for a good report</h3></div>
+          <div class="panel-body">
+            <ul class="tips-list">
+              <li>Mention intensity, duration &amp; visible impact</li>
+              <li>Add a nearby landmark or locality name</li>
+              <li>Attach a photo or clip when it's safe to do so</li>
+              <li>Never put yourself at risk to file a report</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
     </div>
   </div>
 </div>
@@ -996,15 +1557,54 @@
 <!-- ============ ADMIN ============ -->
 <div class="view" id="view-admin">
   <div id="adminLogin" class="admin-login-wrap">
-    <div class="login-card">
-      <div class="login-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"/></svg></div>
-      <h2>Admin Console</h2>
-      <p class="sub">Sign in to review incoming reports, check trust scores and resolve duplicates.</p>
-      <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="admin"></div>
-      <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
-      <button class="btn btn-primary" id="loginBtn" style="width:100%; justify-content:center; margin-top:20px;">Sign in</button>
-      <p class="login-error" id="loginError">Enter a username and password to continue.</p>
-      <p class="login-note">Sign in with the admin account configured for this deployment.</p>
+    <div class="login-visual">
+      <div class="radar-wrap" aria-hidden="true">
+        <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-blip"></div><div class="radar-blip"></div><div class="radar-blip"></div>
+      </div>
+      <div class="login-visual-top">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14.4" stroke="url(#bmGradAdmin)" stroke-width="1.3" opacity="0.5"/>
+          <circle cx="16" cy="16" r="9.6" stroke="url(#bmGradAdmin)" stroke-width="1.3" opacity="0.8"/>
+          <path d="M16 9.2c0 0 4.8 5.7 4.8 9a4.8 4.8 0 0 1-9.6 0c0-3.3 4.8-9 4.8-9Z" fill="url(#bmGradAdmin)"/>
+          <defs>
+            <linearGradient id="bmGradAdmin" x1="3" y1="3" x2="29" y2="29" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#22D3A6"/>
+              <stop offset="1" stop-color="#4FB2FF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>VarshaNet Admin</span>
+      </div>
+      <h3>Everything the moderation team needs to keep the public feed trustworthy.</h3>
+      <div class="login-features">
+        <div class="login-feature">
+          <div class="login-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="login-feature-text"><strong>Trust-scored review queue</strong><span>Every report arrives pre-scored against live weather data.</span></div>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12h4l2-7 4 14 2-7h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="login-feature-text"><strong>Live source analytics</strong><span>Track volume by source and spot duplicate clusters fast.</span></div>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="2"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="login-feature-text"><strong>Team access controls</strong><span>Add moderators and manage who can approve reports.</span></div>
+        </div>
+      </div>
+      <div class="login-visual-foot"><span class="dot"></span> Ingest pipeline connected — awaiting sign-in</div>
+    </div>
+    <div class="login-card-wrap">
+      <div class="login-card">
+        <div class="login-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"/></svg></div>
+        <h2>Admin Console</h2>
+        <p class="sub">Sign in to review incoming reports, check trust scores and resolve duplicates.</p>
+        <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="admin"></div>
+        <div class="field"><label>Password</label><input type="text" id="loginPass" placeholder="••••••••"></div>
+        <button class="btn btn-primary" id="loginBtn" style="width:100%; justify-content:center; margin-top:20px;">Sign in</button>
+        <p class="login-error" id="loginError">Enter a username and password to continue.</p>
+        <p class="login-note">Sign in with the admin account configured for this deployment.</p>
+      </div>
     </div>
   </div>
 
@@ -1013,24 +1613,52 @@
       <div>
         <h1>Review Queue</h1>
         <div class="sub">Moderate incoming weather reports before they reach the public feed</div>
+        <span class="admin-synced" id="adminSynced">Syncing…</span>
       </div>
-      <div style="display:flex; gap:10px; align-items:center;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+  <span class="admin-live-badge"><span class="dot"></span> Ingest pipeline live</span>
   <button class="btn btn-ghost btn-sm" id="ingestNowBtn">🔄 Pull Live Data Now</button>
   <button class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>
 </div>
     </div>
 
     <div class="admin-stats">
-      <div class="stat-card amber"><div class="num" id="adminPending">0</div><div class="label">Pending review</div></div>
-      <div class="stat-card red"><div class="num" id="adminFlagged">0</div><div class="label">Flagged (ML / duplicate)</div></div>
-      <div class="stat-card teal"><div class="num" id="adminVerifiedToday">0</div><div class="label">Verified this session</div></div>
-      <div class="stat-card">
+      <div class="stat-card amber">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="num" id="adminPending">0</div><div class="label">Pending review</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v11M12 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="num" id="adminFlagged">0</div><div class="label">Flagged (ML / duplicate)</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="num" id="adminVerifiedToday">0</div><div class="label">Verified this session</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="num" id="adminAvgTrust">0</div><div class="label">Avg. trust score</div>
-        <div class="trust-ring-wrap">
-          <svg viewBox="0 0 40 40" width="38" height="38">
-            <circle class="trust-ring-bg" cx="20" cy="20" r="16"></circle>
-            <circle class="trust-ring-fg" id="avgTrustRing" cx="20" cy="20" r="16" stroke-dasharray="0 100.5"></circle>
-          </svg>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18" stroke="currentColor" stroke-width="2"/></svg></div>
+        <div class="num" id="adminTotal">0</div><div class="label">Total reports on file</div>
+      </div>
+    </div>
+
+    <div class="admin-charts-row">
+      <div class="panel">
+        <div class="panel-head"><h3>Reports by Source</h3></div>
+        <div class="panel-body chart-box" style="height:190px;"><canvas id="sourceChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>7-Day Intake Trend</h3></div>
+        <div class="panel-body">
+          <div class="chart-box" style="height:150px;"><canvas id="trendChart"></canvas></div>
+          <div class="trend-summary">
+            <div>Today<strong id="trendToday">0</strong></div>
+            <div>7-day total<strong id="trendWeek">0</strong></div>
+            <div>Daily avg<strong id="trendAvg">0</strong></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1045,55 +1673,42 @@
             <span class="chip" data-tab="all">All</span>
           </div>
         </div>
-        <div class="queue-list" id="queueList">
-          <div class="skel-queue-row"><div class="skel" style="width:45%"></div><div class="skel" style="width:85%"></div><div class="skel"></div></div>
-          <div class="skel-queue-row"><div class="skel" style="width:40%"></div><div class="skel" style="width:75%"></div><div class="skel"></div></div>
-          <div class="skel-queue-row"><div class="skel" style="width:50%"></div><div class="skel" style="width:80%"></div><div class="skel"></div></div>
-        </div>
+        <div class="queue-list" id="queueList"></div>
       </div>
 
       <div>
         <div class="panel side-card">
-          <div class="panel-head"><h3>Reports by Source</h3></div>
-          <div class="panel-body chart-box" style="height:200px;"><canvas id="sourceChart"></canvas></div>
+          <div class="panel-head"><h3>Quick Insights</h3></div>
+          <div class="panel-body">
+            <div class="insight-grid" id="insightGrid"></div>
+          </div>
         </div>
         <div class="panel side-card">
-          <div class="panel-head"><h3>Trust Score Distribution</h3></div>
-          <div class="panel-body chart-box" style="height:180px;"><canvas id="trustHistChart"></canvas></div>
-        </div>
-                <div class="panel">
           <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
           <div id="dupClusters"></div>
         </div>
-                <div class="panel" style="margin-top:20px;">
-          <div class="panel-head"><h3>Manage Admins</h3></div>
+        <div class="panel side-card">
+          <div class="panel-head"><h3>Live Activity</h3></div>
           <div class="panel-body">
-            <div id="adminsList" style="margin-bottom:14px;"></div>
-                        <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px; padding-top:18px; margin-top:4px; border-top:1px solid var(--border-soft);">
-              <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
-              <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
-              <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
-              <p id="addAdminMsg" style="min-height:16px; font-size:13px; margin:0;"></p>
-            </form>
+            <div class="activity-feed" id="activityFeed"></div>
           </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Manage Admins</h3></div>
+          <div id="adminsList" style="margin-bottom:12px;"></div>
+          <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px;">
+            <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
+            <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+            <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
+            <p id="addAdminMsg" style="min-height:16px; font-size:13px; margin:0;"></p>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-</main>
-
-<footer class="site-footer">
-  <strong>VarshaNet</strong> — a prototype built for Smart India Hackathon 2026 (PS 26069), for the Ministry of Earth Sciences · India Meteorological Department. Dashboard combines seeded historical data with real citizen submissions from this deployment.
-</footer>
-
-<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
-<button class="to-top" id="toTopBtn" aria-label="Back to top">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 (function(){
@@ -1155,61 +1770,8 @@
     charts:{},
     map:null,
     markerLayer:null,
-    heatLayer:null,
-    heatmapOn:false,
-    dashInitialized:false,
-    loadedOnce:false
+    dashInitialized:false
   };
-
-  /* ================= TOASTS ================= */
-  var TOAST_ICONS = {
-    success:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    error:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-    info:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
-  };
-  function showToast(type, message, duration){
-    var stack = document.getElementById("toastStack");
-    if(!stack) return;
-    duration = duration || 4200;
-    var el = document.createElement("div");
-    el.className = "toast " + (type||"info");
-    el.innerHTML = '<span class="icon">'+(TOAST_ICONS[type]||TOAST_ICONS.info)+'</span><span>'+message+'</span><button class="toast-close" aria-label="Dismiss notification">\u2715</button>';
-    stack.appendChild(el);
-    var timer;
-    function remove(){
-      clearTimeout(timer);
-      el.classList.add("leaving");
-      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 180);
-    }
-    el.querySelector(".toast-close").addEventListener("click", remove);
-    timer = setTimeout(remove, duration);
-  }
-
-  /* ================= TOP LOADING BAR ================= */
-  function startLoader(){
-    var bar = document.getElementById("topLoader");
-    if(!bar) return;
-    bar.classList.add("active");
-    bar.style.width = "18%";
-    clearTimeout(bar._t);
-    bar._t = setTimeout(function(){ bar.style.width = "68%"; }, 220);
-  }
-  function stopLoader(){
-    var bar = document.getElementById("topLoader");
-    if(!bar) return;
-    clearTimeout(bar._t);
-    bar.style.width = "100%";
-    setTimeout(function(){ bar.classList.remove("active"); bar.style.width = "0%"; }, 260);
-  }
-
-  /* ================= EMPTY STATES ================= */
-  var ICON_EMPTY_SEARCH = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-  var ICON_EMPTY_CHECK = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5.5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var ICON_EMPTY_LAYERS = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 13l9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-  var ICON_EMPTY_WARN = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l9.5 16.5H2.5L12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4.2M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-  function emptyState(icon, title, sub){
-    return '<div class="empty-note">'+icon+'<div class="empty-title">'+title+'</div>'+(sub?'<div class="empty-sub">'+sub+'</div>':'')+'</div>';
-  }
 
   function fmtRelative(ts){
     var diff = Date.now() - ts;
@@ -1220,6 +1782,16 @@
     if(hrs < 24) return hrs+"h ago";
     var days = Math.floor(hrs/24);
     return days+"d ago";
+  }
+
+  // Format a Date as YYYY-MM-DD using LOCAL calendar fields (not toISOString,
+  // which converts to UTC first and can show the wrong date — e.g. for IST
+  // users between 12:00am-5:30am, toISOString() still reports "yesterday").
+  function localISODate(d){
+    var y = d.getFullYear();
+    var m = ("0"+(d.getMonth()+1)).slice(-2);
+    var day = ("0"+d.getDate()).slice(-2);
+    return y+"-"+m+"-"+day;
   }
 
   function eventMeta(key){
@@ -1250,6 +1822,35 @@
     if(el){ showView(el.getAttribute("data-nav")); }
   });
 
+  /* ================= THEME TOGGLE ================= */
+  function initTheme(){
+    var root = document.documentElement;
+    var toggleBtn = document.getElementById("themeToggle");
+    var iconSun = document.getElementById("themeIconSun");
+    var iconMoon = document.getElementById("themeIconMoon");
+    function applyTheme(theme){
+      if(theme === "light"){ root.setAttribute("data-theme", "light"); }
+      else{ root.removeAttribute("data-theme"); }
+      if(iconSun) iconSun.style.display = theme === "light" ? "none" : "block";
+      if(iconMoon) iconMoon.style.display = theme === "light" ? "block" : "none";
+      if(toggleBtn){
+        var label = theme === "light" ? "Switch to night theme" : "Switch to light theme";
+        toggleBtn.setAttribute("aria-label", label);
+        toggleBtn.setAttribute("title", label);
+      }
+    }
+    var saved = null;
+    try{ saved = localStorage.getItem("varshanet-theme"); }catch(e){}
+    applyTheme(saved === "light" ? "light" : "dark");
+    if(toggleBtn){
+      toggleBtn.addEventListener("click", function(){
+        var next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+        applyTheme(next);
+        try{ localStorage.setItem("varshanet-theme", next); }catch(e){}
+      });
+    }
+  }
+
   /* ================= HERO COUNTERS ================= */
   function animateCounters(){
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1271,6 +1872,25 @@
       }
       requestAnimationFrame(step);
     });
+  }
+
+  /* ================= SCROLL REVEAL ================= */
+  function initScrollReveal(){
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var els = document.querySelectorAll(".reveal");
+    if(reduce || !("IntersectionObserver" in window)){
+      els.forEach(function(el){ el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("in");
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.12, rootMargin:"0px 0px -40px 0px"});
+    els.forEach(function(el){ io.observe(el); });
   }
 
   /* ================= DASHBOARD ================= */
@@ -1307,22 +1927,76 @@
     var fromDate = document.getElementById("fromDate");
     var today = new Date();
     var past = new Date(Date.now() - 30*86400000);
-    toDate.value = today.toISOString().slice(0,10);
-    fromDate.value = past.toISOString().slice(0,10);
+    toDate.value = localISODate(today);
+    fromDate.value = localISODate(past);
     state.filters.from = fromDate.value;
     state.filters.to = toDate.value;
-    fromDate.addEventListener("change", function(){ state.filters.from = fromDate.value; applyFilters(); });
-    toDate.addEventListener("change", function(){ state.filters.to = toDate.value; applyFilters(); });
+    // manual edits mean the range is custom — clear any active quick-range chip
+    function clearQuickRangeActive(){ document.querySelectorAll("#quickRange .chip").forEach(function(c){ c.classList.remove("active"); }); }
+    fromDate.addEventListener("change", function(){ state.filters.from = fromDate.value; clearQuickRangeActive(); applyFilters(); });
+    toDate.addEventListener("change", function(){ state.filters.to = toDate.value; clearQuickRangeActive(); applyFilters(); });
 
     document.getElementById("resetFilters").addEventListener("click", function(){
       state.filters.events = new Set(EVENTS.map(function(e){return e.key;}));
       state.filters.state = "all"; state.filters.status = "all";
-      fromDate.value = past.toISOString().slice(0,10);
-      toDate.value = today.toISOString().slice(0,10);
+      fromDate.value = localISODate(past);
+      toDate.value = localISODate(today);
       state.filters.from = fromDate.value; state.filters.to = toDate.value;
       stateSelect.value = "all"; document.getElementById("statusSelect").value = "all";
       chipWrap.querySelectorAll(".chip").forEach(function(c){ c.classList.add("active"); });
+      document.querySelectorAll("#quickRange .chip").forEach(function(c){ c.classList.toggle("active", c.getAttribute("data-range")==="30"); });
       applyFilters();
+    });
+
+    // quick date-range chips
+    var quickRangeWrap = document.getElementById("quickRange");
+    quickRangeWrap.addEventListener("click", function(e){
+      var chip = e.target.closest(".chip");
+      if(!chip) return;
+      quickRangeWrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("active"); });
+      chip.classList.add("active");
+      var days = parseInt(chip.getAttribute("data-range"), 10);
+      var end = new Date();
+      var start = new Date(Date.now() - (days-1)*86400000);
+      fromDate.value = localISODate(start);
+      toDate.value = localISODate(end);
+      state.filters.from = fromDate.value; state.filters.to = toDate.value;
+      applyFilters();
+    });
+
+    // CSV export of currently filtered reports
+    document.getElementById("exportCsvBtn").addEventListener("click", function(){
+      var rows = getFiltered().slice().sort(function(a,b){ return b.ts-a.ts; });
+      var header = ["timestamp","city","state","event","status","trust","source","lat","lng","text"];
+      var lines = [header.join(",")];
+      rows.forEach(function(r){
+        var meta = eventMeta(r.event);
+        var cells = [
+          new Date(r.ts).toISOString(), r.city, r.state, meta.label, r.status,
+          r.trust, r.source, r.lat, r.lng, r.text
+        ].map(function(v){
+          var s = (v===undefined || v===null) ? "" : String(v);
+          if(s.indexOf(",")>-1 || s.indexOf('"')>-1 || s.indexOf("\n")>-1){ s = '"'+s.replace(/"/g,'""')+'"'; }
+          return s;
+        });
+        lines.push(cells.join(","));
+      });
+      var blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "varshanet-reports-"+new Date().toISOString().slice(0,10)+".csv";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // click a report row to fly the map to it
+    document.getElementById("reportList").addEventListener("click", function(e){
+      var row = e.target.closest(".report-row");
+      if(!row || !state.map) return;
+      var lat = parseFloat(row.getAttribute("data-lat"));
+      var lng = parseFloat(row.getAttribute("data-lng"));
+      if(isNaN(lat) || isNaN(lng)) return;
+      state.map.flyTo([lat,lng], 8, {duration:0.8});
     });
 
     document.getElementById("refreshBtn").addEventListener("click", function(){
@@ -1330,13 +2004,6 @@
       loadReports().then(function(){
         document.getElementById("updatedLine").textContent = "Updated just now";
       });
-    });
-
-    document.getElementById("exportCsvBtn").addEventListener("click", function(){
-      var filtered = getFiltered();
-      if(!filtered.length){ showToast("info", "No reports to export with the current filters."); return; }
-      exportReportsCsv(filtered);
-      showToast("success", "Exported "+filtered.length.toLocaleString()+" report(s) to CSV.");
     });
 
     // map legend
@@ -1355,97 +2022,56 @@
     }).addTo(state.map);
     state.markerLayer = L.layerGroup().addTo(state.map);
 
-    var heatBtn = document.getElementById("heatmapToggle");
-    if(heatBtn){
-      heatBtn.addEventListener("click", function(){
-        if(!state.heatmapOn && (!window.L || typeof L.heatLayer !== "function")){
-          showToast("error", "Heatmap layer couldn't load — check your connection and try again.");
-          return;
-        }
-        state.heatmapOn = !state.heatmapOn;
-        heatBtn.classList.toggle("active", state.heatmapOn);
-        heatBtn.setAttribute("aria-pressed", state.heatmapOn ? "true" : "false");
-        if(state.heatmapOn){
-          state.map.removeLayer(state.markerLayer);
-          updateHeatLayer(getFiltered());
-        } else {
-          if(state.heatLayer){ state.map.removeLayer(state.heatLayer); state.heatLayer = null; }
-          state.markerLayer.addTo(state.map);
-        }
-      });
-    }
-
     // charts
     var lineCtx = document.getElementById("lineChart").getContext("2d");
-    var lineGradient = lineCtx.createLinearGradient(0,0,0,230);
-    lineGradient.addColorStop(0,"rgba(34,211,166,0.38)");
-    lineGradient.addColorStop(1,"rgba(34,211,166,0.02)");
     state.charts.line = new Chart(lineCtx, {
       type:"line",
-      data:{labels:[], datasets:[{label:"Reports", data:[], borderColor:"#22D3A6", backgroundColor:lineGradient, fill:true, tension:0.35, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:"#22D3A6", borderWidth:2}]},
+      data:{labels:[], datasets:[{label:"Reports", data:[], borderColor:"#22D3A6", backgroundColor:"rgba(34,211,166,0.12)", fill:true, tension:0.35, pointRadius:0, borderWidth:2}]},
       options: chartBaseOptions({legend:false})
     });
 
     var donutCtx = document.getElementById("donutChart").getContext("2d");
     state.charts.donut = new Chart(donutCtx, {
       type:"doughnut",
-      data:{labels:EVENTS.map(function(e){return e.label;}), datasets:[{data:EVENTS.map(function(){return 0;}), backgroundColor:EVENTS.map(function(e){return e.color;}), borderWidth:2, borderColor:"#101C2C", hoverOffset:6}]},
-      options:{
-        responsive:true, maintainAspectRatio:false, cutout:"68%",
-        plugins:{
-          legend:{position:"right", labels:{color:"#93A9BE", boxWidth:10, font:{size:10}, padding:8}},
-          tooltip: TOOLTIP_STYLE
-        }
-      },
-      plugins:[donutCenterTextPlugin]
+      data:{labels:EVENTS.map(function(e){return e.label;}), datasets:[{data:EVENTS.map(function(){return 0;}), backgroundColor:EVENTS.map(function(e){return e.color;}), borderWidth:0}]},
+      options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:"right", labels:{color:"#93A9BE", boxWidth:10, font:{size:10}, padding:8}}}}
     });
 
     var barCtx = document.getElementById("barChart").getContext("2d");
-    var barGradient = barCtx.createLinearGradient(0,0,320,0);
-    barGradient.addColorStop(0,"#1c6fb8"); barGradient.addColorStop(1,"#4FB2FF");
     state.charts.bar = new Chart(barCtx, {
       type:"bar",
-      data:{labels:[], datasets:[{label:"Reports", data:[], backgroundColor:barGradient, borderRadius:4, maxBarThickness:22}]},
+      data:{labels:[], datasets:[{label:"Reports", data:[], backgroundColor:"#4FB2FF", borderRadius:4}]},
       options: chartBaseOptions({legend:false, indexAxis:"y"})
+    });
+
+    var hourCtx = document.getElementById("hourChart").getContext("2d");
+    state.charts.hour = new Chart(hourCtx, {
+      type:"bar",
+      data:{
+        labels:Array.from({length:24}, function(_,i){ return (i%12===0?12:i%12) + (i<12?"am":"pm"); }),
+        datasets:[{label:"Reports", data:Array(24).fill(0), backgroundColor:"#9B8CFB", borderRadius:4, barPercentage:0.9, categoryPercentage:0.9}]
+      },
+      options: chartBaseOptions({legend:false})
+    });
+
+    var statusDonutCtx = document.getElementById("statusDonutChart").getContext("2d");
+    state.charts.statusDonut = new Chart(statusDonutCtx, {
+      type:"doughnut",
+      data:{
+        labels:["Verified","Pending","Flagged"],
+        datasets:[{data:[0,0,0], backgroundColor:["#22D3A6","#FDB750","#FF6B57"], borderWidth:0}]
+      },
+      options:{responsive:true, maintainAspectRatio:false, cutout:"62%", plugins:{legend:{position:"right", labels:{color:"#93A9BE", boxWidth:10, font:{size:10}, padding:8}}}}
     });
 
     applyFilters();
   }
 
-  var TOOLTIP_STYLE = {
-    backgroundColor:"#0B1220", borderColor:"#22384F", borderWidth:1, padding:10,
-    titleColor:"#EEF5FB", bodyColor:"#93A9BE", cornerRadius:8, displayColors:false, titleFont:{family:"'Space Grotesk', sans-serif", weight:"600"}
-  };
-
-  // Draws the running total in the donut's empty center — small touch that
-  // turns "seven colored slices" into an at-a-glance number.
-  var donutCenterTextPlugin = {
-    id:"donutCenterText",
-    afterDraw: function(chart){
-      var data = chart.data.datasets[0].data;
-      var total = data.reduce(function(a,b){return a+b;},0);
-      var ctx = chart.ctx;
-      var area = chart.chartArea;
-      if(!area) return;
-      var cx = (area.left+area.right)/2, cy = (area.top+area.bottom)/2;
-      ctx.save();
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.font = "600 22px 'IBM Plex Mono', monospace";
-      ctx.fillStyle = "#EEF5FB";
-      ctx.fillText(total.toLocaleString(), cx, cy - 9);
-      ctx.font = "500 10px 'Inter', sans-serif";
-      ctx.fillStyle = "#5E7690";
-      ctx.fillText(total===1 ? "report" : "reports", cx, cy + 12);
-      ctx.restore();
-    }
-  };
-
   function chartBaseOptions(opts){
     opts = opts||{};
     var o = {
       responsive:true, maintainAspectRatio:false,
-      interaction:{ intersect:false, mode:"index" },
-      plugins:{ legend:{ display: !!opts.legend }, tooltip: TOOLTIP_STYLE },
+      plugins:{ legend:{ display: !!opts.legend } },
       scales:{
         x:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5E7690", font:{size:10}} },
         y:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5E7690", font:{size:10}}, beginAtZero:true }
@@ -1474,71 +2100,6 @@
     });
   }
 
-  // Density heatmap: an alternate read of the same points, useful once a
-  // filter narrows the map down to a cluster too dense for individual pins
-  // to read cleanly.
-  function updateHeatLayer(filtered){
-    if(!state.heatmapOn || !window.L || typeof L.heatLayer !== "function") return;
-    var points = filtered.slice(0,3000).map(function(r){ return [r.lat, r.lng, r.status==="flagged" ? 0.35 : 1]; });
-    if(state.heatLayer){ state.map.removeLayer(state.heatLayer); }
-    state.heatLayer = L.heatLayer(points, {
-      radius:22, blur:18, maxZoom:10,
-      gradient:{0.2:"#22D3A6", 0.5:"#4FB2FF", 0.75:"#FDB750", 1:"#FF6B57"}
-    });
-    state.heatLayer.addTo(state.map);
-  }
-
-  // Builds a tiny inline sparkline (last 7 days) plus a %-change chip
-  // (vs. the 7 days before) for a stat card — computed from the full,
-  // unfiltered dataset so it reflects overall momentum, not just whatever
-  // date range happens to be selected in the filter rail.
-  function buildSparklineSvg(values, color){
-    var w=64, h=24;
-    var max = Math.max.apply(null, values.concat([1]));
-    var n = values.length;
-    var stepX = n>1 ? w/(n-1) : w;
-    var pts = values.map(function(v,i){
-      var x = i*stepX;
-      var y = h - (max>0 ? (v/max)*(h-3) : 0) - 1.5;
-      return x.toFixed(1)+","+y.toFixed(1);
-    }).join(" ");
-    var areaPts = pts+" "+w+","+h+" 0,"+h;
-    return '<svg width="64" height="24" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+
-      '<polyline class="spark-fill" points="'+areaPts+'" fill="'+color+'" opacity="0.16"></polyline>'+
-      '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></polyline>'+
-    '</svg>';
-  }
-
-  function renderTrendStat(predicate, sparkId, deltaId, color){
-    var dayMs = 86400000, now = Date.now();
-    var days = [];
-    for(var i=13;i>=0;i--){
-      var dayStart = new Date(now - i*dayMs); dayStart.setHours(0,0,0,0);
-      var dayEnd = dayStart.getTime()+dayMs;
-      var count = 0;
-      for(var j=0;j<state.reports.length;j++){
-        var r = state.reports[j];
-        if(r.status!=="rejected" && predicate(r) && r.ts>=dayStart.getTime() && r.ts<dayEnd) count++;
-      }
-      days.push(count);
-    }
-    var prev7 = days.slice(0,7).reduce(function(a,b){return a+b;},0);
-    var curr7 = days.slice(7).reduce(function(a,b){return a+b;},0);
-    var sparkEl = document.getElementById(sparkId);
-    var deltaEl = document.getElementById(deltaId);
-    if(sparkEl) sparkEl.innerHTML = buildSparklineSvg(days.slice(7), color);
-    if(deltaEl){
-      var pct, dir;
-      if(prev7===0 && curr7===0){ pct = 0; dir = "flat"; }
-      else if(prev7===0){ pct = 100; dir = "up"; }
-      else { pct = Math.round(((curr7-prev7)/prev7)*100); dir = pct>0 ? "up" : (pct<0 ? "down" : "flat"); }
-      var arrow = dir==="up" ? "\u25B2" : (dir==="down" ? "\u25BC" : "\u2022");
-      deltaEl.className = "stat-delta "+dir;
-      deltaEl.textContent = arrow+" "+Math.abs(pct)+"% vs prior 7d";
-      deltaEl.title = curr7+" in the last 7 days vs "+prev7+" in the 7 days before (all data, independent of filters above).";
-    }
-  }
-
   function applyFilters(){
     var filtered = getFiltered();
     var dayMs = 86400000;
@@ -1549,9 +2110,42 @@
     document.getElementById("statActive").textContent = filtered.filter(function(r){return now - r.ts < dayMs;}).length.toLocaleString();
     document.getElementById("statFlagged").textContent = filtered.filter(function(r){return r.status==="flagged";}).length.toLocaleString();
 
-    renderTrendStat(function(){ return true; }, "sparkTotal", "deltaTotal", "#4FB2FF");
-    renderTrendStat(function(r){ return r.status==="verified"; }, "sparkVerified", "deltaVerified", "#22D3A6");
-    renderTrendStat(function(r){ return r.status==="flagged"; }, "sparkFlagged", "deltaFlagged", "#FF6B57");
+    // avg trust score across filtered reports
+    var trustEl = document.getElementById("statAvgTrust");
+    if(trustEl){
+      if(filtered.length){
+        var avgTrust = Math.round(filtered.reduce(function(s,r){ return s + (r.trust||0); }, 0) / filtered.length);
+        trustEl.textContent = avgTrust + "%";
+      } else { trustEl.textContent = "—"; }
+    }
+
+    // most active state
+    var topStateEl = document.getElementById("statTopState");
+    if(topStateEl){
+      var stateTally = {};
+      filtered.forEach(function(r){ stateTally[r.state] = (stateTally[r.state]||0) + 1; });
+      var topStateEntry = Object.keys(stateTally).sort(function(a,b){ return stateTally[b]-stateTally[a]; })[0];
+      topStateEl.textContent = topStateEntry || "—";
+    }
+
+    // live alert ticker: most recent verified/flagged reports, duplicated for seamless scroll
+    var tickerList = document.getElementById("alertTickerList");
+    if(tickerList){
+      var tickerItems = filtered.slice().sort(function(a,b){ return b.ts-a.ts; })
+        .filter(function(r){ return r.status !== "rejected"; })
+        .slice(0, 10);
+      if(!tickerItems.length){
+        tickerList.innerHTML = "<li>No active reports in the current filter window.</li>";
+      } else {
+        var buildTicker = function(){
+          return tickerItems.map(function(r){
+            var meta = eventMeta(r.event);
+            return '<li><span class="cat-dot" style="background:'+meta.color+'"></span><strong>'+meta.label+'</strong> · '+r.city+', '+r.state+' · '+fmtRelative(r.ts)+'</li>';
+          }).join("");
+        };
+        tickerList.innerHTML = buildTicker() + buildTicker();
+      }
+    }
 
     // map
     if(state.markerLayer){
@@ -1571,7 +2165,6 @@
         marker.addTo(state.markerLayer);
       });
     }
-    if(state.heatmapOn) updateHeatLayer(filtered);
     document.getElementById("mapCountHint").textContent = filtered.length.toLocaleString()+" reports plotted";
 
     // line chart: last 30 days count
@@ -1615,11 +2208,11 @@
     var recent = filtered.slice().sort(function(a,b){ return b.ts-a.ts; }).slice(0,60);
     document.getElementById("tableCountHint").textContent = "showing "+recent.length+" of "+filtered.length;
     if(recent.length===0){
-      list.innerHTML = emptyState(ICON_EMPTY_SEARCH, "No reports match these filters", "Try widening the date range or clearing a filter.");
+      list.innerHTML = '<div class="empty-note">No reports match these filters. Try widening the date range.</div>';
     } else {
       list.innerHTML = recent.map(function(r){
         var meta = eventMeta(r.event);
-        return '<div class="report-row">'+
+        return '<div class="report-row" data-lat="'+r.lat+'" data-lng="'+r.lng+'" title="Click to locate on map">'+
           '<span class="time">'+fmtRelative(r.ts)+'</span>'+
           '<span class="loc"><strong>'+r.city+'</strong><span>'+r.state+'</span></span>'+
           '<span class="cat-tag"><span class="cat-dot" style="background:'+meta.color+'"></span>'+meta.label+'</span>'+
@@ -1628,28 +2221,23 @@
         '</div>';
       }).join("");
     }
-  }
 
-  function csvValue(v){
-    var s = v===null || v===undefined ? "" : String(v);
-    if(/[",\n]/.test(s)) s = '"'+s.replace(/"/g,'""')+'"';
-    return s;
-  }
-  function exportReportsCsv(reports){
-    var headers = ["id","city","state","event","source","status","trust_score","lat","lng","timestamp_utc","description"];
-    var lines = [headers.join(",")];
-    reports.forEach(function(r){
-      lines.push([r.id, r.city, r.state, r.event, r.source, r.status, r.trust, r.lat, r.lng, new Date(r.ts).toISOString(), r.text].map(csvValue).join(","));
-    });
-    var blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "varshanet-reports-"+new Date().toISOString().slice(0,10)+".csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    // reports by hour of day
+    if(state.charts.hour){
+      var hourCounts = Array(24).fill(0);
+      filtered.forEach(function(r){ hourCounts[new Date(r.ts).getHours()]++; });
+      state.charts.hour.data.datasets[0].data = hourCounts;
+      state.charts.hour.update();
+    }
+
+    // verification split donut
+    if(state.charts.statusDonut){
+      var vCount = filtered.filter(function(r){return r.status==="verified";}).length;
+      var pCount = filtered.filter(function(r){return r.status==="pending";}).length;
+      var fCount = filtered.filter(function(r){return r.status==="flagged";}).length;
+      state.charts.statusDonut.data.datasets[0].data = [vCount, pCount, fCount];
+      state.charts.statusDonut.update();
+    }
   }
 
   /* ================= ADMIN ================= */
@@ -1770,39 +2358,38 @@
     });
 
     var srcCtx = document.getElementById("sourceChart").getContext("2d");
-    var srcGradient = srcCtx.createLinearGradient(0,0,0,200);
-    srcGradient.addColorStop(0,"#22D3A6"); srcGradient.addColorStop(1,"#17b695");
     state.charts.source = new Chart(srcCtx, {
       type:"bar",
-      data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:srcGradient, borderRadius:4, maxBarThickness:34}]},
+      data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:"#22D3A6", borderRadius:4}]},
       options: chartBaseOptions({legend:false})
     });
 
-    var trustHistCtx = document.getElementById("trustHistChart").getContext("2d");
-    state.charts.trustHist = new Chart(trustHistCtx, {
-      type:"bar",
-      data:{
-        labels:["0-20","21-40","41-60","61-80","81-100"],
-        datasets:[{label:"Reports", data:[0,0,0,0,0], backgroundColor:["#FF6B57","#FF9457","#FDB750","#8FDBAE","#22D3A6"], borderRadius:4, maxBarThickness:34}]
-      },
+    var trendCtx = document.getElementById("trendChart").getContext("2d");
+    var trendGrad = trendCtx.createLinearGradient(0,0,0,150);
+    trendGrad.addColorStop(0, "rgba(79,178,255,0.35)");
+    trendGrad.addColorStop(1, "rgba(79,178,255,0)");
+    state.charts.trend = new Chart(trendCtx, {
+      type:"line",
+      data:{labels:[], datasets:[{label:"Reports received", data:[], borderColor:"#4FB2FF", backgroundColor:trendGrad, fill:true, tension:0.35, pointRadius:3, pointBackgroundColor:"#4FB2FF"}]},
       options: chartBaseOptions({legend:false})
     });
   }
 
-  function computeTrustBins(reports){
-    var bins = [0,0,0,0,0];
-    reports.forEach(function(r){
-      var t = r.trust;
-      var idx = t<=20 ? 0 : (t<=40 ? 1 : (t<=60 ? 2 : (t<=80 ? 3 : 4)));
-      bins[idx]++;
-    });
-    return bins;
+  function initialsOf(name){
+    var parts = (name||"?").trim().split(/[\s._-]+/).filter(Boolean);
+    if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0]+parts[1][0]).toUpperCase();
+  }
+  var AVATAR_COLORS = ["#22D3A6","#4FB2FF","#FDB750","#9B8CFB","#FF6B57","#2FC4D6"];
+  function colorForName(name){
+    var sum = 0;
+    for(var i=0;i<(name||"").length;i++){ sum += name.charCodeAt(i); }
+    return AVATAR_COLORS[sum % AVATAR_COLORS.length];
   }
 
     function loadAdmins(){
     var token = localStorage.getItem(ADMIN_TOKEN_KEY);
     var listEl = document.getElementById("adminsList");
-    var currentUser = getCurrentAdminUsername(token);
     fetch("/api/admin/admins", {
       headers: { "Authorization": "Bearer " + token }
     })
@@ -1810,30 +2397,19 @@
       .then(function(data){
         var admins = data.admins || [];
         if(!admins.length){
-          listEl.innerHTML = emptyState(ICON_EMPTY_WARN, "No admin accounts found");
+          listEl.innerHTML = '<div class="empty-note">No admin accounts found.</div>';
           return;
         }
         listEl.innerHTML = admins.map(function(a){
-          var initial = (a.username || "?").trim().charAt(0).toUpperCase();
-          var youBadge = (currentUser && a.username === currentUser) ? '<span class="admin-you-badge">You</span>' : "";
-          return '<div class="admin-row"><span class="admin-avatar">'+initial+'</span><span class="admin-name">'+a.username+'</span>'+youBadge+'</div>';
+          return '<div class="admin-person-row">'+
+            '<div class="admin-avatar" style="background:'+colorForName(a.username)+'">'+initialsOf(a.username)+'</div>'+
+            '<div class="admin-person-meta"><strong>'+a.username+'</strong><span>Moderator</span></div>'+
+          '</div>';
         }).join("");
       })
       .catch(function(){
-        listEl.innerHTML = emptyState(ICON_EMPTY_WARN, "Could not load admin list", "Check your connection and try again.");
+        listEl.innerHTML = '<div class="empty-note">Could not load admin list.</div>';
       });
-  }
-
-  // Reads the (unencrypted, signed) JWT payload to know which admin is
-  // currently logged in — purely cosmetic, just to badge "You" in the list.
-  function getCurrentAdminUsername(token){
-    if(!token) return null;
-    try{
-      var payload = token.split(".")[1];
-      var normalized = payload.replace(/-/g,"+").replace(/_/g,"/");
-      var json = JSON.parse(atob(normalized));
-      return json.username || null;
-    } catch(e){ return null; }
   }
 
   function renderAdmin(){
@@ -1861,24 +2437,19 @@
     document.getElementById("adminFlagged").textContent = flaggedCount;
     document.getElementById("adminVerifiedToday").textContent = state.verifiedThisSession;
     document.getElementById("adminAvgTrust").textContent = avgTrust;
-
-    var ring = document.getElementById("avgTrustRing");
-    if(ring){
-      var circumference = 2*Math.PI*16;
-      var frac = Math.max(0, Math.min(100, avgTrust))/100;
-      ring.setAttribute("stroke-dasharray", (circumference*frac).toFixed(1)+" "+circumference.toFixed(1));
-      ring.style.stroke = avgTrust<42 ? "#FF6B57" : (avgTrust<68 ? "#FDB750" : "#22D3A6");
-    }
+    document.getElementById("adminTotal").textContent = state.reports.length;
+    var syncedEl = document.getElementById("adminSynced");
+    if(syncedEl) syncedEl.textContent = "Synced " + new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 
     var list = document.getElementById("queueList");
     if(queue.length===0){
-      list.innerHTML = emptyState(ICON_EMPTY_CHECK, "Queue is clear", "Nothing needs review right now.");
+      list.innerHTML = '<div class="empty-note">Queue is clear — nothing needs review right now.</div>';
     } else {
       list.innerHTML = queue.slice(0,80).map(function(r){
         var meta = eventMeta(r.event);
         var fillColor = r.trust<42 ? "#FF6B57" : (r.trust<68 ? "#FDB750" : "#22D3A6");
         var dupNote = r.duplicateOf!==null ? '<span class="dup-badge">possible duplicate of #'+r.duplicateOf+'</span>' : '';
-        return '<div class="queue-row" data-id="'+r.id+'" data-status="'+r.status+'">'+
+        return '<div class="queue-row sev-'+r.status+'" data-id="'+r.id+'">'+
           '<div class="queue-loc">'+
             '<strong>'+r.city+', '+r.state+'</strong>'+
             '<div class="snippet">'+r.text+'</div>'+
@@ -1903,10 +2474,52 @@
       state.charts.source.update();
     }
 
-    // trust score distribution
-    if(state.charts.trustHist){
-      state.charts.trustHist.data.datasets[0].data = computeTrustBins(all);
-      state.charts.trustHist.update();
+    // 7-day intake trend
+    if(state.charts.trend){
+      var dayLabels = [], dayCounts = [];
+      var DAY_MS = 24*60*60*1000;
+      var todayStart = new Date().setHours(0,0,0,0);
+      for(var d=6; d>=0; d--){
+        var dayStart = todayStart - d*DAY_MS;
+        var dayEnd = dayStart + DAY_MS;
+        var count = state.reports.filter(function(r){ return r.ts>=dayStart && r.ts<dayEnd; }).length;
+        dayLabels.push(new Date(dayStart).toLocaleDateString([], {weekday:"short"}));
+        dayCounts.push(count);
+      }
+      state.charts.trend.data.labels = dayLabels;
+      state.charts.trend.data.datasets[0].data = dayCounts;
+      state.charts.trend.update();
+      var weekTotal = dayCounts.reduce(function(s,c){return s+c;},0);
+      document.getElementById("trendToday").textContent = dayCounts[dayCounts.length-1];
+      document.getElementById("trendWeek").textContent = weekTotal;
+      document.getElementById("trendAvg").textContent = Math.round(weekTotal/7);
+    }
+
+    // quick insights — computed live from current report pool, no extra API calls needed
+    var insightGrid = document.getElementById("insightGrid");
+    if(insightGrid){
+      if(state.reports.length===0){
+        insightGrid.innerHTML = '<div class="empty-note" style="grid-column:1/-1; padding:16px;">No data yet.</div>';
+      } else {
+        function topBy(items, keyFn){
+          var counts = {};
+          items.forEach(function(it){ var k = keyFn(it); counts[k] = (counts[k]||0)+1; });
+          var best = null, bestCount = -1;
+          Object.keys(counts).forEach(function(k){ if(counts[k]>bestCount){ best=k; bestCount=counts[k]; } });
+          return {key:best, count:bestCount};
+        }
+        var topEvent = topBy(state.reports, function(r){return r.event;});
+        var topEventMeta = topEvent.key ? eventMeta(topEvent.key) : null;
+        var topState = topBy(state.reports, function(r){return r.state;});
+        var topSource = topBy(state.reports, function(r){return r.source;});
+        var withMedia = state.reports.filter(function(r){return r.hasPhoto||r.hasVideo;}).length;
+        var mediaPct = Math.round((withMedia/state.reports.length)*100);
+        insightGrid.innerHTML =
+          '<div class="insight-item"><div class="lbl">Top event type</div><div class="val"><span class="insight-dot" style="background:'+(topEventMeta?topEventMeta.color:"#5E7690")+'"></span>'+(topEventMeta?topEventMeta.label:"—")+'</div></div>'+
+          '<div class="insight-item"><div class="lbl">Most active state</div><div class="val">'+(topState.key||"—")+'</div></div>'+
+          '<div class="insight-item"><div class="lbl">Top source</div><div class="val">'+(topSource.key||"—")+'</div></div>'+
+          '<div class="insight-item"><div class="lbl">Reports with media</div><div class="val">'+mediaPct+'%</div></div>';
+      }
     }
 
         // duplicate clusters — newest first, so a duplicate caught live during a
@@ -1916,12 +2529,31 @@
       .filter(function(r){ return r.duplicateOf!==null && r.status!=="rejected"; })
       .sort(function(a,b){ return b.ts - a.ts; });
     if(clusters.length===0){
-      dupWrap.innerHTML = emptyState(ICON_EMPTY_LAYERS, "No duplicate clusters detected");
+      dupWrap.innerHTML = '<div class="empty-note">No duplicate clusters detected.</div>';
     } else {
       dupWrap.innerHTML = clusters.slice(0,10).map(function(r){
         return '<div class="dup-cluster"><strong>'+r.city+'</strong> — '+eventMeta(r.event).label+
           '<div class="ids">report #'+r.id+' ↔ original #'+r.duplicateOf+'</div></div>';
       }).join("");
+    }
+
+    // live activity feed — most recent report events across all statuses
+    var activityWrap = document.getElementById("activityFeed");
+    if(activityWrap){
+      var recent = state.reports.slice().sort(function(a,b){ return b.ts-a.ts; }).slice(0,8);
+      if(recent.length===0){
+        activityWrap.innerHTML = '<div class="empty-note">No activity yet.</div>';
+      } else {
+        activityWrap.innerHTML = recent.map(function(r){
+          var dotColor = r.status==="verified" ? "#22D3A6" : (r.status==="flagged" ? "#FF6B57" : (r.status==="rejected" ? "#5E7690" : "#FDB750"));
+          var verb = r.status==="verified" ? "was verified" : (r.status==="flagged" ? "was flagged for review" : (r.status==="rejected" ? "was rejected" : "came in for review"));
+          return '<div class="activity-item">'+
+            '<span class="activity-dot" style="background:'+dotColor+'"></span>'+
+            '<div><div class="activity-text"><strong>'+r.city+'</strong> '+eventMeta(r.event).label.toLowerCase()+' report '+verb+'</div>'+
+            '<div class="activity-time">'+fmtRelative(r.ts)+' · '+r.source+'</div></div>'+
+          '</div>';
+        }).join("");
+      }
     }
   }
 
@@ -1966,7 +2598,31 @@
   });
 
   /* ================= FORECAST (live, via Open-Meteo — no API key needed) ================= */
-  var WEATHER_ICONS = { Clear:"☀️", Clouds:"☁️", Rain:"🌧️", Drizzle:"🌦️", Fog:"🌫️", Snow:"❄️", Storm:"⛈️" };
+  var CONDITION_META = {
+    Clear:   {icon:"☀️", label:"Clear sky",    accent:"#FDB750"},
+    Clouds:  {icon:"☁️", label:"Cloudy",        accent:"#8FA6BE"},
+    Rain:    {icon:"🌧️", label:"Rainy",         accent:"#4FB2FF"},
+    Drizzle: {icon:"🌦️", label:"Light drizzle", accent:"#4FB2FF"},
+    Fog:     {icon:"🌫️", label:"Foggy",         accent:"#9FB4C9"},
+    Snow:    {icon:"❄️", label:"Snowy",         accent:"#8FE3F5"},
+    Storm:   {icon:"⛈️", label:"Thunderstorm",  accent:"#9B8CFB"}
+  };
+  function conditionMeta(main){
+    return CONDITION_META[main] || {icon:"☁️", label: main || "Unknown", accent:"#22D3A6"};
+  }
+
+  var POPULAR_CITIES = ["Delhi","Mumbai","Bengaluru","Chennai","Kolkata","Hyderabad"];
+  var RECENT_CITY_KEY = "varshanet-recent-cities";
+  function getRecentCities(){
+    try{ return JSON.parse(localStorage.getItem(RECENT_CITY_KEY) || "[]"); }catch(e){ return []; }
+  }
+  function addRecentCity(name){
+    try{
+      var list = getRecentCities().filter(function(c){ return c.toLowerCase() !== name.toLowerCase(); });
+      list.unshift(name);
+      localStorage.setItem(RECENT_CITY_KEY, JSON.stringify(list.slice(0,5)));
+    }catch(e){}
+  }
 
   // Looks up a city (free-text) and returns its live conditions, via our
   // own /api/weather proxy (server talks to Open-Meteo — no key required).
@@ -1980,39 +2636,128 @@
   }
 
   function initForecast(){
-    var input = document.getElementById("forecastCity");
-    var btn = document.getElementById("forecastSearchBtn");
-    var loading = document.getElementById("forecastLoading");
-    var errorBox = document.getElementById("forecastError");
-    var resultBox = document.getElementById("forecastResult");
+    var input       = document.getElementById("forecastCity");
+    var btn         = document.getElementById("forecastSearchBtn");
+    var loading     = document.getElementById("forecastLoading");
+    var errorBox    = document.getElementById("forecastError");
+    var errorText   = document.getElementById("forecastErrorText");
+    var retryBtn    = document.getElementById("forecastRetryBtn");
+    var resultBox   = document.getElementById("forecastResult");
+    var emptyBox    = document.getElementById("forecastEmpty");
+    var cardEl      = document.getElementById("forecastCard");
+    var iconWrap    = document.getElementById("forecastIconWrap");
+    var iconEl      = document.getElementById("forecastIcon");
+    var tempEl      = document.getElementById("forecastTemp");
+    var conditionEl = document.getElementById("forecastCondition");
+    var cityNameEl  = document.getElementById("forecastCityName");
+    var updatedEl   = document.getElementById("forecastUpdated");
+    var detailsEl   = document.getElementById("forecastDetails");
+    var popularWrap = document.getElementById("popularCities");
+    var recentWrap  = document.getElementById("recentCities");
+    var recentList  = document.getElementById("recentCitiesList");
+    var unitToggle  = document.getElementById("unitToggle");
+
+    var lastData = null, lastCity = null, unit = "c", fetchedAt = null;
+    var DETAIL_ICONS = { "Humidity":"💧", "Wind":"🌬️", "Feels like":"🌡️", "Pressure":"⏱️", "Visibility":"👁️" };
+
+    function cToF(c){ return (c * 9/5) + 32; }
+    function kmhToMph(kmh){ return kmh * 0.621371; }
+
+    function renderRecentChips(){
+      var recent = getRecentCities();
+      if(!recent.length){ recentWrap.style.display = "none"; return; }
+      recentWrap.style.display = "flex";
+      recentList.innerHTML = "";
+      recent.forEach(function(city){
+        var chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = city;
+        chip.addEventListener("click", function(){ input.value = city; runSearch(); });
+        recentList.appendChild(chip);
+      });
+    }
+
+    function renderResult(){
+      if(!lastData) return;
+      var meta = conditionMeta(lastData.main);
+      iconEl.textContent = meta.icon;
+      iconWrap.style.setProperty("--accent", meta.accent);
+      if(cardEl) cardEl.style.setProperty("--accent", meta.accent);
+      conditionEl.textContent = lastData.description || meta.label;
+      cityNameEl.textContent = lastData.name;
+
+      var t = unit === "f" ? cToF(lastData.temp) : lastData.temp;
+      tempEl.textContent = Math.round(t) + "°" + unit.toUpperCase();
+
+      if(fetchedAt){
+        updatedEl.innerHTML = '<span class="dot-live"></span>Updated ' + fmtRelative(fetchedAt);
+      }
+
+      var wind = unit === "f" ? kmhToMph(lastData.wind) : lastData.wind;
+      var windUnit = unit === "f" ? "mph" : "km/h";
+      var items = [
+        { label:"Humidity", value: lastData.humidity + "%" },
+        { label:"Wind", value: Math.round(wind) + " " + windUnit }
+      ];
+      if(typeof lastData.feelsLike === "number"){
+        var fl = unit === "f" ? cToF(lastData.feelsLike) : lastData.feelsLike;
+        items.push({ label:"Feels like", value: Math.round(fl) + "°" + unit.toUpperCase() });
+      }
+      if(typeof lastData.pressure === "number"){
+        items.push({ label:"Pressure", value: lastData.pressure + " hPa" });
+      }
+      if(typeof lastData.visibility === "number"){
+        items.push({ label:"Visibility", value: lastData.visibility + " km" });
+      }
+      detailsEl.innerHTML = items.map(function(it){
+        return '<div class="forecast-detail"><div class="ico">'+(DETAIL_ICONS[it.label]||"")+'</div><div class="val">' + it.value + '</div><div class="lbl">' + it.label + '</div></div>';
+      }).join("");
+
+      resultBox.classList.add("show");
+    }
 
     function runSearch(){
       var city = input.value.trim();
       if(!city){ return; }
+      lastCity = city;
+      if(emptyBox) emptyBox.style.display = "none";
       errorBox.classList.remove("show");
       resultBox.classList.remove("show");
       loading.classList.add("show");
       fetchCityWeather(city).then(function(data){
         loading.classList.remove("show");
-        document.getElementById("forecastIcon").textContent = WEATHER_ICONS[data.main] || "☁️";
-        document.getElementById("forecastTemp").textContent = data.temp + "°C";
-        document.getElementById("forecastCityName").textContent = data.name;
-        document.getElementById("forecastHumidity").textContent = data.humidity + "%";
-        document.getElementById("forecastWind").textContent = data.wind + " km/h";
-        var card = document.getElementById("forecastCard");
-        if(card) card.setAttribute("data-cond", data.main || "");
-        resultBox.classList.add("show");
+        lastData = data;
+        fetchedAt = Date.now();
+        renderResult();
+        addRecentCity(data.name || city);
+        renderRecentChips();
       }).catch(function(err){
         loading.classList.remove("show");
-        errorBox.textContent = err.message || "Could not fetch weather data. Check your connection.";
+        errorText.textContent = err.message || "Could not fetch weather data. Check your connection.";
         errorBox.classList.add("show");
-        var card = document.getElementById("forecastCard");
-        if(card) card.removeAttribute("data-cond");
       });
     }
 
     btn.addEventListener("click", runSearch);
     input.addEventListener("keydown", function(e){ if(e.key==="Enter") runSearch(); });
+    retryBtn.addEventListener("click", function(){ if(lastCity){ input.value = lastCity; runSearch(); } });
+
+    popularWrap.querySelectorAll(".chip").forEach(function(chip){
+      chip.addEventListener("click", function(){
+        input.value = chip.getAttribute("data-city");
+        runSearch();
+      });
+    });
+
+    unitToggle.querySelectorAll(".unit-btn").forEach(function(ubtn){
+      ubtn.addEventListener("click", function(){
+        unit = ubtn.getAttribute("data-unit");
+        unitToggle.querySelectorAll(".unit-btn").forEach(function(b){ b.classList.toggle("active", b === ubtn); });
+        renderResult();
+      });
+    });
+
+    renderRecentChips();
   }
 
   /* ================= REPORT AN EVENT (citizen submission) ================= */
@@ -2050,42 +2795,156 @@
     return bestKey;
   }
 
+  var CATEGORY_ICONS = {
+    rainfall: "\uD83C\uDF27\uFE0F",
+    thunderstorm: "\u26C8\uFE0F",
+    flooding: "\uD83C\uDF0A",
+    heatwave: "\uD83D\uDD25",
+    fog: "\uD83C\uDF2B\uFE0F",
+    dust_storm: "\uD83C\uDFDC\uFE0F",
+    strong_winds: "\uD83D\uDCA8"
+  };
+
   function initReportForm(){
     var catSelect = document.getElementById("reportCategory");
+    var catGrid = document.getElementById("catGrid");
+    var categoryError = document.getElementById("categoryError");
     EVENTS.forEach(function(ev){
       var opt = document.createElement("option");
       opt.value = ev.key; opt.textContent = ev.label;
       catSelect.appendChild(opt);
+
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "cat-chip";
+      chip.setAttribute("data-key", ev.key);
+      chip.innerHTML = '<span class="cat-chip-icon">' + (CATEGORY_ICONS[ev.key] || "\uD83C\uDF10") + '</span><span>' + ev.label + '</span>';
+      chip.addEventListener("click", function(){
+        userPickedCategory = true;
+        catSelect.value = ev.key;
+        setActiveCatChip(ev.key);
+        categoryError.textContent = "";
+      });
+      catGrid.appendChild(chip);
     });
+
+    function setActiveCatChip(key){
+      catGrid.querySelectorAll(".cat-chip").forEach(function(c){
+        var isActive = c.getAttribute("data-key") === key;
+        c.classList.toggle("active", isActive);
+        if(isActive){
+          var meta = eventMeta(key);
+          c.style.borderColor = meta.color;
+          c.style.color = meta.color;
+          c.style.background = meta.color + "22";
+        } else {
+          c.style.borderColor = ""; c.style.color = ""; c.style.background = "";
+        }
+      });
+    }
 
     var userPickedCategory = false;
     catSelect.addEventListener("change", function(){ userPickedCategory = true; });
+
     var descBox = document.getElementById("reportDescription");
     var autoHint = document.getElementById("autoCategoryHint");
+    var descCounter = document.getElementById("descCounter");
     descBox.addEventListener("input", function(){
+      descCounter.textContent = descBox.value.length + " / 400";
       var detected = detectCategoryClient(descBox.value);
-      if(!detected){ autoHint.textContent = ""; return; }
-      var match = EVENTS.filter(function(ev){ return ev.key === detected; })[0];
-      autoHint.textContent = "\uD83E\uDD16 System detected: " + match.label +
-        (userPickedCategory ? "" : " (auto-selected below)");
-      if(!userPickedCategory){ catSelect.value = detected; }
+      if(!detected){ autoHint.style.display = "none"; autoHint.textContent = ""; return; }
+      var match = eventMeta(detected);
+      autoHint.style.display = "inline-flex";
+      autoHint.style.borderColor = match.color;
+      autoHint.style.color = match.color;
+      autoHint.style.background = match.color + "22";
+      autoHint.textContent = "\uD83E\uDD16 Detected: " + match.label + (userPickedCategory ? "" : " — auto-selected");
+      if(!userPickedCategory){ catSelect.value = detected; setActiveCatChip(detected); }
     });
 
     var latVal = null, lngVal = null;
     var locBtn = document.getElementById("getLocationBtn");
     var locStatus = document.getElementById("locationStatus");
+    var locChip = document.getElementById("locChip");
+    var locChipText = document.getElementById("locChipText");
+    var locClearBtn = document.getElementById("locClearBtn");
     locBtn.addEventListener("click", function(){
       if(!navigator.geolocation){ locStatus.textContent = "Geolocation not supported by this browser."; return; }
       locStatus.textContent = "Fetching location…";
+      locBtn.disabled = true;
       navigator.geolocation.getCurrentPosition(function(pos){
         latVal = pos.coords.latitude; lngVal = pos.coords.longitude;
-        locStatus.textContent = "Captured: " + latVal.toFixed(3) + ", " + lngVal.toFixed(3);
+        locStatus.textContent = "";
+        locChipText.textContent = "\uD83D\uDCCD " + latVal.toFixed(3) + ", " + lngVal.toFixed(3);
+        locChip.style.display = "inline-flex";
+        locBtn.disabled = false;
       }, function(){
         locStatus.textContent = "Could not fetch location. Report will still use the city you entered.";
+        locBtn.disabled = false;
       });
+    });
+    locClearBtn.addEventListener("click", function(){
+      latVal = null; lngVal = null;
+      locChip.style.display = "none";
+      locStatus.textContent = "";
+    });
+
+    var fileInput = document.getElementById("reportMedia");
+    var uploadZone = document.getElementById("uploadZone");
+    var uploadPreview = document.getElementById("uploadPreview");
+    var uploadPreviewImg = document.getElementById("uploadPreviewImg");
+    var uploadPreviewIcon = document.getElementById("uploadPreviewIcon");
+    var uploadPreviewName = document.getElementById("uploadPreviewName");
+    var uploadRemoveBtn = document.getElementById("uploadRemoveBtn");
+
+    function showFilePreview(file){
+      if(!file){
+        uploadPreview.style.display = "none";
+        uploadZone.style.display = "flex";
+        uploadPreviewImg.src = "";
+        return;
+      }
+      uploadZone.style.display = "none";
+      uploadPreview.style.display = "flex";
+      uploadPreviewName.textContent = file.name;
+      if(file.type && file.type.indexOf("image/") === 0){
+        var reader = new FileReader();
+        reader.onload = function(e){
+          uploadPreviewImg.src = e.target.result;
+          uploadPreviewImg.style.display = "block";
+          uploadPreviewIcon.style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        uploadPreviewImg.style.display = "none";
+        uploadPreviewIcon.style.display = "inline-block";
+      }
+    }
+
+    fileInput.addEventListener("change", function(){
+      showFilePreview(fileInput.files && fileInput.files[0]);
+    });
+    uploadRemoveBtn.addEventListener("click", function(){
+      fileInput.value = "";
+      showFilePreview(null);
+    });
+    ["dragover","dragenter"].forEach(function(evt){
+      uploadZone.addEventListener(evt, function(e){ e.preventDefault(); uploadZone.classList.add("dragover"); });
+    });
+    ["dragleave","drop"].forEach(function(evt){
+      uploadZone.addEventListener(evt, function(e){ e.preventDefault(); uploadZone.classList.remove("dragover"); });
+    });
+    uploadZone.addEventListener("drop", function(e){
+      var dtFiles = e.dataTransfer && e.dataTransfer.files;
+      if(dtFiles && dtFiles.length){
+        fileInput.files = dtFiles;
+        showFilePreview(dtFiles[0]);
+      }
     });
 
     var form = document.getElementById("reportForm");
+    var cityInput = document.getElementById("reportCity");
+    var cityError = document.getElementById("cityError");
     var resultBox = document.getElementById("resultBox");
     var resultText = document.getElementById("resultText");
     var resultGauge = document.getElementById("resultGauge");
@@ -2094,12 +2953,17 @@
       e.preventDefault();
       var category = catSelect.value;
       var description = document.getElementById("reportDescription").value;
-      var city = document.getElementById("reportCity").value.trim();
+      var city = cityInput.value.trim();
       var stateName = document.getElementById("reportState").value.trim() || "Unknown";
-      var fileInput = document.getElementById("reportMedia");
       var file = fileInput.files && fileInput.files[0];
 
-      if(!category || !city){ return; }
+      categoryError.textContent = "";
+      cityError.textContent = "";
+      cityInput.classList.remove("input-error");
+      var hasError = false;
+      if(!category){ categoryError.textContent = "Please choose an event category above."; hasError = true; }
+      if(!city){ cityError.textContent = "Please enter a city."; cityInput.classList.add("input-error"); hasError = true; }
+      if(hasError) return;
 
       var submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
@@ -2160,7 +3024,14 @@
             '<a href="#" data-nav="dashboard">View it on the Live Dashboard →</a>';
 
           form.reset();
+          setActiveCatChip(null);
+          descCounter.textContent = "0 / 400";
+          autoHint.style.display = "none"; autoHint.textContent = "";
+          showFilePreview(null);
+          locChip.style.display = "none";
           locStatus.textContent = "";
+          cityInput.classList.remove("input-error");
+          userPickedCategory = false;
           latVal = null; lngVal = null;
         })
         .catch(function(err){
@@ -2178,91 +3049,19 @@
 
   /* ================= INIT ================= */
   function loadReports(){
-    startLoader();
     return fetch("/api/reports").then(function(res){ return res.json(); }).then(function(data){
       state.reports = data;
       if(state.dashInitialized) applyFilters();
       if(state.isAdmin) renderAdmin();
-      stopLoader();
-      state.loadedOnce = true;
       return data;
-    }).catch(function(){
-      state.reports = state.reports || [];
-      stopLoader();
-      if(state.loadedOnce) showToast("error", "Couldn't refresh reports — check your connection.");
-    });
-  }
-
-  /* ================= MOBILE NAV DRAWER ================= */
-  function initNavToggle(){
-    var toggle = document.getElementById("navToggle");
-    var links = document.getElementById("navLinks");
-    var backdrop = document.getElementById("navBackdrop");
-    if(!toggle || !links || !backdrop) return;
-    function closeMenu(){
-      links.classList.remove("open");
-      backdrop.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-      document.body.style.overflow = "";
-    }
-    function openMenu(){
-      links.classList.add("open");
-      backdrop.classList.add("open");
-      toggle.setAttribute("aria-expanded", "true");
-      document.body.style.overflow = "hidden";
-    }
-    toggle.addEventListener("click", function(){
-      if(links.classList.contains("open")) closeMenu(); else openMenu();
-    });
-    backdrop.addEventListener("click", closeMenu);
-    links.addEventListener("click", function(e){
-      if(e.target.closest(".nav-btn")) closeMenu();
-    });
-    document.addEventListener("keydown", function(e){
-      if(e.key === "Escape") closeMenu();
-    });
-  }
-
-  /* ================= SCROLL REVEAL (landing page) ================= */
-  function initScrollReveal(){
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var targets = document.querySelectorAll("#view-home .pipeline-step, #view-home .preview-card, #view-home .section-head");
-    if(!targets.length) return;
-    targets.forEach(function(el, i){
-      el.classList.add("reveal");
-      el.style.transitionDelay = (Math.min(i, 6) * 60) + "ms";
-    });
-    if(reduce || !("IntersectionObserver" in window)){
-      targets.forEach(function(el){ el.classList.add("in"); });
-      return;
-    }
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting){ entry.target.classList.add("in"); io.unobserve(entry.target); }
-      });
-    }, {threshold:0.15, rootMargin:"0px 0px -40px 0px"});
-    targets.forEach(function(el){ io.observe(el); });
-  }
-
-  /* ================= BACK TO TOP ================= */
-  function initToTop(){
-    var btn = document.getElementById("toTopBtn");
-    if(!btn) return;
-    window.addEventListener("scroll", function(){
-      btn.classList.toggle("show", window.scrollY > 480);
-    }, {passive:true});
-    btn.addEventListener("click", function(){
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo({top:0, behavior: reduce ? "auto" : "smooth"});
-    });
+    }).catch(function(){ state.reports = state.reports || []; });
   }
 
     document.addEventListener("DOMContentLoaded", function(){
+    initTheme();
     animateCounters();
-    initAdmin();
-    initNavToggle();
     initScrollReveal();
-    initToTop();
+    initAdmin();
     loadReports();
 
     // Auto-refresh: pull latest reports every 25s so the Live Dashboard
