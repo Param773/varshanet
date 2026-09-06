@@ -638,7 +638,10 @@
     background:var(--teal-dim); color:var(--teal); font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
     margin-right:8px; flex:none;
   }
-  .admin-row{display:flex; align-items:center;}
+    .admin-row{display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft);}
+  .admin-row:last-child{border-bottom:none;}
+  .admin-name{color:var(--cloud); font-size:0.88rem; font-weight:500;}
+  .admin-you-badge{margin-left:auto; font-size:0.68rem; font-family:var(--font-mono); color:var(--teal); background:var(--teal-dim); padding:3px 9px; border-radius:999px; flex:none;}
 
   /* ---------- MISC RESPONSIVE FOR NEW BITS ---------- */
   @media (max-width:720px){
@@ -1062,15 +1065,17 @@
           <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
           <div id="dupClusters"></div>
         </div>
-        <div class="panel">
+                <div class="panel">
           <div class="panel-head"><h3>Manage Admins</h3></div>
-          <div id="adminsList" style="margin-bottom:12px;"></div>
-          <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px;">
-            <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
-            <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
-            <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
-            <p id="addAdminMsg" style="min-height:16px; font-size:13px; margin:0;"></p>
-          </form>
+          <div class="panel-body">
+            <div id="adminsList" style="margin-bottom:14px;"></div>
+            <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px;">
+              <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
+              <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+              <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
+              <p id="addAdminMsg" style="min-height:16px; font-size:13px; margin:0;"></p>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -1794,9 +1799,10 @@
     return bins;
   }
 
-    function loadAdmins(){
+        function loadAdmins(){
     var token = localStorage.getItem(ADMIN_TOKEN_KEY);
     var listEl = document.getElementById("adminsList");
+    var currentUser = getCurrentAdminUsername(token);
     fetch("/api/admin/admins", {
       headers: { "Authorization": "Bearer " + token }
     })
@@ -1808,12 +1814,26 @@
           return;
         }
         listEl.innerHTML = admins.map(function(a){
-          return '<div class="dup-cluster"><strong>' + a.username + '</strong></div>';
+          var initial = (a.username || "?").trim().charAt(0).toUpperCase();
+          var youBadge = (currentUser && a.username === currentUser) ? '<span class="admin-you-badge">You</span>' : "";
+          return '<div class="admin-row"><span class="admin-avatar">'+initial+'</span><span class="admin-name">'+a.username+'</span>'+youBadge+'</div>';
         }).join("");
       })
       .catch(function(){
         listEl.innerHTML = emptyState(ICON_EMPTY_WARN, "Could not load admin list", "Check your connection and try again.");
       });
+  }
+
+  // Reads the (unencrypted, signed) JWT payload to know which admin is
+  // currently logged in — purely cosmetic, just to badge "You" in the list.
+  function getCurrentAdminUsername(token){
+    if(!token) return null;
+    try{
+      var payload = token.split(".")[1];
+      var normalized = payload.replace(/-/g,"+").replace(/_/g,"/");
+      var json = JSON.parse(atob(normalized));
+      return json.username || null;
+    } catch(e){ return null; }
   }
 
   function renderAdmin(){
