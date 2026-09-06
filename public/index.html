@@ -295,7 +295,7 @@
   .filter-rail h4::before{content:""; width:9px; height:9px; border-radius:2px; background:var(--teal); box-shadow:0 0 0 3px var(--teal-dim);}
   .filter-group{margin-bottom:20px;}
   .filter-group label{display:block; font-size:0.8rem; color:var(--mist); margin-bottom:8px; font-weight:500;}
-  .date-row{display:flex; gap:6px;}
+  .date-row{display:flex; flex-direction:column; gap:8px;}
   input[type=date],select,input[type=text],input[type=password]{
     width:100%; background:var(--ink); border:1px solid var(--border); color:var(--cloud);
     padding:9px 11px; border-radius:8px; font-size:0.82rem; font-family:var(--font-body);
@@ -505,9 +505,162 @@
     html{scroll-behavior:auto;}
   }
 
+  /* ---------- SKIP LINK ---------- */
+  .skip-link{
+    position:fixed; top:-60px; left:12px; z-index:200;
+    background:var(--teal); color:#00261F; font-weight:600; font-size:0.85rem;
+    padding:10px 16px; border-radius:8px; transition:top .18s ease;
+  }
+  .skip-link:focus{top:12px;}
+
+  /* ---------- TOP LOADING BAR ---------- */
+  .top-loader{position:fixed; top:0; left:0; height:2.5px; width:0%; z-index:300;
+    background:linear-gradient(90deg, var(--teal), var(--blue)); transition:width .25s ease, opacity .3s ease .15s; opacity:0;
+    box-shadow:0 0 10px rgba(34,211,166,0.7);}
+  .top-loader.active{opacity:1;}
+
+  /* ---------- NAV: HAMBURGER + MOBILE DRAWER ---------- */
+  .nav-toggle{
+    display:none; align-items:center; justify-content:center; width:38px; height:38px;
+    border-radius:9px; border:1px solid var(--border); background:var(--panel-2); color:var(--cloud);
+    cursor:pointer; flex:none;
+  }
+  .nav-toggle svg{pointer-events:none;}
+  .nav-backdrop{position:fixed; inset:0; background:rgba(4,8,14,0.6); backdrop-filter:blur(2px); z-index:55; opacity:0; pointer-events:none; transition:opacity .22s ease;}
+  .nav-backdrop.open{opacity:1; pointer-events:auto;}
+
+  /* ---------- STAT CARD ENRICHMENT (home hero ticker) ---------- */
+  .stat-item{display:flex; flex-direction:column;}
+  .stat-item-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+
+  /* ---------- DASHBOARD STAT CARDS: sparkline + delta ---------- */
+  .stat-card{position:relative; overflow:hidden;}
+  .stat-card-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
+  .stat-spark{flex:none; opacity:0.9;}
+  .stat-spark path{fill:none; stroke-width:1.6;}
+  .stat-spark .spark-fill{stroke:none;}
+  .stat-delta{display:inline-flex; align-items:center; gap:3px; font-size:0.72rem; font-family:var(--font-mono); margin-top:6px; font-weight:600;}
+  .stat-delta.up{color:var(--teal);}
+  .stat-delta.down{color:var(--red);}
+  .stat-delta.flat{color:var(--mist-dim);}
+  .stat-delta svg{flex:none;}
+  .stat-card.red .stat-delta.up{color:var(--red);}
+  .stat-card.red .stat-delta.down{color:var(--teal);}
+
+  /* trust-ring on admin avg trust card */
+  .trust-ring-wrap{position:absolute; top:12px; right:14px; width:38px; height:38px;}
+  .trust-ring-wrap svg{transform:rotate(-90deg);}
+  .trust-ring-bg{fill:none; stroke:var(--border); stroke-width:3;}
+  .trust-ring-fg{fill:none; stroke:var(--teal); stroke-width:3; stroke-linecap:round; transition:stroke-dasharray .6s ease;}
+
+  /* ---------- SKELETON LOADERS ---------- */
+  @keyframes shimmer{0%{background-position:-200px 0;}100%{background-position:calc(200px + 100%) 0;}}
+  .skel{
+    border-radius:6px; background:linear-gradient(90deg, var(--panel-2) 0%, var(--panel-3) 40%, var(--panel-2) 80%);
+    background-size:200px 100%; animation:shimmer 1.4s ease-in-out infinite;
+  }
+  .skel-row{display:grid; grid-template-columns:80px 1.3fr 1fr 1fr 90px; gap:10px; align-items:center; padding:12px 20px; border-bottom:1px solid var(--border-soft);}
+  .skel-row .skel{height:12px;}
+  .skel-queue-row{padding:16px 20px; border-bottom:1px solid var(--border-soft);}
+  .skel-queue-row .skel{height:12px; margin-bottom:8px;}
+  .skel-queue-row .skel:last-child{margin-bottom:0; width:60%;}
+  @media (prefers-reduced-motion:reduce){ .skel{animation:none;} }
+
+  /* ---------- TOASTS ---------- */
+  .toast-stack{position:fixed; bottom:20px; right:20px; z-index:400; display:flex; flex-direction:column; gap:10px; max-width:340px;}
+  .toast{
+    display:flex; align-items:flex-start; gap:10px; padding:13px 16px; border-radius:12px;
+    background:var(--panel-2); border:1px solid var(--border); box-shadow:var(--shadow-lift);
+    font-size:0.85rem; color:var(--cloud); animation:toastIn .25s ease both;
+  }
+  .toast .icon{flex:none; margin-top:1px;}
+  .toast.success{border-color:rgba(34,211,166,0.4);} .toast.success .icon{color:var(--teal);}
+  .toast.error{border-color:rgba(255,107,87,0.4);} .toast.error .icon{color:var(--red);}
+  .toast.info{border-color:rgba(79,178,255,0.4);} .toast.info .icon{color:var(--blue);}
+  .toast-close{margin-left:auto; background:none; border:none; color:var(--mist-dim); cursor:pointer; padding:0; flex:none;}
+  @keyframes toastIn{from{opacity:0; transform:translateY(8px) scale(0.98);}to{opacity:1; transform:translateY(0) scale(1);}}
+  .toast.leaving{animation:toastOut .18s ease both;}
+  @keyframes toastOut{to{opacity:0; transform:translateX(12px);}}
+
+  /* ---------- MAP TOOLBAR / HEATMAP TOGGLE ---------- */
+  .map-toolbar{display:flex; align-items:center; gap:8px;}
+  .map-toggle-btn{
+    display:inline-flex; align-items:center; gap:6px; font-size:0.74rem; font-family:var(--font-mono);
+    padding:5px 11px; border-radius:999px; border:1px solid var(--border); background:var(--ink);
+    color:var(--mist); cursor:pointer; transition:all .15s ease;
+  }
+  .map-toggle-btn:hover{color:var(--cloud); border-color:var(--mist-dim);}
+  .map-toggle-btn.active{background:var(--teal-dim); border-color:var(--teal); color:var(--teal);}
+
+  /* ---------- CSV EXPORT BUTTON ---------- */
+  .export-btn{
+    display:inline-flex; align-items:center; gap:5px; font-size:0.74rem; font-family:var(--font-mono);
+    color:var(--mist); background:none; border:1px solid var(--border); padding:5px 11px; border-radius:999px;
+    cursor:pointer; transition:all .15s ease;
+  }
+  .export-btn:hover{color:var(--teal); border-color:var(--teal);}
+
+  /* ---------- EMPTY STATE ---------- */
+  .empty-note{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .empty-note svg{opacity:0.45;}
+  .empty-note .empty-title{color:var(--mist); font-weight:600; font-size:0.9rem;}
+  .empty-note .empty-sub{color:var(--mist-dim); font-size:0.78rem;}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion:reduce){ .reveal{opacity:1; transform:none; transition:none;} }
+
+  /* ---------- BACK TO TOP ---------- */
+  .to-top{
+    position:fixed; bottom:22px; right:22px; z-index:120; width:42px; height:42px; border-radius:50%;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--cloud); display:flex;
+    align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-lift);
+    opacity:0; pointer-events:none; transform:translateY(8px); transition:all .22s ease;
+  }
+  .to-top.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .to-top:hover{border-color:var(--teal); color:var(--teal);}
+
+  /* ---------- FORECAST: condition theming ---------- */
+  .forecast-card{transition:background .5s ease, border-color .5s ease;}
+  .forecast-card[data-cond="Rain"], .forecast-card[data-cond="Drizzle"]{background:linear-gradient(160deg, #0E2436, #16283C);}
+  .forecast-card[data-cond="Storm"]{background:linear-gradient(160deg, #1a1830, #16283C);}
+  .forecast-card[data-cond="Clear"]{background:linear-gradient(160deg, #22301c, #16283C);}
+  .forecast-card[data-cond="Snow"]{background:linear-gradient(160deg, #1c2e3a, #16283C);}
+  .forecast-card[data-cond="Fog"]{background:linear-gradient(160deg, #22283a, #16283C);}
+
+  /* ---------- ADMIN: source/queue polish ---------- */
+  .queue-row{border-left:3px solid transparent;}
+  .queue-row[data-status="flagged"]{border-left-color:var(--red);}
+  .queue-row[data-status="pending"]{border-left-color:var(--amber);}
+  .admin-avatar{
+    display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%;
+    background:var(--teal-dim); color:var(--teal); font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
+    margin-right:8px; flex:none;
+  }
+  .admin-row{display:flex; align-items:center;}
+
+  /* ---------- MISC RESPONSIVE FOR NEW BITS ---------- */
+  @media (max-width:720px){
+    .nav-toggle{display:flex;}
+    .navbar .nav-links{
+      position:fixed; top:65px; right:0; bottom:0; width:min(78vw,300px);
+      background:var(--ink-2); border-left:1px solid var(--border-soft);
+      flex-direction:column; align-items:stretch; padding:16px; gap:4px;
+      overflow-y:auto; transform:translateX(100%); transition:transform .28s ease; z-index:60;
+      box-shadow:-16px 0 40px -20px rgba(0,0,0,0.6);
+    }
+    .navbar .nav-links.open{transform:translateX(0);}
+    .navbar .nav-links .nav-btn{width:100%; text-align:left; padding:13px 14px; border-radius:10px;}
+    .skel-row{grid-template-columns:1fr 1fr;}
+    .stat-spark{display:none;}
+  }
 </style>
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="top-loader" id="topLoader"></div>
 
 <nav class="navbar">
   <div class="brand" data-nav="home">
@@ -524,15 +677,20 @@
     </svg>
     <span class="brand-text">VarshaNet<small>NATIONAL WEATHER DATA PLATFORM</small></span>
   </div>
-  <div class="nav-links">
+  <div class="nav-links" id="navLinks">
     <button class="nav-btn active" data-nav="home">Home</button>
     <button class="nav-btn" data-nav="forecast">Forecast</button>
     <button class="nav-btn" data-nav="dashboard">Live Dashboard</button>
     <button class="nav-btn" data-nav="report">Report an Event</button>
     <button class="nav-btn" data-nav="admin">Admin Console</button>
   </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
 </nav>
+<div class="nav-backdrop" id="navBackdrop"></div>
 
+<main id="main-content">
 <!-- ============ HOME ============ -->
 <div class="view active" id="view-home">
   <section class="hero">
@@ -642,10 +800,6 @@
       </div>
     </div>
   </section>
-
-  <footer class="site-footer">
-    <strong>VarshaNet</strong> — a prototype built for Smart India Hackathon 2026 (PS 26069), for the Ministry of Earth Sciences · India Meteorological Department. Dashboard combines seeded historical data with real citizen submissions from this deployment.
-  </footer>
 </div>
 
 <!-- ============ FORECAST ============ -->
@@ -656,7 +810,7 @@
       <h1 class="section-title">Real-time weather for any city</h1>
       <p class="section-sub">Search live conditions, or cross-check them against citizen and social-media reports on the <button type="button" class="nav-btn" data-nav="dashboard" style="display:inline; padding:0; background:none; color:var(--teal); text-decoration:underline; font-size:inherit; font-weight:inherit;">Live Dashboard</button>.</p>
     </div>
-    <div class="forecast-card">
+    <div class="forecast-card" id="forecastCard">
       <div class="forecast-search">
         <input type="text" id="forecastCity" placeholder="Enter city name" spellcheck="false">
         <button class="btn btn-primary" id="forecastSearchBtn">Search</button>
@@ -689,10 +843,21 @@
   </div>
 
   <div class="dash-stats">
-    <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total reports</div></div>
-    <div class="stat-card teal"><div class="num" id="statVerified">0</div><div class="label">Verified</div></div>
-    <div class="stat-card amber"><div class="num" id="statActive">0</div><div class="label">Active events (24h)</div></div>
-    <div class="stat-card red"><div class="num" id="statFlagged">0</div><div class="label">Flagged / duplicate</div></div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div><div class="num" id="statTotal">0</div><div class="label">Total reports</div></div><div class="stat-spark" id="sparkTotal"></div></div>
+      <div class="stat-delta flat" id="deltaTotal"></div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-card-top"><div><div class="num" id="statVerified">0</div><div class="label">Verified</div></div><div class="stat-spark" id="sparkVerified"></div></div>
+      <div class="stat-delta flat" id="deltaVerified"></div>
+    </div>
+    <div class="stat-card amber"><div class="num" id="statActive">0</div><div class="label">Active events (24h)</div>
+      <div class="stat-delta flat"><span class="dot-live" style="margin-top:1px;"></span>&nbsp;live window</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-card-top"><div><div class="num" id="statFlagged">0</div><div class="label">Flagged / duplicate</div></div><div class="stat-spark" id="sparkFlagged"></div></div>
+      <div class="stat-delta flat" id="deltaFlagged"></div>
+    </div>
   </div>
 
   <div class="dash-layout">
@@ -725,9 +890,15 @@
       <button class="btn btn-ghost btn-reset" id="resetFilters">Reset filters</button>
     </aside>
 
-    <main class="dash-main">
+    <div class="dash-main">
       <div class="panel panel-map">
-        <div class="panel-head"><h3>Report Map</h3><span class="hint" id="mapCountHint">— reports plotted</span></div>
+        <div class="panel-head">
+          <h3>Report Map</h3>
+          <div class="map-toolbar">
+            <span class="hint" id="mapCountHint">— reports plotted</span>
+            <button class="map-toggle-btn" id="heatmapToggle" type="button" aria-pressed="false">🔥 Density heatmap</button>
+          </div>
+        </div>
         <div id="map"></div>
         <div class="map-legend" id="mapLegend"></div>
       </div>
@@ -749,11 +920,21 @@
           <div class="panel-body chart-box"><canvas id="barChart"></canvas></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>Recent Reports</h3><span class="hint" id="tableCountHint"></span></div>
-          <div class="report-list" id="reportList"></div>
+          <div class="panel-head">
+            <h3>Recent Reports</h3>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="hint" id="tableCountHint"></span>
+              <button class="export-btn" id="exportCsvBtn" type="button">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="report-list" id="reportList">
+            <div class="skel-row"><div class="skel" style="width:70%"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:50%"></div><div class="skel" style="width:70%"></div></div>
+            <div class="skel-row"><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:55%"></div><div class="skel" style="width:65%"></div><div class="skel" style="width:60%"></div></div>
+            <div class="skel-row"><div class="skel" style="width:65%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:50%"></div><div class="skel" style="width:55%"></div><div class="skel" style="width:65%"></div></div>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </div>
 
@@ -817,7 +998,7 @@
       <h2>Admin Console</h2>
       <p class="sub">Sign in to review incoming reports, check trust scores and resolve duplicates.</p>
       <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="admin"></div>
-      <div class="field"><label>Password</label><input type="text" id="loginPass" placeholder="••••••••"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
       <button class="btn btn-primary" id="loginBtn" style="width:100%; justify-content:center; margin-top:20px;">Sign in</button>
       <p class="login-error" id="loginError">Enter a username and password to continue.</p>
       <p class="login-note">Sign in with the admin account configured for this deployment.</p>
@@ -840,7 +1021,15 @@
       <div class="stat-card amber"><div class="num" id="adminPending">0</div><div class="label">Pending review</div></div>
       <div class="stat-card red"><div class="num" id="adminFlagged">0</div><div class="label">Flagged (ML / duplicate)</div></div>
       <div class="stat-card teal"><div class="num" id="adminVerifiedToday">0</div><div class="label">Verified this session</div></div>
-      <div class="stat-card"><div class="num" id="adminAvgTrust">0</div><div class="label">Avg. trust score</div></div>
+      <div class="stat-card">
+        <div class="num" id="adminAvgTrust">0</div><div class="label">Avg. trust score</div>
+        <div class="trust-ring-wrap">
+          <svg viewBox="0 0 40 40" width="38" height="38">
+            <circle class="trust-ring-bg" cx="20" cy="20" r="16"></circle>
+            <circle class="trust-ring-fg" id="avgTrustRing" cx="20" cy="20" r="16" stroke-dasharray="0 100.5"></circle>
+          </svg>
+        </div>
+      </div>
     </div>
 
     <div class="admin-layout">
@@ -853,13 +1042,21 @@
             <span class="chip" data-tab="all">All</span>
           </div>
         </div>
-        <div class="queue-list" id="queueList"></div>
+        <div class="queue-list" id="queueList">
+          <div class="skel-queue-row"><div class="skel" style="width:45%"></div><div class="skel" style="width:85%"></div><div class="skel"></div></div>
+          <div class="skel-queue-row"><div class="skel" style="width:40%"></div><div class="skel" style="width:75%"></div><div class="skel"></div></div>
+          <div class="skel-queue-row"><div class="skel" style="width:50%"></div><div class="skel" style="width:80%"></div><div class="skel"></div></div>
+        </div>
       </div>
 
       <div>
         <div class="panel side-card">
           <div class="panel-head"><h3>Reports by Source</h3></div>
           <div class="panel-body chart-box" style="height:200px;"><canvas id="sourceChart"></canvas></div>
+        </div>
+        <div class="panel side-card">
+          <div class="panel-head"><h3>Trust Score Distribution</h3></div>
+          <div class="panel-body chart-box" style="height:180px;"><canvas id="trustHistChart"></canvas></div>
         </div>
                 <div class="panel">
           <div class="panel-head"><h3>Possible Duplicate Clusters</h3></div>
@@ -879,8 +1076,19 @@
     </div>
   </div>
 </div>
+</main>
+
+<footer class="site-footer">
+  <strong>VarshaNet</strong> — a prototype built for Smart India Hackathon 2026 (PS 26069), for the Ministry of Earth Sciences · India Meteorological Department. Dashboard combines seeded historical data with real citizen submissions from this deployment.
+</footer>
+
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+<button class="to-top" id="toTopBtn" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 (function(){
@@ -923,7 +1131,8 @@
     {key:"strong_winds", label:"Strong Winds", color:"#6FE0B8"}
   ];
 
-    var SOURCES = ["X / Twitter", "Citizen Report App", "Weather API", "IMD API", "Public Dataset"];
+  var SOURCES = ["X / Twitter", "Citizen Report App", "IMD API", "Public Dataset"];
+
   function statusFromTrust(t){
     if(t < 42) return "flagged";
     if(t < 68) return "pending";
@@ -941,8 +1150,61 @@
     charts:{},
     map:null,
     markerLayer:null,
-    dashInitialized:false
+    heatLayer:null,
+    heatmapOn:false,
+    dashInitialized:false,
+    loadedOnce:false
   };
+
+  /* ================= TOASTS ================= */
+  var TOAST_ICONS = {
+    success:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    error:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    info:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+  function showToast(type, message, duration){
+    var stack = document.getElementById("toastStack");
+    if(!stack) return;
+    duration = duration || 4200;
+    var el = document.createElement("div");
+    el.className = "toast " + (type||"info");
+    el.innerHTML = '<span class="icon">'+(TOAST_ICONS[type]||TOAST_ICONS.info)+'</span><span>'+message+'</span><button class="toast-close" aria-label="Dismiss notification">\u2715</button>';
+    stack.appendChild(el);
+    var timer;
+    function remove(){
+      clearTimeout(timer);
+      el.classList.add("leaving");
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 180);
+    }
+    el.querySelector(".toast-close").addEventListener("click", remove);
+    timer = setTimeout(remove, duration);
+  }
+
+  /* ================= TOP LOADING BAR ================= */
+  function startLoader(){
+    var bar = document.getElementById("topLoader");
+    if(!bar) return;
+    bar.classList.add("active");
+    bar.style.width = "18%";
+    clearTimeout(bar._t);
+    bar._t = setTimeout(function(){ bar.style.width = "68%"; }, 220);
+  }
+  function stopLoader(){
+    var bar = document.getElementById("topLoader");
+    if(!bar) return;
+    clearTimeout(bar._t);
+    bar.style.width = "100%";
+    setTimeout(function(){ bar.classList.remove("active"); bar.style.width = "0%"; }, 260);
+  }
+
+  /* ================= EMPTY STATES ================= */
+  var ICON_EMPTY_SEARCH = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  var ICON_EMPTY_CHECK = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5.5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_EMPTY_LAYERS = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 13l9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+  var ICON_EMPTY_WARN = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l9.5 16.5H2.5L12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4.2M12 17h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  function emptyState(icon, title, sub){
+    return '<div class="empty-note">'+icon+'<div class="empty-title">'+title+'</div>'+(sub?'<div class="empty-sub">'+sub+'</div>':'')+'</div>';
+  }
 
   function fmtRelative(ts){
     var diff = Date.now() - ts;
@@ -1065,6 +1327,13 @@
       });
     });
 
+    document.getElementById("exportCsvBtn").addEventListener("click", function(){
+      var filtered = getFiltered();
+      if(!filtered.length){ showToast("info", "No reports to export with the current filters."); return; }
+      exportReportsCsv(filtered);
+      showToast("success", "Exported "+filtered.length.toLocaleString()+" report(s) to CSV.");
+    });
+
     // map legend
     var legend = document.getElementById("mapLegend");
     EVENTS.forEach(function(ev){
@@ -1081,36 +1350,97 @@
     }).addTo(state.map);
     state.markerLayer = L.layerGroup().addTo(state.map);
 
+    var heatBtn = document.getElementById("heatmapToggle");
+    if(heatBtn){
+      heatBtn.addEventListener("click", function(){
+        if(!state.heatmapOn && (!window.L || typeof L.heatLayer !== "function")){
+          showToast("error", "Heatmap layer couldn't load — check your connection and try again.");
+          return;
+        }
+        state.heatmapOn = !state.heatmapOn;
+        heatBtn.classList.toggle("active", state.heatmapOn);
+        heatBtn.setAttribute("aria-pressed", state.heatmapOn ? "true" : "false");
+        if(state.heatmapOn){
+          state.map.removeLayer(state.markerLayer);
+          updateHeatLayer(getFiltered());
+        } else {
+          if(state.heatLayer){ state.map.removeLayer(state.heatLayer); state.heatLayer = null; }
+          state.markerLayer.addTo(state.map);
+        }
+      });
+    }
+
     // charts
     var lineCtx = document.getElementById("lineChart").getContext("2d");
+    var lineGradient = lineCtx.createLinearGradient(0,0,0,230);
+    lineGradient.addColorStop(0,"rgba(34,211,166,0.38)");
+    lineGradient.addColorStop(1,"rgba(34,211,166,0.02)");
     state.charts.line = new Chart(lineCtx, {
       type:"line",
-      data:{labels:[], datasets:[{label:"Reports", data:[], borderColor:"#22D3A6", backgroundColor:"rgba(34,211,166,0.12)", fill:true, tension:0.35, pointRadius:0, borderWidth:2}]},
+      data:{labels:[], datasets:[{label:"Reports", data:[], borderColor:"#22D3A6", backgroundColor:lineGradient, fill:true, tension:0.35, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:"#22D3A6", borderWidth:2}]},
       options: chartBaseOptions({legend:false})
     });
 
     var donutCtx = document.getElementById("donutChart").getContext("2d");
     state.charts.donut = new Chart(donutCtx, {
       type:"doughnut",
-      data:{labels:EVENTS.map(function(e){return e.label;}), datasets:[{data:EVENTS.map(function(){return 0;}), backgroundColor:EVENTS.map(function(e){return e.color;}), borderWidth:0}]},
-      options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:"right", labels:{color:"#93A9BE", boxWidth:10, font:{size:10}, padding:8}}}}
+      data:{labels:EVENTS.map(function(e){return e.label;}), datasets:[{data:EVENTS.map(function(){return 0;}), backgroundColor:EVENTS.map(function(e){return e.color;}), borderWidth:2, borderColor:"#101C2C", hoverOffset:6}]},
+      options:{
+        responsive:true, maintainAspectRatio:false, cutout:"68%",
+        plugins:{
+          legend:{position:"right", labels:{color:"#93A9BE", boxWidth:10, font:{size:10}, padding:8}},
+          tooltip: TOOLTIP_STYLE
+        }
+      },
+      plugins:[donutCenterTextPlugin]
     });
 
     var barCtx = document.getElementById("barChart").getContext("2d");
+    var barGradient = barCtx.createLinearGradient(0,0,320,0);
+    barGradient.addColorStop(0,"#1c6fb8"); barGradient.addColorStop(1,"#4FB2FF");
     state.charts.bar = new Chart(barCtx, {
       type:"bar",
-      data:{labels:[], datasets:[{label:"Reports", data:[], backgroundColor:"#4FB2FF", borderRadius:4}]},
+      data:{labels:[], datasets:[{label:"Reports", data:[], backgroundColor:barGradient, borderRadius:4, maxBarThickness:22}]},
       options: chartBaseOptions({legend:false, indexAxis:"y"})
     });
 
     applyFilters();
   }
 
+  var TOOLTIP_STYLE = {
+    backgroundColor:"#0B1220", borderColor:"#22384F", borderWidth:1, padding:10,
+    titleColor:"#EEF5FB", bodyColor:"#93A9BE", cornerRadius:8, displayColors:false, titleFont:{family:"'Space Grotesk', sans-serif", weight:"600"}
+  };
+
+  // Draws the running total in the donut's empty center — small touch that
+  // turns "seven colored slices" into an at-a-glance number.
+  var donutCenterTextPlugin = {
+    id:"donutCenterText",
+    afterDraw: function(chart){
+      var data = chart.data.datasets[0].data;
+      var total = data.reduce(function(a,b){return a+b;},0);
+      var ctx = chart.ctx;
+      var area = chart.chartArea;
+      if(!area) return;
+      var cx = (area.left+area.right)/2, cy = (area.top+area.bottom)/2;
+      ctx.save();
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = "600 22px 'IBM Plex Mono', monospace";
+      ctx.fillStyle = "#EEF5FB";
+      ctx.fillText(total.toLocaleString(), cx, cy - 9);
+      ctx.font = "500 10px 'Inter', sans-serif";
+      ctx.fillStyle = "#5E7690";
+      ctx.fillText(total===1 ? "report" : "reports", cx, cy + 12);
+      ctx.restore();
+    }
+  };
+
   function chartBaseOptions(opts){
     opts = opts||{};
     var o = {
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display: !!opts.legend } },
+      interaction:{ intersect:false, mode:"index" },
+      plugins:{ legend:{ display: !!opts.legend }, tooltip: TOOLTIP_STYLE },
       scales:{
         x:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5E7690", font:{size:10}} },
         y:{ grid:{color:"rgba(255,255,255,0.05)"}, ticks:{color:"#5E7690", font:{size:10}}, beginAtZero:true }
@@ -1139,6 +1469,71 @@
     });
   }
 
+  // Density heatmap: an alternate read of the same points, useful once a
+  // filter narrows the map down to a cluster too dense for individual pins
+  // to read cleanly.
+  function updateHeatLayer(filtered){
+    if(!state.heatmapOn || !window.L || typeof L.heatLayer !== "function") return;
+    var points = filtered.slice(0,3000).map(function(r){ return [r.lat, r.lng, r.status==="flagged" ? 0.35 : 1]; });
+    if(state.heatLayer){ state.map.removeLayer(state.heatLayer); }
+    state.heatLayer = L.heatLayer(points, {
+      radius:22, blur:18, maxZoom:10,
+      gradient:{0.2:"#22D3A6", 0.5:"#4FB2FF", 0.75:"#FDB750", 1:"#FF6B57"}
+    });
+    state.heatLayer.addTo(state.map);
+  }
+
+  // Builds a tiny inline sparkline (last 7 days) plus a %-change chip
+  // (vs. the 7 days before) for a stat card — computed from the full,
+  // unfiltered dataset so it reflects overall momentum, not just whatever
+  // date range happens to be selected in the filter rail.
+  function buildSparklineSvg(values, color){
+    var w=64, h=24;
+    var max = Math.max.apply(null, values.concat([1]));
+    var n = values.length;
+    var stepX = n>1 ? w/(n-1) : w;
+    var pts = values.map(function(v,i){
+      var x = i*stepX;
+      var y = h - (max>0 ? (v/max)*(h-3) : 0) - 1.5;
+      return x.toFixed(1)+","+y.toFixed(1);
+    }).join(" ");
+    var areaPts = pts+" "+w+","+h+" 0,"+h;
+    return '<svg width="64" height="24" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+
+      '<polyline class="spark-fill" points="'+areaPts+'" fill="'+color+'" opacity="0.16"></polyline>'+
+      '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></polyline>'+
+    '</svg>';
+  }
+
+  function renderTrendStat(predicate, sparkId, deltaId, color){
+    var dayMs = 86400000, now = Date.now();
+    var days = [];
+    for(var i=13;i>=0;i--){
+      var dayStart = new Date(now - i*dayMs); dayStart.setHours(0,0,0,0);
+      var dayEnd = dayStart.getTime()+dayMs;
+      var count = 0;
+      for(var j=0;j<state.reports.length;j++){
+        var r = state.reports[j];
+        if(r.status!=="rejected" && predicate(r) && r.ts>=dayStart.getTime() && r.ts<dayEnd) count++;
+      }
+      days.push(count);
+    }
+    var prev7 = days.slice(0,7).reduce(function(a,b){return a+b;},0);
+    var curr7 = days.slice(7).reduce(function(a,b){return a+b;},0);
+    var sparkEl = document.getElementById(sparkId);
+    var deltaEl = document.getElementById(deltaId);
+    if(sparkEl) sparkEl.innerHTML = buildSparklineSvg(days.slice(7), color);
+    if(deltaEl){
+      var pct, dir;
+      if(prev7===0 && curr7===0){ pct = 0; dir = "flat"; }
+      else if(prev7===0){ pct = 100; dir = "up"; }
+      else { pct = Math.round(((curr7-prev7)/prev7)*100); dir = pct>0 ? "up" : (pct<0 ? "down" : "flat"); }
+      var arrow = dir==="up" ? "\u25B2" : (dir==="down" ? "\u25BC" : "\u2022");
+      deltaEl.className = "stat-delta "+dir;
+      deltaEl.textContent = arrow+" "+Math.abs(pct)+"% vs prior 7d";
+      deltaEl.title = curr7+" in the last 7 days vs "+prev7+" in the 7 days before (all data, independent of filters above).";
+    }
+  }
+
   function applyFilters(){
     var filtered = getFiltered();
     var dayMs = 86400000;
@@ -1148,6 +1543,10 @@
     document.getElementById("statVerified").textContent = filtered.filter(function(r){return r.status==="verified";}).length.toLocaleString();
     document.getElementById("statActive").textContent = filtered.filter(function(r){return now - r.ts < dayMs;}).length.toLocaleString();
     document.getElementById("statFlagged").textContent = filtered.filter(function(r){return r.status==="flagged";}).length.toLocaleString();
+
+    renderTrendStat(function(){ return true; }, "sparkTotal", "deltaTotal", "#4FB2FF");
+    renderTrendStat(function(r){ return r.status==="verified"; }, "sparkVerified", "deltaVerified", "#22D3A6");
+    renderTrendStat(function(r){ return r.status==="flagged"; }, "sparkFlagged", "deltaFlagged", "#FF6B57");
 
     // map
     if(state.markerLayer){
@@ -1167,6 +1566,7 @@
         marker.addTo(state.markerLayer);
       });
     }
+    if(state.heatmapOn) updateHeatLayer(filtered);
     document.getElementById("mapCountHint").textContent = filtered.length.toLocaleString()+" reports plotted";
 
     // line chart: last 30 days count
@@ -1210,7 +1610,7 @@
     var recent = filtered.slice().sort(function(a,b){ return b.ts-a.ts; }).slice(0,60);
     document.getElementById("tableCountHint").textContent = "showing "+recent.length+" of "+filtered.length;
     if(recent.length===0){
-      list.innerHTML = '<div class="empty-note">No reports match these filters. Try widening the date range.</div>';
+      list.innerHTML = emptyState(ICON_EMPTY_SEARCH, "No reports match these filters", "Try widening the date range or clearing a filter.");
     } else {
       list.innerHTML = recent.map(function(r){
         var meta = eventMeta(r.event);
@@ -1223,6 +1623,28 @@
         '</div>';
       }).join("");
     }
+  }
+
+  function csvValue(v){
+    var s = v===null || v===undefined ? "" : String(v);
+    if(/[",\n]/.test(s)) s = '"'+s.replace(/"/g,'""')+'"';
+    return s;
+  }
+  function exportReportsCsv(reports){
+    var headers = ["id","city","state","event","source","status","trust_score","lat","lng","timestamp_utc","description"];
+    var lines = [headers.join(",")];
+    reports.forEach(function(r){
+      lines.push([r.id, r.city, r.state, r.event, r.source, r.status, r.trust, r.lat, r.lng, new Date(r.ts).toISOString(), r.text].map(csvValue).join(","));
+    });
+    var blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "varshanet-reports-"+new Date().toISOString().slice(0,10)+".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
   }
 
   /* ================= ADMIN ================= */
@@ -1343,11 +1765,33 @@
     });
 
     var srcCtx = document.getElementById("sourceChart").getContext("2d");
+    var srcGradient = srcCtx.createLinearGradient(0,0,0,200);
+    srcGradient.addColorStop(0,"#22D3A6"); srcGradient.addColorStop(1,"#17b695");
     state.charts.source = new Chart(srcCtx, {
       type:"bar",
-      data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:"#22D3A6", borderRadius:4}]},
+      data:{labels:SOURCES, datasets:[{label:"Reports", data:SOURCES.map(function(){return 0;}), backgroundColor:srcGradient, borderRadius:4, maxBarThickness:34}]},
       options: chartBaseOptions({legend:false})
     });
+
+    var trustHistCtx = document.getElementById("trustHistChart").getContext("2d");
+    state.charts.trustHist = new Chart(trustHistCtx, {
+      type:"bar",
+      data:{
+        labels:["0-20","21-40","41-60","61-80","81-100"],
+        datasets:[{label:"Reports", data:[0,0,0,0,0], backgroundColor:["#FF6B57","#FF9457","#FDB750","#8FDBAE","#22D3A6"], borderRadius:4, maxBarThickness:34}]
+      },
+      options: chartBaseOptions({legend:false})
+    });
+  }
+
+  function computeTrustBins(reports){
+    var bins = [0,0,0,0,0];
+    reports.forEach(function(r){
+      var t = r.trust;
+      var idx = t<=20 ? 0 : (t<=40 ? 1 : (t<=60 ? 2 : (t<=80 ? 3 : 4)));
+      bins[idx]++;
+    });
+    return bins;
   }
 
     function loadAdmins(){
@@ -1360,7 +1804,7 @@
       .then(function(data){
         var admins = data.admins || [];
         if(!admins.length){
-          listEl.innerHTML = '<div class="empty-note">No admin accounts found.</div>';
+          listEl.innerHTML = emptyState(ICON_EMPTY_WARN, "No admin accounts found");
           return;
         }
         listEl.innerHTML = admins.map(function(a){
@@ -1368,7 +1812,7 @@
         }).join("");
       })
       .catch(function(){
-        listEl.innerHTML = '<div class="empty-note">Could not load admin list.</div>';
+        listEl.innerHTML = emptyState(ICON_EMPTY_WARN, "Could not load admin list", "Check your connection and try again.");
       });
   }
 
@@ -1398,15 +1842,23 @@
     document.getElementById("adminVerifiedToday").textContent = state.verifiedThisSession;
     document.getElementById("adminAvgTrust").textContent = avgTrust;
 
+    var ring = document.getElementById("avgTrustRing");
+    if(ring){
+      var circumference = 2*Math.PI*16;
+      var frac = Math.max(0, Math.min(100, avgTrust))/100;
+      ring.setAttribute("stroke-dasharray", (circumference*frac).toFixed(1)+" "+circumference.toFixed(1));
+      ring.style.stroke = avgTrust<42 ? "#FF6B57" : (avgTrust<68 ? "#FDB750" : "#22D3A6");
+    }
+
     var list = document.getElementById("queueList");
     if(queue.length===0){
-      list.innerHTML = '<div class="empty-note">Queue is clear — nothing needs review right now.</div>';
+      list.innerHTML = emptyState(ICON_EMPTY_CHECK, "Queue is clear", "Nothing needs review right now.");
     } else {
       list.innerHTML = queue.slice(0,80).map(function(r){
         var meta = eventMeta(r.event);
         var fillColor = r.trust<42 ? "#FF6B57" : (r.trust<68 ? "#FDB750" : "#22D3A6");
         var dupNote = r.duplicateOf!==null ? '<span class="dup-badge">possible duplicate of #'+r.duplicateOf+'</span>' : '';
-        return '<div class="queue-row" data-id="'+r.id+'">'+
+        return '<div class="queue-row" data-id="'+r.id+'" data-status="'+r.status+'">'+
           '<div class="queue-loc">'+
             '<strong>'+r.city+', '+r.state+'</strong>'+
             '<div class="snippet">'+r.text+'</div>'+
@@ -1431,6 +1883,12 @@
       state.charts.source.update();
     }
 
+    // trust score distribution
+    if(state.charts.trustHist){
+      state.charts.trustHist.data.datasets[0].data = computeTrustBins(all);
+      state.charts.trustHist.update();
+    }
+
         // duplicate clusters — newest first, so a duplicate caught live during a
     // demo always surfaces instead of being buried behind old seed data
     var dupWrap = document.getElementById("dupClusters");
@@ -1438,7 +1896,7 @@
       .filter(function(r){ return r.duplicateOf!==null && r.status!=="rejected"; })
       .sort(function(a,b){ return b.ts - a.ts; });
     if(clusters.length===0){
-      dupWrap.innerHTML = '<div class="empty-note">No duplicate clusters detected.</div>';
+      dupWrap.innerHTML = emptyState(ICON_EMPTY_LAYERS, "No duplicate clusters detected");
     } else {
       dupWrap.innerHTML = clusters.slice(0,10).map(function(r){
         return '<div class="dup-cluster"><strong>'+r.city+'</strong> — '+eventMeta(r.event).label+
@@ -1521,11 +1979,15 @@
         document.getElementById("forecastCityName").textContent = data.name;
         document.getElementById("forecastHumidity").textContent = data.humidity + "%";
         document.getElementById("forecastWind").textContent = data.wind + " km/h";
+        var card = document.getElementById("forecastCard");
+        if(card) card.setAttribute("data-cond", data.main || "");
         resultBox.classList.add("show");
       }).catch(function(err){
         loading.classList.remove("show");
         errorBox.textContent = err.message || "Could not fetch weather data. Check your connection.";
         errorBox.classList.add("show");
+        var card = document.getElementById("forecastCard");
+        if(card) card.removeAttribute("data-cond");
       });
     }
 
@@ -1696,17 +2158,91 @@
 
   /* ================= INIT ================= */
   function loadReports(){
+    startLoader();
     return fetch("/api/reports").then(function(res){ return res.json(); }).then(function(data){
       state.reports = data;
       if(state.dashInitialized) applyFilters();
       if(state.isAdmin) renderAdmin();
+      stopLoader();
+      state.loadedOnce = true;
       return data;
-    }).catch(function(){ state.reports = state.reports || []; });
+    }).catch(function(){
+      state.reports = state.reports || [];
+      stopLoader();
+      if(state.loadedOnce) showToast("error", "Couldn't refresh reports — check your connection.");
+    });
+  }
+
+  /* ================= MOBILE NAV DRAWER ================= */
+  function initNavToggle(){
+    var toggle = document.getElementById("navToggle");
+    var links = document.getElementById("navLinks");
+    var backdrop = document.getElementById("navBackdrop");
+    if(!toggle || !links || !backdrop) return;
+    function closeMenu(){
+      links.classList.remove("open");
+      backdrop.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+    }
+    function openMenu(){
+      links.classList.add("open");
+      backdrop.classList.add("open");
+      toggle.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+    }
+    toggle.addEventListener("click", function(){
+      if(links.classList.contains("open")) closeMenu(); else openMenu();
+    });
+    backdrop.addEventListener("click", closeMenu);
+    links.addEventListener("click", function(e){
+      if(e.target.closest(".nav-btn")) closeMenu();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape") closeMenu();
+    });
+  }
+
+  /* ================= SCROLL REVEAL (landing page) ================= */
+  function initScrollReveal(){
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var targets = document.querySelectorAll("#view-home .pipeline-step, #view-home .preview-card, #view-home .section-head");
+    if(!targets.length) return;
+    targets.forEach(function(el, i){
+      el.classList.add("reveal");
+      el.style.transitionDelay = (Math.min(i, 6) * 60) + "ms";
+    });
+    if(reduce || !("IntersectionObserver" in window)){
+      targets.forEach(function(el){ el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add("in"); io.unobserve(entry.target); }
+      });
+    }, {threshold:0.15, rootMargin:"0px 0px -40px 0px"});
+    targets.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ================= BACK TO TOP ================= */
+  function initToTop(){
+    var btn = document.getElementById("toTopBtn");
+    if(!btn) return;
+    window.addEventListener("scroll", function(){
+      btn.classList.toggle("show", window.scrollY > 480);
+    }, {passive:true});
+    btn.addEventListener("click", function(){
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({top:0, behavior: reduce ? "auto" : "smooth"});
+    });
   }
 
     document.addEventListener("DOMContentLoaded", function(){
     animateCounters();
     initAdmin();
+    initNavToggle();
+    initScrollReveal();
+    initToTop();
     loadReports();
 
     // Auto-refresh: pull latest reports every 25s so the Live Dashboard
