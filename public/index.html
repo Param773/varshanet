@@ -74,8 +74,8 @@
   .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
 
   /* ---------- NAVBAR ---------- */
-  .navbar{
-    position:sticky; top:0; z-index:50;
+    .navbar{
+    position:sticky; top:0; z-index:90;
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 28px;
     background:rgba(8,13,22,0.78);
@@ -1069,7 +1069,7 @@
           <div class="panel-head"><h3>Manage Admins</h3></div>
           <div class="panel-body">
             <div id="adminsList" style="margin-bottom:14px;"></div>
-            <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px;">
+                        <form id="addAdminForm" style="display:flex; flex-direction:column; gap:8px; padding-top:18px; margin-top:4px; border-top:1px solid var(--border-soft);">
               <input type="text" id="newAdminUsername" placeholder="New admin username" autocomplete="off">
               <input type="password" id="newAdminPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
               <button type="submit" class="btn btn-primary btn-sm">Add Admin</button>
