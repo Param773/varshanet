@@ -7,6 +7,7 @@ const path = require("path");
 const db = require("./db");
 const { generateSeedReports } = require("./seedData");
 const { runIngestion } = require("./ingest");
+const { runSachetIngestion } = require("./sachetIngest");
 
 const reportsRouter = require("./routes/reports");
 const adminRouter = require("./routes/admin");
@@ -64,6 +65,12 @@ async function main() {
   runIngestion();
   const INGEST_INTERVAL_MS = 20 * 60 * 1000;
   setInterval(runIngestion, INGEST_INTERVAL_MS);
+
+  // Live public-dataset ingestion: pull real NDMA SACHET disaster/weather
+  // alerts once at boot, then every 30 minutes.
+  runSachetIngestion();
+  const SACHET_INTERVAL_MS = 30 * 60 * 1000;
+  setInterval(runSachetIngestion, SACHET_INTERVAL_MS);
 }
 
 main().catch((err) => {

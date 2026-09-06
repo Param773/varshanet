@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../db");
 const { requireAdmin } = require("../middleware/auth");
 const { runIngestion } = require("../ingest");
+const { runSachetIngestion } = require("../sachetIngest");
 
 const router = express.Router();
 
@@ -28,8 +29,16 @@ router.post("/login", async (req, res) => {
 
 router.post("/ingest", requireAdmin, async (req, res) => {
   try {
-    const created = await runIngestion();
-    res.json({ created: created.length, reports: created });
+    const [weatherReports, sachetReports] = await Promise.all([
+      runIngestion(),
+      runSachetIngestion(),
+    ]);
+    const reports = [...weatherReports, ...sachetReports];
+    res.json({
+      created: reports.length,
+      reports,
+      breakdown: { weatherApi: weatherReports.length, publicDataset: sachetReports.length },
+    });
   } catch (e) {
     console.error("Manual ingestion failed:", e);
     res.status(500).json({ error: "Ingestion failed. Please try again." });
